@@ -1,6 +1,7 @@
 <script setup>
 import { reactive } from 'vue';
 import { useUserStore } from '@/stores/user';
+import { useRouter, RouterLink } from 'vue-router';
 
 const form = reactive({
     email: '',
@@ -12,6 +13,7 @@ const state = reactive({
 });
 
 const store = useUserStore();
+const router = useRouter();
 
 const loginUser = async () => {
     try {
@@ -29,6 +31,7 @@ const loginUser = async () => {
             state.incorrectCreds = false;
             sessionStorage.setItem('authToken', data.response.user.authentication_token);
             store.login();
+            router.push('/');
         }
     } catch (error) {
         console.error('Error logging in.', error);
@@ -55,7 +58,7 @@ const loginUser = async () => {
             </div>
         </form>
         <div>
-            <p>Don't have an account? <a href="/signup">Sign up</a></p>
+            <p>Don't have an account? <RouterLink to="/register">Register</RouterLink></p>
         </div>
     </section>
 </template>

@@ -1,12 +1,12 @@
 <script setup>
-import Hello from '@/components/Hello.vue';
+import Home from '@/components/Home.vue';
 import Navbar from '@/components/Navbar.vue';
 </script>
 
 <template>
     <main>
         <Navbar />
-        <Hello />
+        <Home />
     </main>
 </template>
 

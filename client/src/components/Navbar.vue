@@ -20,10 +20,14 @@ const logoutUser = async () => {
 <template>
     <nav>
         <div>SponsorConnect</div>
-        <div>
-            <RouterLink to="/dashboard">Dashboard</RouterLink>
-            <button v-if="isLoggedIn" @click="logoutUser">Logout</button>
-            <RouterLink v-else to="/login">Login</RouterLink>
-        </div>
+        <ul>
+            <li>
+                <RouterLink to="/dashboard">Dashboard</RouterLink>
+            </li>
+            <li>
+                <button v-if="isLoggedIn" @click="logoutUser">Logout</button>
+                <RouterLink v-else to="/login">Login</RouterLink>
+            </li>
+        </ul>
     </nav>
 </template>

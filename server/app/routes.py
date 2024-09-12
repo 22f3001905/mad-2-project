@@ -1,5 +1,7 @@
-from flask import current_app as app
+from flask import current_app as app, jsonify
 from flask_security import current_user, auth_required, roles_required, roles_accepted
+
+from app.utils import hard_coded_info
 
 # @roles_required("Student", "Instructor") -> User should have both Student and Instructor. { AND condition }
 # @roles_accepted("Student", "Instructor") -> User should have either Student or Instructor. { OR condition }
@@ -20,3 +22,8 @@ def admin_dash():
 #         "email": current_user.email,
 #         "roles": [role.name for role in current_user.roles]
 #     }
+
+@app.route("/registration-form-data")
+def registration_form_data():
+
+    return jsonify(hard_coded_info())
