@@ -25,5 +25,4 @@ def admin_dash():
 
 @app.route("/registration-form-data")
 def registration_form_data():
-
     return jsonify(hard_coded_info())

@@ -6,6 +6,7 @@ def create_user(email, password, roles: list):
     if not user_exists:
         hashed_password = hash_password(password)
         app.security.datastore.create_user(email=email, password=hashed_password, roles=roles)
+        return app.security.datastore.find_user(email=email)
 
 def hard_coded_info():
     industry_names = ['Fashion/Apparel', 'Food & Beverage', 'Beauty/Cosmetics', 'Travel', 'Health/Fitness', 'Technology', 'Entertainment', 'Automotive', 'Education', 'Other']

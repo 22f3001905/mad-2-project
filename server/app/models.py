@@ -39,7 +39,7 @@ class Sponsor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     industry_id = db.Column(db.Integer, db.ForeignKey("industry.id"), nullable=False)
-    budget = db.Column(db.Float, nullable=False)
+    budget = db.Column(db.Float, nullable=False, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, unique=True)
     campaigns = db.relationship("Campaign", backref="sponsor")
 

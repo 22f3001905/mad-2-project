@@ -2,14 +2,8 @@
 import Login from '@/components/Login.vue';
 import Navbar from '@/components/Navbar.vue';
 
-import { useUserStore } from '@/stores/user';
-import { useRouter } from 'vue-router';
-
-const store = useUserStore();
-const router = useRouter();
-if (store.isLoggedIn) {
-    router.push('/');
-}
+import { userLoggedInRedirect } from '@/utils';
+userLoggedInRedirect();
 </script>
 
 <template>
