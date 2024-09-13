@@ -27,11 +27,13 @@ const loginUser = async () => {
 
         if (data.response.errors) {
             state.incorrectCreds = true;
+            form.password = '';
         } else {
             state.incorrectCreds = false;
             sessionStorage.setItem('authToken', data.response.user.authentication_token);
             store.login();
-            router.push('/');
+            sessionStorage.setItem('userEmail', form.email);
+            router.push('/dashboard');
         }
     } catch (error) {
         console.error('Error logging in.', error);
