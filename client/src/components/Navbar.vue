@@ -12,7 +12,6 @@ const logoutUser = async () => {
         await fetch('/api/logout');
         sessionStorage.removeItem('authToken');
         store.logout();
-        sessionStorage.removeItem('userEmail');
         router.push('/');
     } catch (error) {
         console.error('Error logging out.', error);

@@ -32,7 +32,6 @@ const loginUser = async () => {
             state.incorrectCreds = false;
             sessionStorage.setItem('authToken', data.response.user.authentication_token);
             store.login();
-            sessionStorage.setItem('userEmail', form.email);
             router.push('/dashboard');
         }
     } catch (error) {

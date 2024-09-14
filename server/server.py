@@ -35,8 +35,6 @@ with app.app_context():
     db.session.commit()
 
     create_user(email="admin@website.com", password="admin", roles=["Admin", "Sponsor", "Influencer"])
-    # create_user(email="tesla@website.com", password="robots", roles=["Sponsor"])
-
     db.session.commit()
 
 from app.routes import *

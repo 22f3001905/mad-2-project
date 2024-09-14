@@ -48,7 +48,8 @@ class UserAPI(Resource):
                 name=influencer_name,
                 category_id=category_id,
                 niche=niche,
-                reach=reach
+                reach=reach,
+                user=user
             )
             db.session.add(influencer)
 

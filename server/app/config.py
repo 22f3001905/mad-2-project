@@ -8,9 +8,8 @@ class Config():
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class LocalDevConfig(Config):
-    SQLALCHEMY_DATABASE_URI = "sqlite:///secure_db.sqlite3"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///project.sqlite3"
     DEBUG = True
-    # SECRET_KEY = "dummy-secret-key"
     SECRET_KEY = os.environ.get("SECRET_KEY")
     SECURITY_PASSWORD_HASH = "bcrypt"
     SECURITY_PASSWORD_SALT = os.environ.get("SECURITY_PASSWORD_SALT")
