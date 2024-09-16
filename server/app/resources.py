@@ -30,6 +30,9 @@ class UserAPI(Resource):
 
         user = create_user(email, password, roles)
 
+        if user == None:
+            return { "message": "User cannot be created." }, 402
+
         if roles[0] == "Sponsor":
             company_name = user_args.get("companyName")
             industry_id = user_args.get("industryId")

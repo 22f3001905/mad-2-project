@@ -21,13 +21,31 @@ def user_info():
 @roles_required("Sponsor")
 def sponsor_info():
     if current_user.sponsor == None:
-        return jsonify({  })
+        return jsonify({ 'message': 'Sponsor not found.' }), 404
+    
+    campaigns = []
+    for campaign in current_user.sponsor.campaigns:
+        campaigns.append({
+            'id': campaign.id,
+            'name': campaign.name,
+            'description': campaign.description,
+            # 'start_date': campaign.start_date,
+            'end_date': campaign.end_date,
+            # 'budget': campaign.budget,
+            'visibility': campaign.campaign_visibility.name,
+            'niche': campaign.niche.name,
+            # 'ad_requests': campaign.ad_requests,
+            # 'goals': [{ 'name': goal.name, 'status': goal.status } for goal in campaign.goals],
+            'flagged': campaign.flagged
+        })
+    
     info = {
         "name": current_user.sponsor.name,
         "industry": current_user.sponsor.industry.name,
         "budget": current_user.sponsor.budget,
-        "campaigns": current_user.sponsor.campaigns
+        "campaigns": campaigns
     }
+
     return jsonify(info)
 
 @app.route("/influencer/info")
@@ -35,7 +53,8 @@ def sponsor_info():
 @roles_required("Influencer")
 def influencer_info():
     if current_user.influencer == None:
-        return jsonify({  })
+        return jsonify({ 'message': 'Influencer not found.' }), 404
+    
     info = {
         "name": current_user.influencer.name,
         "category": current_user.influencer.category.name,
@@ -44,6 +63,7 @@ def influencer_info():
         "wallet_balance": current_user.influencer.wallet_balance,
         "assigned_ads": current_user.influencer.assigned_ads
     }
+
     return jsonify(info)
 
 @app.route("/registration-form-data")

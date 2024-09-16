@@ -14,6 +14,7 @@ class User(db.Model, UserMixin):
     fs_uniquifier = db.Column(db.String, unique=True, nullable=False)
     active = db.Column(db.Boolean, nullable=False, default=True)
     roles = db.Relationship("Role", backref="bearers", secondary="users_roles")
+    flagged = db.Column(db.Boolean, default=False)
 
     sponsor = db.relationship("Sponsor", uselist=False, backref="user", cascade="all, delete")
     influencer = db.relationship("Influencer", uselist=False, backref="user", cascade="all, delete")
@@ -86,7 +87,7 @@ class CampaignNiche(db.Model):
 class CampaignGoal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
-    # status = db.Column(db.String(80))  # ("Incomplete", "Completed")
+    status = db.Column(db.String(80), default="Incomplete")  # ("Incomplete", "Completed")
     campaign_id = db.Column(db.Integer, db.ForeignKey("campaign.id", ondelete="CASCADE"), nullable=False)
     ad_requests = db.relationship("AdRequest", backref="campaign_goal")
 
