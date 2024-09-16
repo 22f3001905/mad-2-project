@@ -2,6 +2,9 @@
 import { onMounted, reactive } from 'vue';
 
 import Navbar from '@/components/Navbar.vue';
+import UserInfo from '@/components/UserInfo.vue';
+import CampaignList from '@/components/CampaignList.vue';
+
 import { userLoggedInRedirect } from '@/utils';
 
 const user = reactive({
@@ -11,13 +14,11 @@ const user = reactive({
 });
 
 const sponsor = reactive({
-    // name: '',
     budget: 0,
     industry: '',
     campaigns: []
 });
 const influencer = reactive({
-    // name: '',
     niche: '',
     reach: 0,
     wallet_balance: 0,
@@ -69,4 +70,10 @@ onMounted(async () => {
 <template>
     <Navbar />
     <h1>Welcome, {{ user.name }}</h1>
+    <UserInfo 
+        :user="user" 
+        :sponsor="{ budget: sponsor.budget, industry: sponsor.industry }" 
+        :influencer="{ niche: influencer.niche, reach: influencer.reach, wallet_balance: influencer.wallet_balance, category: influencer.category }" 
+    />
+    <CampaignList :campaigns="sponsor.campaigns" />
 </template>
