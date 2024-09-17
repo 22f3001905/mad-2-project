@@ -16,6 +16,7 @@ class LocalDevConfig(Config):
     SECURITY_PASSWORD_SALT = os.environ.get("SECURITY_PASSWORD_SALT")
 
     WTF_CSRF_ENABLED = False  # Cross-Site Request Forgery
+    SESSION_COOKIE_HTTPONLY = False
     # SECURITY_CSRF_PROTECT = False
     SECURITY_TOKEN_AUTHENTICAION_HEADER = "Authentication-Token"  # Include in Request Header
 

@@ -2,8 +2,11 @@
 import Login from '@/components/Login.vue';
 import Navbar from '@/components/Navbar.vue';
 
-import { userLoggedInRedirect } from '@/utils';
-userLoggedInRedirect();
+import { userLoggedInRedirect, clearCookie } from '@/utils';
+const redirect = userLoggedInRedirect();
+if (!redirect) {
+    clearCookie('session');
+}
 </script>
 
 <template>

@@ -2,6 +2,7 @@
 import { RouterLink, useRouter } from 'vue-router';
 import { reactive, computed } from 'vue';
 import { useUserStore } from '@/stores/user';
+import { clearCookie } from '@/utils';
 
 const router = useRouter();
 const store = useUserStore();
@@ -12,6 +13,7 @@ const logoutUser = async () => {
         await fetch('/api/logout');
         sessionStorage.removeItem('authToken');
         store.logout();
+        clearCookie('session');
         router.push('/');
     } catch (error) {
         console.error('Error logging out.', error);
