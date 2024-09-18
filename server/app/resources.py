@@ -1,6 +1,6 @@
 from flask import current_app as app
 from flask_restful import Api, Resource, reqparse, fields, marshal_with
-from flask_security import auth_required, roles_required, current_user
+from flask_security import auth_required, roles_required, current_user, roles_accepted
 
 from app.utils import create_user
 from app.models import db
@@ -75,10 +75,12 @@ campaign_fields = {
     "description": fields.String,
     "start_date": fields.DateTime(dt_format="iso8601"),
     "end_date": fields.DateTime(dt_format="iso8601"),
-    "niche_id": fields.Integer,
     "budget": fields.Float,
-    "visibility_id": fields.Integer,
-    "sponsor_id": fields.Integer
+    "niche": fields.String,
+    "visibility": fields.String,
+    # "niche_id": fields.Integer,
+    # "visibility_id": fields.Integer,
+    # "sponsor_id": fields.Integer
 }
 
 campaign_parser = reqparse.RequestParser()
@@ -166,9 +168,22 @@ class CampaignAPI(Resource):
                 status_code=500,
                 error_message="Database error."
             )
+        
+        output = {
+            'id': campaign.id,
+            'name': campaign.name,
+            'start_date': campaign.start_date,
+            'end_date': campaign.end_date,
+            'description': campaign.description,
+            'budget': campaign.budget,
+            'niche': campaign.niche.name,
+            'visibility': campaign.campaign_visibility.name,
+        }
 
-        return campaign
+        return output
     
+    @auth_required('token')
+    @roles_accepted('Sponsor', 'Influencer', 'Admin')
     @marshal_with(campaign_fields)
     def get(self, campaign_id):
         campaign = db.session.get(Campaign, campaign_id)
@@ -183,8 +198,19 @@ class CampaignAPI(Resource):
                 status_code=403, 
                 error_message="Campaign does not belong to the sponsor."
             )
+        
+        output = {
+            'id': campaign.id,
+            'name': campaign.name,
+            'start_date': campaign.start_date,
+            'end_date': campaign.end_date,
+            'description': campaign.description,
+            'budget': campaign.budget,
+            'niche': campaign.niche.name,
+            'visibility': campaign.campaign_visibility.name,
+        }
 
-        return campaign
+        return output
 
     @auth_required('token')
     @roles_required('Sponsor')
@@ -251,7 +277,18 @@ class CampaignAPI(Resource):
                 error_message="Database error."
             )
         
-        return campaign
+        output = {
+            'id': campaign.id,
+            'name': campaign.name,
+            'start_date': campaign.start_date,
+            'end_date': campaign.end_date,
+            'description': campaign.description,
+            'budget': campaign.budget,
+            'niche': campaign.niche.name,
+            'visibility': campaign.campaign_visibility.name,
+        }
+        
+        return output
 
     @auth_required('token')
     @roles_required('Sponsor')
