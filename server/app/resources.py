@@ -69,6 +69,20 @@ class UserAPI(Resource):
 
 api.add_resource(UserAPI, "/user/create")
 
+ad_fields = {
+    'id': fields.Integer,
+    'requirement': fields.String,
+    'payment_amount': fields.Float,
+    'message': fields.String,
+    'status': fields.String,
+    'sender_user_id': fields.Integer,
+}
+goal_fields = {
+    'name': fields.String,
+    'status': fields.String,
+    'n_ads': fields.Integer
+}
+
 campaign_fields = {
     "id": fields.Integer,
     "name": fields.String,
@@ -78,9 +92,9 @@ campaign_fields = {
     "budget": fields.Float,
     "niche": fields.String,
     "visibility": fields.String,
-    # "niche_id": fields.Integer,
-    # "visibility_id": fields.Integer,
-    # "sponsor_id": fields.Integer
+    "ad_requests": fields.List(fields.Nested(ad_fields)),
+    "goals": fields.List(fields.Nested(goal_fields)),
+    "flagged": fields.Boolean
 }
 
 campaign_parser = reqparse.RequestParser()
@@ -199,6 +213,27 @@ class CampaignAPI(Resource):
                 error_message="Campaign does not belong to the sponsor."
             )
         
+        ad_requests = []
+        for ad_request in campaign.ad_requests:
+            ad = {
+                'id': ad_request.id,
+                'requirement': ad_request.requirement,
+                'payment_amount': ad_request.payment_amount,
+                'message': ad_request.message,
+                'status': ad_request.status.name,
+                'sender_user_id': ad_request.sender_user_id,
+            }
+            ad_requests.append(ad)
+        
+        goals = []
+        for goal in campaign.goals:
+            g = {
+                'name': goal.name,
+                'status': goal.status,
+                'n_ads': len(goal.ad_requests)
+            }
+            goals.append(g)
+        
         output = {
             'id': campaign.id,
             'name': campaign.name,
@@ -208,6 +243,9 @@ class CampaignAPI(Resource):
             'budget': campaign.budget,
             'niche': campaign.niche.name,
             'visibility': campaign.campaign_visibility.name,
+            'ad_requests': ad_requests,
+            'goals': goals,
+            'flagged': campaign.flagged
         }
 
         return output

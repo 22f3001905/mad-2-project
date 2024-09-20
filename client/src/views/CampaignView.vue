@@ -18,9 +18,22 @@ const campaign = reactive({
     visibility: ''
 });
 
+async function deleteCampaign() {
+    console.log('Campaign Deleted!');
+    try {
+        const res = await fetch(`/api/campaign/${campaignId.value}`, {
+            method: 'DELETE',
+            headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
+        });
+    } catch (error) {
+        console.error('Error in deleting campaign.', error);
+    }
+}
+
 onMounted(async () => {
     try {
         const res = await fetch(`/api/campaign/${campaignId.value}`, {
+            method: 'GET',
             headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
         });
         const data = await res.json();
@@ -45,6 +58,8 @@ onMounted(async () => {
     <h1>{{ campaign.name }}</h1>
     <p>{{ campaign.description }}</p>
     <div>
-        <RouterLink to="/campaign/create">Create a New Campaign</RouterLink>
+        <span>Actions: </span>
+        <RouterLink :to="`/campaign/${campaignId}/edit`">Edit</RouterLink>
+        <button @click="deleteCampaign">Delete</button>
     </div>
 </template>

@@ -14,6 +14,9 @@ import LoginView from '@/views/LoginView.vue';
 import RegisterView from '@/views/RegisterView.vue';
 import DashboardView from '@/views/DashboardView.vue';
 import CampaignView from '@/views/CampaignView.vue';
+import CreateCampaignView from '@/views/CreateCampaignView.vue';
+import EditCampaignView from '@/views/EditCampaignView.vue';
+import AllCampaignsView from '@/views/AllCampaignsView.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,7 +25,10 @@ const router = createRouter({
         { path: '/login', name: 'login', component: LoginView },
         { path: '/register', name: 'register', component: RegisterView },
         { path: '/dashboard', name: 'dashboard', component: DashboardView },
+        { path: '/campaigns', name: 'all-campaign', component: AllCampaignsView },
         { path: '/campaign/:id', name: 'campaign', component: CampaignView },
+        { path: '/campaign/:id/edit', name: 'edit-campaign', component: EditCampaignView },
+        { path: '/campaign/create', name: 'create-campaign', component: CreateCampaignView },
     ]
 });
 

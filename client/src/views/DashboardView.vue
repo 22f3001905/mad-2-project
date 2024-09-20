@@ -29,7 +29,7 @@ const influencer = reactive({
 onMounted(async () => {
     // fetch sponsor/influencer data
     try {
-        const res = await fetch('/api/user/info', {
+        const res = await fetch('/api/info/user', {
             headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
         });
         const data = await res.json();
@@ -40,7 +40,7 @@ onMounted(async () => {
     }
     if (user.role == 'Sponsor') {
         try {
-            const res = await fetch('/api/sponsor/info', {
+            const res = await fetch('/api/info/sponsor', {
                 headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
             });
             const data = await res.json();
@@ -54,12 +54,13 @@ onMounted(async () => {
         }
     } else if (user.role == 'Influencer') {
         try {
-            const res = await fetch('/api/influencer/info', {
+            const res = await fetch('/api/info/influencer', {
                 headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
             });
             const data = await res.json();
             console.log(data);
             user.name = data.name;
+            // TODO: Populate influencer data
         } catch (error) {
             console.error('Error in fetching influencer info.', error);
         }
