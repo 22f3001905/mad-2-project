@@ -25,9 +25,8 @@ const logoutUser = async () => {
     <nav>
         <div>SponsorConnect</div>
         <ul>
-            <li v-if="isLoggedIn">
-                <RouterLink to="/dashboard">Dashboard</RouterLink>
-            </li>
+            <li v-if="isLoggedIn"><RouterLink to="/dashboard">Dashboard</RouterLink></li>
+            <li><RouterLink to="/campaigns">Campaigns</RouterLink></li>
             <li>
                 <button v-if="isLoggedIn" @click="logoutUser">Logout</button>
                 <RouterLink v-else to="/login">Login</RouterLink>
