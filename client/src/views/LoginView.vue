@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar.vue';
 
 import { userLoggedInRedirect, clearCookie } from '@/utils';
 const redirect = userLoggedInRedirect();
+// Clear session cookie if user not logged in!
 if (!redirect) {
     clearCookie('session');
 }
