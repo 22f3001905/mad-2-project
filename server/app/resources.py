@@ -82,7 +82,14 @@ goal_fields = {
     'status': fields.String,
     'n_ads': fields.Integer
 }
-
+niche_fields = {
+    'id': fields.Integer,
+    'name': fields.String
+}
+visibility_fields = {
+    'id': fields.Integer,
+    'name': fields.String
+}
 campaign_fields = {
     "id": fields.Integer,
     "name": fields.String,
@@ -90,8 +97,8 @@ campaign_fields = {
     "start_date": fields.DateTime(dt_format="iso8601"),
     "end_date": fields.DateTime(dt_format="iso8601"),
     "budget": fields.Float,
-    "niche": fields.String,
-    "visibility": fields.String,
+    "niche": fields.Nested(niche_fields),
+    "visibility": fields.Nested(visibility_fields),
     "ad_requests": fields.List(fields.Nested(ad_fields)),
     "goals": fields.List(fields.Nested(goal_fields)),
     "flagged": fields.Boolean
@@ -190,8 +197,14 @@ class CampaignAPI(Resource):
             'end_date': campaign.end_date,
             'description': campaign.description,
             'budget': campaign.budget,
-            'niche': campaign.niche.name,
-            'visibility': campaign.campaign_visibility.name,
+            'niche': {
+                'id': campaign.niche.id,
+                'name': campaign.niche.name
+            },
+            'visibility': {
+                'id': campaign.campaign_visibility.id,
+                'name': campaign.campaign_visibility.name
+            },
         }
 
         return output
@@ -241,8 +254,14 @@ class CampaignAPI(Resource):
             'end_date': campaign.end_date,
             'description': campaign.description,
             'budget': campaign.budget,
-            'niche': campaign.niche.name,
-            'visibility': campaign.campaign_visibility.name,
+            'niche': {
+                'id': campaign.niche.id,
+                'name': campaign.niche.name
+            },
+            'visibility': {
+                'id': campaign.campaign_visibility.id,
+                'name': campaign.campaign_visibility.name
+            },
             'ad_requests': ad_requests,
             'goals': goals,
             'flagged': campaign.flagged

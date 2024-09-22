@@ -10,7 +10,7 @@ def create_user(email, password, roles: list):
     
     return None
 
-def hard_coded_info():
+def form_hard_coded():
     industry_names = ['Fashion/Apparel', 'Food & Beverage', 'Beauty/Cosmetics', 'Travel', 'Health/Fitness', 'Technology', 'Entertainment', 'Automotive', 'Education', 'Other']
     influencer_category_names = ['Fashion', 'Fitness', 'Travel', 'Food', 'Tech', 'Lifestyle', 'Education', 'Gaming', 'Finance', 'Other']
     campaign_niche_names = ['Social Media Advertising', 'Video Advertising', 'Sponsored Content', 'Affiliate Marketing', 'Sponsored Posts', 'Other']
@@ -18,5 +18,5 @@ def hard_coded_info():
     return {
         "industry_names": industry_names, 
         "influencer_category_names": influencer_category_names, 
-        "campaign_niche_names": campaign_niche_names
+        "campaign_niche_names": campaign_niche_names,
     }

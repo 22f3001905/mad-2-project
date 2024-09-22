@@ -25,6 +25,7 @@ async function deleteCampaign() {
             method: 'DELETE',
             headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
         });
+        router.push('/campaigns')
     } catch (error) {
         console.error('Error in deleting campaign.', error);
     }
@@ -45,8 +46,8 @@ onMounted(async () => {
         campaign.startDate = data.start_date;
         campaign.endDate = data.end_date;
         campaign.budget = data.budget;
-        campaign.niche = data.niche;
-        campaign.visibility = data.visibility;
+        campaign.niche = data.niche.name;
+        campaign.visibility = data.visibility.name;
     } catch (error) {
         console.error('Error in fetching campaign data.', error);
     }

@@ -25,7 +25,8 @@ onMounted(async () => {
             headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
         });
         const data = await res.json();
-        console.log(data);
+        console.log(data.campaigns);
+        state.campaigns = [...data.campaigns];  // creates a copy
     } catch (error) {
         console.error('Error fetching all the campaigns for this user.', error);
     }
@@ -48,6 +49,15 @@ onMounted(async () => {
         </div>
         <div v-else>
             <div v-for="campaign in state.campaigns" style="border: 1px solid black;">
+                <h3>{{ campaign.name }}</h3>
+                <p>{{ campaign.description }}</p>
+                <p>Starts: {{ new Date(campaign.start_date).toDateString() }} | Ends: {{ new Date(campaign.end_date).toDateString() }}</p>
+                <p>{{ campaign.visibility }}</p>
+                <p>Budget: Rs. {{ campaign.budget }}</p>
+                <p>Niche: {{ campaign.niche }}</p>
+                <div>
+                    <RouterLink :to="`/campaign/${campaign.id}`">View</RouterLink>
+                </div>
             </div>
         </div>
     </section>

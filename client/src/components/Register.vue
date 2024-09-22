@@ -9,18 +9,18 @@ const influencerCategories = ref([]);
 
 onMounted(async () => {
     try {
-        const response = await fetch('/api/registration-form-data');
+        const response = await fetch('/api/hard-coded-form-data');
         const data = await response.json();
         const fetchedIndustries = [];
         for (const [idx, industryName] of data.industry_names.entries()) {
             fetchedIndustries.push({ id: idx + 1, name: industryName });
         }
-        industries.value = fetchedIndustries;
+        industries.value = [...fetchedIndustries];
         const fetchedInfluencerCategories = [];
         for (const [idx, categoryName] of data.influencer_category_names.entries()) {
             fetchedInfluencerCategories.push({ id: idx + 1, name: categoryName });
         }
-        influencerCategories.value = fetchedInfluencerCategories;
+        influencerCategories.value = [...fetchedInfluencerCategories];
     } catch (error) {
         console.error('Error fetching hard coded form data.', error);
     }

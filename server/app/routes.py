@@ -1,8 +1,6 @@
 from flask import current_app as app, jsonify
 from flask_security import current_user, auth_required, roles_required, roles_accepted, login_user, logout_user
 
-from app.utils import hard_coded_info
-
 # @roles_required("Student", "Instructor") -> User should have both Student and Instructor. { AND condition }
 # @roles_accepted("Student", "Instructor") -> User should have either Student or Instructor. { OR condition }
 
@@ -87,6 +85,15 @@ def influencer_info():
 
     return jsonify(info)
 
-@app.route("/registration-form-data")
+from app.utils import form_hard_coded
+
+@app.route("/hard-coded-form-data")
 def registration_form_data():
-    return jsonify(hard_coded_info())
+    return jsonify(form_hard_coded())
+
+@app.route('/sponsor-budget')
+@auth_required("token")
+@roles_required("Sponsor")
+def sponsor_budget():
+    budget = current_user.sponsor.budget
+    return jsonify({ 'budget': budget })
