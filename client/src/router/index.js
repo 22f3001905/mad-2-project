@@ -13,10 +13,10 @@ import HomeView from '@/views/HomeView.vue';
 import LoginView from '@/views/LoginView.vue';
 import RegisterView from '@/views/RegisterView.vue';
 import DashboardView from '@/views/DashboardView.vue';
-import CampaignView from '@/views/CampaignView.vue';
-import CreateCampaignView from '@/views/CreateCampaignView.vue';
-import EditCampaignView from '@/views/EditCampaignView.vue';
-import AllCampaignsView from '@/views/AllCampaignsView.vue';
+import CampaignView from '@/views//campaign/CampaignView.vue';
+import CreateCampaignView from '@/views/campaign/CreateCampaignView.vue';
+import EditCampaignView from '@/views/campaign/EditCampaignView.vue';
+import AllCampaignsView from '@/views/campaign/AllCampaignsView.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),

@@ -1,10 +1,11 @@
 <script setup>
 import { ref, onMounted, reactive } from 'vue';
-import { useRoute, RouterLink } from 'vue-router';
+import { useRoute, RouterLink, useRouter } from 'vue-router';
 
 import Navbar from '@/components/Navbar.vue';
 
 const route = useRoute();
+const router = useRouter();
 const campaignId = ref(route.params.id);
 
 const campaign = reactive({

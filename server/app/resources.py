@@ -117,7 +117,7 @@ campaign_parser.add_argument("goals", type=str)
 class CampaignAPI(Resource):
     @auth_required('token')
     @roles_required('Sponsor')
-    @marshal_with(campaign_fields)
+    # @marshal_with(campaign_fields)
     def post(self):
         campaign_args = campaign_parser.parse_args()
         name = campaign_args.get("name")
@@ -158,6 +158,12 @@ class CampaignAPI(Resource):
                 status_code=403, 
                 error_message="End date cannot be before start date."
             )
+        
+        total_budget = sponsor.budget
+        if budget > total_budget:
+            pass  # error
+
+        sponsor.budget = total_budget - budget
 
         campaign = Campaign(
             name=name,
@@ -190,24 +196,7 @@ class CampaignAPI(Resource):
                 error_message="Database error."
             )
         
-        output = {
-            'id': campaign.id,
-            'name': campaign.name,
-            'start_date': campaign.start_date,
-            'end_date': campaign.end_date,
-            'description': campaign.description,
-            'budget': campaign.budget,
-            'niche': {
-                'id': campaign.niche.id,
-                'name': campaign.niche.name
-            },
-            'visibility': {
-                'id': campaign.campaign_visibility.id,
-                'name': campaign.campaign_visibility.name
-            },
-        }
-
-        return output
+        return { 'message': 'Campaign created successfully.', 'id': campaign.id }
     
     @auth_required('token')
     @roles_accepted('Sponsor', 'Influencer', 'Admin')
@@ -271,7 +260,7 @@ class CampaignAPI(Resource):
 
     @auth_required('token')
     @roles_required('Sponsor')
-    @marshal_with(campaign_fields)
+    # @marshal_with(campaign_fields)
     def put(self, campaign_id):
         campaign_args = campaign_parser.parse_args()
         name = campaign_args.get("name")
@@ -314,6 +303,13 @@ class CampaignAPI(Resource):
                 status_code=403, 
                 error_message="End date cannot be before start date."
             )
+        
+        total_budget = sponsor.budget + campaign.budget
+        if budget > total_budget:
+            pass  # error
+
+        total_budget -= budget
+        sponsor.budget = total_budget
 
         campaign.name = name
         campaign.description = description
@@ -334,18 +330,20 @@ class CampaignAPI(Resource):
                 error_message="Database error."
             )
         
-        output = {
-            'id': campaign.id,
-            'name': campaign.name,
-            'start_date': campaign.start_date,
-            'end_date': campaign.end_date,
-            'description': campaign.description,
-            'budget': campaign.budget,
-            'niche': campaign.niche.name,
-            'visibility': campaign.campaign_visibility.name,
-        }
+        # output = {
+        #     'id': campaign.id,
+        #     'name': campaign.name,
+        #     'start_date': campaign.start_date,
+        #     'end_date': campaign.end_date,
+        #     'description': campaign.description,
+        #     'budget': campaign.budget,
+        #     'niche': campaign.niche.name,
+        #     'visibility': campaign.campaign_visibility.name,
+        # }
         
-        return output
+        # return output
+
+        return { 'message': 'Campaign edited successfully.' }
 
     @auth_required('token')
     @roles_required('Sponsor')
@@ -354,6 +352,9 @@ class CampaignAPI(Resource):
 
         if not campaign:
             raise NotFoundError(error_message="Campaign not found.")
+        
+        sponsor = current_user.sponsor
+        sponsor.budget += campaign.budget
 
         try:
             db.session.delete(campaign)
@@ -366,6 +367,6 @@ class CampaignAPI(Resource):
                 error_message="Database error."
             )
 
-        return None
+        return { 'message': 'Campaign deleted successfully.' }
 
 api.add_resource(CampaignAPI, "/campaign", "/campaign/<int:campaign_id>")
