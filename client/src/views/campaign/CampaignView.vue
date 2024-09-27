@@ -16,7 +16,8 @@ const campaign = reactive({
     endDate: '',
     budget: null,
     niche: '',
-    visibility: ''
+    visibility: '',
+    adRequests: []
 });
 
 async function deleteCampaign() {
@@ -49,6 +50,7 @@ onMounted(async () => {
         campaign.budget = data.budget;
         campaign.niche = data.niche.name;
         campaign.visibility = data.visibility.name;
+        campaign.adRequests = data.ad_requests;
     } catch (error) {
         console.error('Error in fetching campaign data.', error);
     }
@@ -61,7 +63,30 @@ onMounted(async () => {
     <p>{{ campaign.description }}</p>
     <div>
         <span>Actions: </span>
-        <RouterLink :to="`/campaign/${campaignId}/edit`">Edit</RouterLink>
+        <RouterLink :to="`/campaign/${campaignId}/edit`">Edit</RouterLink> |
         <button @click="deleteCampaign">Delete</button>
+    </div>
+    <h2>Campaign Info</h2>
+    <div>
+        <p>Budget: Rs. {{ campaign.budget }}</p>
+        <p>{{ campaign.startDate }} to {{ campaign.endDate }}</p>
+        <p>{{ campaign.niche }} | {{ campaign.visibility }}</p>
+    </div>
+    <h2>Ad Requests</h2>
+    <div v-for="ad in campaign.adRequests" style="border: 1px solid black;">
+        <h3>{{ ad.requirement }}</h3>
+        <p>Status: {{ ad.status }} | Payment: Rs. {{ ad.payment_amount }}</p>
+        <p>{{ ad.message }}</p>
+        <div v-if="ad.status != 'Accepted'">
+            <span>Actions: </span>
+            <RouterLink :to="`/ad-request/${ad.id}/edit`">Edit</RouterLink> |
+            <button @click="deleteAdRequest">Delete</button>
+        </div>
+        <div v-else>
+            <p>Influencer: {{ ad.influencer }}</p>
+        </div>
+    </div>
+    <div>
+        <RouterLink to="/ad-request/create">Create Ad</RouterLink>
     </div>
 </template>

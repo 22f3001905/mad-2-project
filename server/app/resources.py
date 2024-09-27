@@ -69,6 +69,10 @@ class UserAPI(Resource):
 
 api.add_resource(UserAPI, "/user/create")
 
+# influencer_fields = {
+#     'id': fields.Integer,
+#     'name': fields.String
+# }
 ad_fields = {
     'id': fields.Integer,
     'requirement': fields.String,
@@ -76,6 +80,7 @@ ad_fields = {
     'message': fields.String,
     'status': fields.String,
     'sender_user_id': fields.Integer,
+    'influencer': fields.String
 }
 goal_fields = {
     'name': fields.String,
@@ -217,6 +222,7 @@ class CampaignAPI(Resource):
         
         ad_requests = []
         for ad_request in campaign.ad_requests:
+            influencer = ad_request.influencer
             ad = {
                 'id': ad_request.id,
                 'requirement': ad_request.requirement,
@@ -224,6 +230,11 @@ class CampaignAPI(Resource):
                 'message': ad_request.message,
                 'status': ad_request.status.name,
                 'sender_user_id': ad_request.sender_user_id,
+                # 'influencer': {
+                #     'id': ad_request.influencer.id or None,
+                #     'name': ad_request.influencer.name or None
+                # }
+                'influencer': influencer.name if influencer else None
             }
             ad_requests.append(ad)
         
