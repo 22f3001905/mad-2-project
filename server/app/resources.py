@@ -381,3 +381,8 @@ class CampaignAPI(Resource):
         return { 'message': 'Campaign deleted successfully.' }
 
 api.add_resource(CampaignAPI, "/campaign", "/campaign/<int:campaign_id>")
+
+# class AdRequestAPI(Resource):
+#     pass
+
+# api.add_resource(AdRequest, '/ad-request', '/ad-request/<int:ad_request_id>')

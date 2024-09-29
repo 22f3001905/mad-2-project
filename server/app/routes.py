@@ -63,7 +63,8 @@ def all_campaigns():
             'budget': campaign.budget,
             'visibility': campaign.campaign_visibility.name,
             'niche': campaign.niche.name,
-            'flagged': campaign.flagged
+            'flagged': campaign.flagged,
+            'goals': [{ 'id': goal.id, 'name': goal.name, 'status': goal.status } for goal in campaign.goals]
         })
     return jsonify(data)
 
