@@ -87,6 +87,7 @@ onMounted(async () => {
         </div>
     </div>
     <div>
-        <RouterLink to="/ad-request/create">Create Ad</RouterLink>
+        <RouterLink to="/ad-request/create" v-if="campaign.visibility == 'Public'">Create Ad Request</RouterLink>
+        <RouterLink to="/ad-request/send" v-else>Send Ad Request</RouterLink>
     </div>
 </template>

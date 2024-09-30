@@ -122,7 +122,6 @@ campaign_parser.add_argument("goals", type=str)
 class CampaignAPI(Resource):
     @auth_required('token')
     @roles_required('Sponsor')
-    # @marshal_with(campaign_fields)
     def post(self):
         campaign_args = campaign_parser.parse_args()
         name = campaign_args.get("name")
@@ -271,7 +270,6 @@ class CampaignAPI(Resource):
 
     @auth_required('token')
     @roles_required('Sponsor')
-    # @marshal_with(campaign_fields)
     def put(self, campaign_id):
         campaign_args = campaign_parser.parse_args()
         name = campaign_args.get("name")
@@ -340,19 +338,6 @@ class CampaignAPI(Resource):
                 status_code=500,
                 error_message="Database error."
             )
-        
-        # output = {
-        #     'id': campaign.id,
-        #     'name': campaign.name,
-        #     'start_date': campaign.start_date,
-        #     'end_date': campaign.end_date,
-        #     'description': campaign.description,
-        #     'budget': campaign.budget,
-        #     'niche': campaign.niche.name,
-        #     'visibility': campaign.campaign_visibility.name,
-        # }
-        
-        # return output
 
         return { 'message': 'Campaign edited successfully.' }
 
@@ -382,7 +367,37 @@ class CampaignAPI(Resource):
 
 api.add_resource(CampaignAPI, "/campaign", "/campaign/<int:campaign_id>")
 
-# class AdRequestAPI(Resource):
-#     pass
+ad_request_fields = {
+    'id': fields.Integer,
+    'campaign_id': fields.Integer,
+    'influencer_id': fields.Integer,
+    'message': fields.String,
+    'requirement': fields.String,
+    'payment_amount': fields.Float,
+    'status_id': fields.Integer,
+    'sender_user_id': fields.Integer,
+    'campaign_goal_id': fields.Integer,
+}
 
-# api.add_resource(AdRequest, '/ad-request', '/ad-request/<int:ad_request_id>')
+class AdRequestAPI(Resource):
+    @auth_required('token')
+    @roles_accepted('Sponsor', 'Influencer', 'Admin')
+    @marshal_with(ad_request_fields)
+    def get(self, ad_request_id):
+        ad_request = db.session.get(AdRequest, ad_request_id)
+
+        output = {
+            'id': ad_request.id,
+            'campaign_id': ad_request.campaign_id,
+            'influencer_id': ad_request.influencer_id,
+            'message': ad_request.message,
+            'requirement': ad_request.requirement,
+            'payment_amount': ad_request.payment_amount,
+            'status_id': ad_request.status_id,
+            'sender_user_id': ad_request.sender_user_id,
+            'campaign_goal_id': ad_request.campaign_goal_id,
+        }
+
+        return output
+
+api.add_resource(AdRequestAPI, '/ad-request', '/ad-request/<int:ad_request_id>')
