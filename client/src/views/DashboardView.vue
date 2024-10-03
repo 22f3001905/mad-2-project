@@ -8,6 +8,7 @@ import CampaignList from '@/components/CampaignList.vue';
 import { userLoggedInRedirect } from '@/utils';
 
 const user = reactive({
+    id: null,
     name: '',
     email: '',
     role: ''
@@ -33,6 +34,7 @@ onMounted(async () => {
             headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
         });
         const data = await res.json();
+        user.id = data.id;
         user.email = data.email;
         user.role = data.role;
     } catch (error) {

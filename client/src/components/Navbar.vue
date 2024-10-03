@@ -12,6 +12,7 @@ const logoutUser = async () => {
     try {
         await fetch('/api/logout');
         sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('user');
         store.logout();
         clearCookie('session');
         router.push('/');

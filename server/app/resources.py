@@ -379,7 +379,54 @@ ad_request_fields = {
     'campaign_goal_id': fields.Integer,
 }
 
+ad_request_parser = reqparse.RequestParser()
+ad_request_parser.add_argument("campaign_id", type=int)
+ad_request_parser.add_argument("influencer_id")
+ad_request_parser.add_argument("message", type=str)
+ad_request_parser.add_argument("requirement", type=str)
+ad_request_parser.add_argument("payment_amount", type=float)
+ad_request_parser.add_argument("status_id")
+ad_request_parser.add_argument("sender_user_id", type=int)
+ad_request_parser.add_argument("campaign_goal_id", type=int)
+
 class AdRequestAPI(Resource):
+    @auth_required('token')
+    @roles_accepted('Sponsor')
+    def post(self):
+        ad_request_args = ad_request_parser.parse_args()
+        campaign_id = ad_request_args.get('campaign_id')
+        influencer_id = ad_request_args.get('influencer_id', None)
+        message = ad_request_args.get('message')
+        requirement = ad_request_args.get('requirement')
+        payment_amount = ad_request_args.get('payment_amount')
+        status_id = ad_request_args.get('status_id', 1)
+        sender_user_id = ad_request_args.get('sender_user_id')
+        campaign_goal_id = ad_request_args.get('campaign_goal_id')
+
+        campaign = db.session.get(Campaign, campaign_id)
+
+        if payment_amount > campaign.budget:
+            pass # error
+
+        campaign.budget -= payment_amount
+
+        ad_request = AdRequest(
+            campaign_id=campaign_id,
+            influencer_id=influencer_id,
+            message=message,
+            requirement=requirement,
+            payment_amount=payment_amount,
+            status_id=status_id,
+            sender_user_id=sender_user_id,
+            campaign_goal_id=campaign_goal_id
+        )
+
+        db.session.add(ad_request)
+        db.session.commit()
+
+        return { 'message': 'Ad Request created successfully.', 'id': ad_request.id }
+
+
     @auth_required('token')
     @roles_accepted('Sponsor', 'Influencer', 'Admin')
     @marshal_with(ad_request_fields)
@@ -399,5 +446,49 @@ class AdRequestAPI(Resource):
         }
 
         return output
+    
+    @auth_required('token')
+    @roles_accepted('Sponsor', 'Influencer')
+    def put(self, ad_request_id):
+        ad_request_args = ad_request_parser.parse_args()
+        campaign_id = ad_request_args.get('campaign_id')
+        message = ad_request_args.get('message')
+        requirement = ad_request_args.get('requirement')
+        payment_amount = ad_request_args.get('payment_amount')
+        campaign_goal_id = ad_request_args.get('campaign_goal_id')
+
+        campaign = db.session.get(Campaign, campaign_id)
+        ad_request = db.session.get(AdRequest, ad_request_id)
+
+        total_budget = campaign.budget + ad_request.payment_amount
+
+        if payment_amount > total_budget:
+            pass # error
+
+        campaign.budget = total_budget - payment_amount
+        
+        ad_request.message = message
+        ad_request.requirement = requirement
+        ad_request.payment_amount = payment_amount
+        ad_request.campaign_goal_id = campaign_goal_id
+
+        db.session.commit()
+
+        return { 'message': 'Ad Request created successfully.', 'id': ad_request.id, 'campaign_id': ad_request.campaign.id }
+
+    @auth_required('token')
+    @roles_accepted('Sponsor')
+    def delete(self, ad_request_id):
+        ad_request = db.session.get(AdRequest, ad_request_id)
+
+        if not ad_request:
+            pass  # error
+
+        ad_request.campaign.budget += ad_request.payment_amount
+
+        db.session.delete(ad_request)
+        db.session.commit()
+
+        return { 'message': 'Ad Request deleted successfully.' }
 
 api.add_resource(AdRequestAPI, '/ad-request', '/ad-request/<int:ad_request_id>')

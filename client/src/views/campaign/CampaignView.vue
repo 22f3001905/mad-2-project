@@ -27,9 +27,22 @@ async function deleteCampaign() {
             method: 'DELETE',
             headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
         });
-        router.push('/campaigns')
+        router.push('/campaigns');
     } catch (error) {
         console.error('Error in deleting campaign.', error);
+    }
+}
+
+async function deleteAdRequest(adRequestId) {
+    console.log('Ad Request Deleted!');
+    try {
+        const res = await fetch(`/api/ad-request/${adRequestId}`, {
+            method: 'DELETE',
+            headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
+        });
+        campaign.adRequests = campaign.adRequests.filter(ad => ad.id != adRequestId);
+    } catch (error) {
+        console.error('Error in deleting ad request.', error);
     }
 }
 
@@ -80,14 +93,14 @@ onMounted(async () => {
         <div v-if="ad.status != 'Accepted'">
             <span>Actions: </span>
             <RouterLink :to="`/ad-request/${ad.id}/edit`">Edit</RouterLink> |
-            <button @click="deleteAdRequest">Delete</button>
+            <button @click="deleteAdRequest(ad.id)">Delete</button>
         </div>
         <div v-else>
             <p>Influencer: {{ ad.influencer }}</p>
         </div>
     </div>
     <div>
-        <RouterLink to="/ad-request/create" v-if="campaign.visibility == 'Public'">Create Ad Request</RouterLink>
+        <RouterLink :to="`/ad-request/create?campaign_id=${campaignId}`" v-if="campaign.visibility == 'Public'">Create Ad Request</RouterLink>
         <RouterLink to="/ad-request/send" v-else>Send Ad Request</RouterLink>
     </div>
 </template>

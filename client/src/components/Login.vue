@@ -15,6 +15,18 @@ const state = reactive({
 const store = useUserStore();
 const router = useRouter();
 
+async function fetchUserInfo(authenticationToken) {
+    try {
+        const res = await fetch('/api/info/user', {
+            headers: { 'Authentication-Token': authenticationToken }
+        });
+        const data = await res.json();
+        sessionStorage.setItem('user', JSON.stringify(data));
+    } catch (error) {
+        console.error('Error in fetching user info.', error);
+    }
+}
+
 const loginUser = async () => {
     try {
         const response = await fetch('/api/login?include_auth_token', {
@@ -30,8 +42,10 @@ const loginUser = async () => {
             form.password = '';
         } else {
             state.incorrectCreds = false;
-            sessionStorage.setItem('authToken', data.response.user.authentication_token);
+            const authenticationToken = data.response.user.authentication_token;
+            sessionStorage.setItem('authToken', authenticationToken);
             store.login();
+            fetchUserInfo(authenticationToken);
             router.push('/dashboard');
         }
     } catch (error) {

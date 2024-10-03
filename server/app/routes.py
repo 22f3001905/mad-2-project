@@ -9,6 +9,7 @@ from flask_security import current_user, auth_required, roles_required, roles_ac
 def user_info():
     # current_user: Proxy of the logged in user. Comes from the Session.
     info = {
+        "id": current_user.id,
         "email": current_user.email,
         "role": current_user.roles[0].name
     }

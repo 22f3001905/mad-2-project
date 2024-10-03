@@ -41,7 +41,13 @@ onMounted(async () => {
         state.campaigns = [...data.campaigns];
 
         if (data.campaigns.length) {
-            const campaign = data.campaigns[0];
+            // By defeault select the first campaign.
+            let campaign = null;
+            if (route.query.campaign_id) {
+                campaign = data.campaigns.filter(camp => camp.id == route.query.campaign_id)[0]
+            } else {
+                campaign = data.campaigns[0];
+            }
 
             form.campaign.id = campaign.id;
             // form.campaign.name = campaign.name;
@@ -81,13 +87,62 @@ onMounted(async () => {
 
             state.campaignBudget = selectedCampaign.budget + data.payment_amount;
         } catch (error) {
-            console.error('Error fetching Ad request data.', error);
+            console.error('Error fetching ad request data.', error);
         }
     }
 });
 
 const createAdRequest = async () => {
     console.log(form);
+    try {
+        const res = await fetch(`/api/ad-request`, {
+            method: 'POST',
+            headers: {
+                'Authentication-Token': sessionStorage.getItem('authToken'), 
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                campaign_id: form.campaign.id,
+                influencer_id: null,
+                requirement: form.requirement,
+                message: form.message,
+                payment_amount: form.payment_amount,
+                status_id: 1,
+                sender_user_id: JSON.parse(sessionStorage.getItem('user')).id,
+                campaign_goal_id: form.campaign_goal_id
+            })
+        });
+        const data = await res.json();
+        console.log(data);
+        router.push(`/campaign/${form.campaign.id}`);
+    } catch (error) {
+        console.error('Error posting ad request data.', error);
+    }
+}
+
+const editAdRequest = async () => {
+    try {
+        const adRequestId = ref(route.params.id);
+        const res = await fetch(`/api/ad-request/${adRequestId.value}`, {
+            method: 'PUT',
+            headers: {
+                'Authentication-Token': sessionStorage.getItem('authToken'), 
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                campaign_id: form.campaign.id,
+                requirement: form.requirement,
+                message: form.message,
+                payment_amount: form.payment_amount,
+                campaign_goal_id: form.campaign_goal_id
+            })
+        });
+        const data = await res.json();
+        console.log(data);
+        router.push(`/campaign/${data.campaign_id}`);
+    } catch (error) {
+        console.error('Error in editing ad request data.', error);
+    }
 }
 
 const changeSelectedCampaign = () => {
@@ -108,7 +163,7 @@ const changeSelectedCampaign = () => {
     <h1 class="text-center mb-3">{{ props.title }} Ad Request</h1>
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <form @submit.prevent="createAdRequest">
+            <form @submit.prevent="() => props.title == 'Create' ? createAdRequest() : editAdRequest()">
                 <div class="mb-3">
                     <label for="campaign">Campaign</label>
                     <select v-model="form.campaign.id" name="campaign" id="campaign" @change="changeSelectedCampaign" :disabled="props.title == 'Edit'">
@@ -136,7 +191,7 @@ const changeSelectedCampaign = () => {
                     <input v-model="form.message" class="form-control" type="text" name="message" id="message" required>
                 </div>
                 <div>
-                    <button type="submit" class="btn btn-primary">Create Ad Request</button>
+                    <button type="submit" class="btn btn-primary">{{ props.title }} Ad Request</button>
                 </div>
             </form>
         </div>
