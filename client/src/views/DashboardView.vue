@@ -62,7 +62,11 @@ onMounted(async () => {
             const data = await res.json();
             console.log(data);
             user.name = data.name;
-            // TODO: Populate influencer data
+            influencer.niche = data.niche;
+            influencer.reach = data.reach;
+            influencer.wallet_balance = data.wallet_balance;
+            influencer.category = data.category;
+            influencer.assigned_ads = data.assigned_ads;
         } catch (error) {
             console.error('Error in fetching influencer info.', error);
         }

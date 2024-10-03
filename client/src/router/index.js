@@ -19,6 +19,7 @@ import EditCampaignView from '@/views/campaign/EditCampaignView.vue';
 import AllCampaignsView from '@/views/campaign/AllCampaignsView.vue';
 import CreateAdRequestView from '@/views/ad-request/CreateAdRequestView.vue';
 import EditAdRequestView from '@/views/ad-request/EditAdRequestView.vue';
+import SearchView from '@/views/SearchView.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,6 +34,7 @@ const router = createRouter({
         { path: '/campaign/create', name: 'create-campaign', component: CreateCampaignView },
         { path: '/ad-request/create', name: 'create-ad', component: CreateAdRequestView },
         { path: '/ad-request/:id/edit', name: 'edit-ad', component: EditAdRequestView },
+        { path: '/search', name: 'search', component: SearchView },
     ]
 });
 

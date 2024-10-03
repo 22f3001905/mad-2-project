@@ -492,3 +492,94 @@ class AdRequestAPI(Resource):
         return { 'message': 'Ad Request deleted successfully.' }
 
 api.add_resource(AdRequestAPI, '/ad-request', '/ad-request/<int:ad_request_id>')
+
+influencer_serach_parser = reqparse.RequestParser()
+influencer_serach_parser.add_argument("min_reach")
+influencer_serach_parser.add_argument("category_id")
+influencer_serach_parser.add_argument("niche", type=str)
+
+class InfluencerSearchAPI(Resource):
+    @auth_required('token')
+    @roles_accepted('Sponsor')
+    def post(self):
+        influencer_serach_args = influencer_serach_parser.parse_args()
+        min_reach = influencer_serach_args.get("min_reach", None)
+        category_id = influencer_serach_args.get("category_id", None)
+        niche = influencer_serach_args.get("niche", None)
+
+        unflagged_user_ids = [user.id for user in db.session.query(User).filter(User.flagged == False).all()]
+
+        query = db.session.query(Influencer)
+
+        if min_reach:
+            query = query.filter(Influencer.reach >= min_reach)
+        
+        if category_id:
+            query = query.filter(Influencer.category_id == category_id)
+
+        if niche:
+            query = query.filter((Influencer.niche.like(f"%{niche}%")) | (Influencer.name.like(f"%{niche}%")))
+
+        filtered_influencers = [influencer for influencer in query.all() if influencer.user_id in unflagged_user_ids]
+
+        influencers = []
+        for influencer in filtered_influencers:
+            influ = {
+                'id': influencer.id,
+                'name': influencer.name,
+                'category_id': influencer.category_id,
+                'niche': influencer.niche,
+                'reach': influencer.reach,
+                'user_id': influencer.user_id,
+            }
+            influencers.append(influ)
+
+        return { 'data': influencers }
+
+api.add_resource(InfluencerSearchAPI, '/search/influencers')
+
+campaign_search_parser = reqparse.RequestParser()
+campaign_search_parser.add_argument("min_budget")
+campaign_search_parser.add_argument("niche_id")
+campaign_search_parser.add_argument("keyword", type=str)
+
+
+# campaign_fields = {
+#     "id": fields.Integer,
+#     "name": fields.String,
+#     "description": fields.String,
+#     "start_date": fields.DateTime(dt_format="iso8601"),
+#     "end_date": fields.DateTime(dt_format="iso8601"),
+#     "budget": fields.Float,
+#     "niche": fields.Nested(niche_fields),
+#     "visibility": fields.Nested(visibility_fields),
+#     "ad_requests": fields.List(fields.Nested(ad_fields)),
+#     "goals": fields.List(fields.Nested(goal_fields)),
+#     "flagged": fields.Boolean
+# }
+
+class CampaignSearchAPI(Resource):
+    @auth_required('token')
+    @roles_accepted('Influencer')
+    # @marshal_with(campaign_fields)
+    def post(self):
+        campaign_search_args = campaign_search_parser.parse_args()
+        min_budget = campaign_search_args.get("min_budget", None)
+        niche_id = campaign_search_args.get("niche_id", None)
+        keyword = campaign_search_args.get("keyword", None)
+
+        query = db.session.query(Campaign).filter((Campaign.flagged == False) & (Campaign.visibility_id == 1) & (Campaign.end_date > datetime.today().date()))
+
+        if min_budget:
+            query = query.filter(Campaign.budget >= min_budget)
+        
+        if niche_id:
+            query = query.filter(Campaign.niche_id == niche_id)
+
+        if keyword:
+            query = query.filter((Campaign.name.like(f"%{keyword}%")) | (Campaign.description.like(f"%{keyword}%")))
+
+        filtered_campaigns = query.all()
+        return filtered_campaigns
+
+api.add_resource(CampaignSearchAPI, '/search/campaigns')

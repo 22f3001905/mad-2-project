@@ -76,13 +76,26 @@ def influencer_info():
     if current_user.influencer == None:
         return jsonify({ 'message': 'Influencer not found.' }), 404
     
+    assigned_ads = []
+
+    for ad_request in current_user.influencer.assigned_ads:
+        ad = {
+            'id': ad_request.id,
+            'requirement': ad_request.requirement,
+            'payment_amount': ad_request.payment_amount,
+            'message': ad_request.message,
+            'status': ad_request.status.name,
+            'sender_user_id': ad_request.sender_user_id,
+        }
+        assigned_ads.append(ad)
+    
     info = {
         "name": current_user.influencer.name,
         "category": current_user.influencer.category.name,
         "niche": current_user.influencer.niche,
         "reach": current_user.influencer.reach,
         "wallet_balance": current_user.influencer.wallet_balance,
-        "assigned_ads": current_user.influencer.assigned_ads
+        "assigned_ads": assigned_ads
     }
 
     return jsonify(info)

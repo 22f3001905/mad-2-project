@@ -1,8 +1,12 @@
 <script setup>
 import { RouterLink, useRouter } from 'vue-router';
-import { reactive, computed } from 'vue';
+import { reactive, computed, defineProps } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { clearCookie } from '@/utils';
+
+// const props = defineProps({
+//     role: String  // ['Admin', 'Sponsor', 'Influencer']
+// });
 
 const router = useRouter();
 const store = useUserStore();
@@ -28,6 +32,7 @@ const logoutUser = async () => {
         <ul>
             <li v-if="isLoggedIn"><RouterLink to="/dashboard">Dashboard</RouterLink></li>
             <li v-if="isLoggedIn"><RouterLink to="/campaigns">Campaigns</RouterLink></li>
+            <li v-if="isLoggedIn"><RouterLink to="/search">Search</RouterLink></li>
             <li>
                 <button v-if="isLoggedIn" @click="logoutUser">Logout</button>
                 <RouterLink v-else to="/login">Login</RouterLink>
