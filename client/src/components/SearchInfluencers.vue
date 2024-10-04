@@ -2,11 +2,12 @@
 import { onMounted, reactive, ref } from 'vue';
 
 const searchForm = reactive({
-    'min_reach': null,
-    'category_id': '',
-    'niche': null,
+    min_reach: null,
+    category_id: '',
+    niche: null,
 });
 
+const searchResults = ref([]);
 const influencerCategories = ref([]);
 
 const searchInfluencers = async () => {
@@ -26,6 +27,7 @@ const searchInfluencers = async () => {
         });
         const data = await res.json();
         console.log(data);
+        searchResults.value = [...data.data];
     } catch (error) {
         console.error('Error in fetching search influencers results.', error);
     }
@@ -35,7 +37,8 @@ const resetSearch = () => {
     searchForm.min_reach = null
     searchForm.category_id = ''
     searchForm.niche = null
-    searchInfluencers();
+    // searchInfluencers();
+    searchResults.value = [];
 }
 
 onMounted(async () => {
@@ -56,6 +59,7 @@ onMounted(async () => {
 </script>
 
 <template>
+    <h2>Search for Influencers</h2>
     <form @submit.prevent="searchInfluencers">
         <div class="mb-3">
             <label for="min_reach" class="form-label">Reach <span>&#8805;</span></label>
@@ -76,8 +80,11 @@ onMounted(async () => {
         </div>
         <div>
             <button type="submit" class="btn btn-primary">Refine Search</button>
-            <!-- <button id="reset" type="button" class="btn btn-warning" onclick="window.location.reload()">Reset</button> -->
             <button id="reset" type="button" class="btn btn-warning" @click="resetSearch">Reset</button>
         </div>
     </form>
+    <div v-if="searchResults.length">
+        <h3>Search Results</h3>
+        <div v-for="influencer in searchResults">{{ influencer.name }}</div>
+    </div>
 </template>

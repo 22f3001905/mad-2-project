@@ -1,6 +1,7 @@
 <script setup>
 import Navbar from '@/components/Navbar.vue';
 import SearchInfluencers from '@/components/SearchInfluencers.vue';
+import SearchCampaigns from '@/components/SearchCampaigns.vue';
 
 const userRole = JSON.parse(sessionStorage.getItem('user')).role;
 </script>
@@ -11,6 +12,6 @@ const userRole = JSON.parse(sessionStorage.getItem('user')).role;
         <SearchInfluencers />
     </div>
     <div v-else>
-        <!-- <SearchCampaigns /> -->
+        <SearchCampaigns />
     </div>
 </template>

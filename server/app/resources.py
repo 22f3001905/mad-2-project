@@ -544,20 +544,6 @@ campaign_search_parser.add_argument("niche_id")
 campaign_search_parser.add_argument("keyword", type=str)
 
 
-# campaign_fields = {
-#     "id": fields.Integer,
-#     "name": fields.String,
-#     "description": fields.String,
-#     "start_date": fields.DateTime(dt_format="iso8601"),
-#     "end_date": fields.DateTime(dt_format="iso8601"),
-#     "budget": fields.Float,
-#     "niche": fields.Nested(niche_fields),
-#     "visibility": fields.Nested(visibility_fields),
-#     "ad_requests": fields.List(fields.Nested(ad_fields)),
-#     "goals": fields.List(fields.Nested(goal_fields)),
-#     "flagged": fields.Boolean
-# }
-
 class CampaignSearchAPI(Resource):
     @auth_required('token')
     @roles_accepted('Influencer')
@@ -580,6 +566,22 @@ class CampaignSearchAPI(Resource):
             query = query.filter((Campaign.name.like(f"%{keyword}%")) | (Campaign.description.like(f"%{keyword}%")))
 
         filtered_campaigns = query.all()
-        return filtered_campaigns
+        campaigns = []
+        for campaign in filtered_campaigns:
+            camp = {
+                'id': campaign.id,
+                'name': campaign.name,
+                'description': campaign.description,
+                'start_date': str(campaign.start_date),
+                'end_date': str(campaign.end_date),
+                'budget': campaign.budget,
+                'visibility_id': campaign.visibility_id,
+                'niche_id': campaign.niche_id,
+                'sponsor_id': campaign.sponsor_id,
+                'flagged': campaign.flagged,
+            }
+            campaigns.append(camp)
+        
+        return { 'data': campaigns }
 
 api.add_resource(CampaignSearchAPI, '/search/campaigns')
