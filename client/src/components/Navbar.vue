@@ -8,6 +8,8 @@ import { clearCookie } from '@/utils';
 //     role: String  // ['Admin', 'Sponsor', 'Influencer']
 // });
 
+const user = JSON.parse(localStorage.getItem('user'));
+
 const router = useRouter();
 const store = useUserStore();
 const isLoggedIn = computed(() => store.isLoggedIn);
@@ -32,7 +34,8 @@ const logoutUser = async () => {
             <RouterLink class="navbar-brand" to="/">💻 SponsorConnect</RouterLink>
             <ul class="nav">
                 <li v-if="isLoggedIn" class="nav-item"><RouterLink class="nav-link" to="/dashboard">Dashboard</RouterLink></li>
-                <li v-if="isLoggedIn" class="nav-item"><RouterLink class="nav-link" to="/campaigns">Campaigns</RouterLink></li>
+                <li v-if="isLoggedIn && user.role == 'Sponsor'" class="nav-item"><RouterLink class="nav-link" to="/campaigns">Campaigns</RouterLink></li>
+                <li v-if="isLoggedIn && user.role == 'Influencer'" class="nav-item"><RouterLink class="nav-link" to="/profile">Profile</RouterLink></li>
                 <li v-if="isLoggedIn" class="nav-item"><RouterLink class="nav-link" to="/search">Search</RouterLink></li>
                 <li class="nav-item">
                     <button class="nav-link" v-if="isLoggedIn" @click="logoutUser">Logout</button>

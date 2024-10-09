@@ -57,8 +57,9 @@ def sponsor_info():
 @roles_required('Sponsor')
 def all_campaigns():
     data = { 'campaigns': [] }
-    # Sponsor Campaigns
-    for campaign in current_user.sponsor.campaigns:
+    campaigns = current_user.sponsor.campaigns  # Sponsor Campaigns
+
+    for campaign in campaigns:
         camp = {
             'id': campaign.id,
             'name': campaign.name,
@@ -83,9 +84,8 @@ def all_campaigns():
 @roles_required('Influencer')
 def public_campaigns():
     data = { 'campaigns': [] }
-    # All Public Campaigns
-    campaigns = db.session.query(Campaign).filter(Campaign.visibility_id == 1).all()
-    
+    campaigns = db.session.query(Campaign).filter(Campaign.visibility_id == 1).all()  # All Public Campaigns
+
     for campaign in campaigns:
         camp = {
             'id': campaign.id,
@@ -109,7 +109,13 @@ def public_campaigns():
 @auth_required("token")
 @roles_accepted('Sponsor', 'Influencer')
 def active_campaigns():
-    data = { 'campaigns': [] }
+    data = {
+        'campaigns': [], 
+        'pending_ad_requests': {
+            'sent': [],
+            'received': []
+        }
+    }
 
     if current_user.sponsor:
         for campaign in current_user.sponsor.campaigns:
@@ -119,14 +125,37 @@ def active_campaigns():
                 'flagged': campaign.flagged,
                 'end_date': campaign.end_date,
                 'visibility': campaign.campaign_visibility.name,
+                'ad_requests': [],
             }
+
+            for ad_request in campaign.ad_requests:
+                ad = {
+                    'id': ad_request.id,
+                    'requirement': ad_request.requirement,
+                    'payment_amount': ad_request.payment_amount,
+                    'message': ad_request.message,
+                    'status': ad_request.status.name,
+                    'sender_user_id': ad_request.sender_user_id,
+                    'influencer_id': ad_request.influencer_id,
+                }
+
+                camp['ad_requests'].append(ad)
+            
             if campaign.end_date > date.today():
                 data['campaigns'].append(camp)
         
+        for campaign in data['campaigns']:
+            for ad_request in campaign['ad_requests']:
+                if (ad_request['status'] == "Pending") and (ad_request['influencer_id']):
+                    if ad_request['sender_user_id'] == current_user.id:
+                        data['pending_ad_requests']['sent'].append(ad_request)
+                    else:
+                        data['pending_ad_requests']['received'].append(ad_request)
+
         return jsonify(data)
     
-    for ad in current_user.influencer.assigned_ads:
-        campaign = ad.campaign
+    for ad_request in current_user.influencer.assigned_ads:
+        campaign = ad_request.campaign
         camp = {
             'id': campaign.id,
             'name': campaign.name,
@@ -137,6 +166,22 @@ def active_campaigns():
         camp_ids = [camp['id'] for camp in data['campaigns']]
         if (campaign.end_date > date.today()) and (camp['id'] not in camp_ids):
             data['campaigns'].append(camp)
+
+        ad = {
+            'id': ad_request.id,
+            'requirement': ad_request.requirement,
+            'payment_amount': ad_request.payment_amount,
+            'message': ad_request.message,
+            'status': ad_request.status.name,
+            'sender_user_id': ad_request.sender_user_id,
+            'influencer_id': ad_request.influencer_id,
+        }
+
+        if (ad_request.status.name == "Pending") and (not ad_request.campaign.flagged):
+            if ad_request.sender_user_id == current_user.id:
+                data['pending_ad_requests']['sent'].append(ad)
+            else:
+                data['pending_ad_requests']['received'].append(ad)
 
     return jsonify(data)
 

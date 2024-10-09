@@ -97,6 +97,11 @@ onMounted(async () => {
             <RouterLink :to="`/ad-request/${ad.id}/edit`">Edit</RouterLink> |
             <button @click="deleteAdRequest(ad.id)">Delete</button>
         </div>
+        <div v-if="user.role == 'Influencer' && ad.influencer == null">
+            <span>Action: </span>
+            <button @click="acceptAdRequest(ad.id)">Accept</button> | 
+            <RouterLink :to="`/ad-request/${ad.id}/negotiate`">Negotiate</RouterLink>
+        </div>
     </div>
     <div v-if="user.role == 'Sponsor'">
         <RouterLink :to="`/ad-request/create?campaign_id=${campaignId}`">

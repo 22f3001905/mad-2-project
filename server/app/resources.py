@@ -212,10 +212,10 @@ class CampaignAPI(Resource):
             raise NotFoundError(error_message="Campaign not found.")
         
         if current_user.influencer:
-            if current_user.influencer.id not in [ad.influencer_id for ad in campaign.ad_requests]:
+            if campaign.campaign_visibility.name == 'Private' and current_user.influencer.id not in [ad.influencer_id for ad in campaign.ad_requests]:
                 raise BusinessValidationError(
                     status_code=403, 
-                    error_message="Campaign does not belong to the sponsor."
+                    error_message="Private campaign cannot be viewed by an influencer which is not assigned by sponsor."
                 )
 
         if current_user.sponsor:
