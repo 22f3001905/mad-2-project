@@ -16,7 +16,7 @@ const searchInfluencers = async () => {
         const res = await fetch('/api/search/influencers', {
             method: 'POST',
             headers: {
-                'Authentication-Token': sessionStorage.getItem('authToken'), 
+                'Authentication-Token': localStorage.getItem('authToken'), 
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -85,6 +85,12 @@ onMounted(async () => {
     </form>
     <div v-if="searchResults.length">
         <h3>Search Results</h3>
-        <div v-for="influencer in searchResults">{{ influencer.name }}</div>
+        <div v-for="influencer in searchResults">
+            {{ influencer.name }}
+            <div>
+                <RouterLink :to="`/ad-request/assign?influencer_id=${influencer.id}`">Assign Ad Request</RouterLink> | 
+                <RouterLink :to="`/ad-request/create?influencer_id=${influencer.id}`">Create Ad Request</RouterLink>
+            </div>
+        </div>
     </div>
 </template>

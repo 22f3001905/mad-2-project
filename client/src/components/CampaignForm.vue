@@ -40,7 +40,7 @@ onMounted(async () => {
         try {
             const res = await fetch(`/api/campaign/${campaignId.value}`, {
                 method: 'GET',
-                headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
+                headers: { 'Authentication-Token': localStorage.getItem('authToken') }
             });
             const data = await res.json();
             console.log(data);
@@ -66,7 +66,7 @@ const createCampaign = async () => {
         const res = await fetch(`/api/campaign`, {
             method: 'POST',
             headers: {
-                'Authentication-Token': sessionStorage.getItem('authToken'),
+                'Authentication-Token': localStorage.getItem('authToken'),
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -93,7 +93,7 @@ const editCampaign = async () => {
         const res = await fetch(`/api/campaign/${campaignId.value}`, {
             method: 'PUT',
             headers: {
-                'Authentication-Token': sessionStorage.getItem('authToken'),
+                'Authentication-Token': localStorage.getItem('authToken'),
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({

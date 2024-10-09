@@ -22,7 +22,7 @@ onMounted(async () => {
     try {
         const res = await fetch('/api/all-campaigns', {
             method: 'GET',
-            headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
+            headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
         const data = await res.json();
         console.log(data.campaigns);

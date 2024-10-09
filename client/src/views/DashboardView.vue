@@ -31,7 +31,7 @@ onMounted(async () => {
     // fetch sponsor/influencer data
     try {
         const res = await fetch('/api/info/user', {
-            headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
+            headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
         const data = await res.json();
         user.id = data.id;
@@ -43,7 +43,7 @@ onMounted(async () => {
     if (user.role == 'Sponsor') {
         try {
             const res = await fetch('/api/info/sponsor', {
-                headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
+                headers: { 'Authentication-Token': localStorage.getItem('authToken') }
             });
             const data = await res.json();
             console.log(data);
@@ -57,7 +57,7 @@ onMounted(async () => {
     } else if (user.role == 'Influencer') {
         try {
             const res = await fetch('/api/info/influencer', {
-                headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
+                headers: { 'Authentication-Token': localStorage.getItem('authToken') }
             });
             const data = await res.json();
             console.log(data);

@@ -15,7 +15,7 @@ const searchCampaigns = async () => {
         const res = await fetch('/api/search/campaigns', {
             method: 'POST',
             headers: {
-                'Authentication-Token': sessionStorage.getItem('authToken'), 
+                'Authentication-Token': localStorage.getItem('authToken'), 
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({

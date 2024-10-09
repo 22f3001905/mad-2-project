@@ -1,5 +1,8 @@
-from flask import current_app as app, jsonify
+from flask import current_app as app, jsonify, request
 from flask_security import current_user, auth_required, roles_required, roles_accepted, login_user, logout_user
+
+from app.models import db
+from app.models import *
 
 # @roles_required("Student", "Instructor") -> User should have both Student and Instructor. { AND condition }
 # @roles_accepted("Student", "Instructor") -> User should have either Student or Instructor. { OR condition }
@@ -65,7 +68,9 @@ def all_campaigns():
             'visibility': campaign.campaign_visibility.name,
             'niche': campaign.niche.name,
             'flagged': campaign.flagged,
-            'goals': [{ 'id': goal.id, 'name': goal.name, 'status': goal.status } for goal in campaign.goals]
+            'goals': [{ 'id': goal.id, 'name': goal.name, 'status': goal.status } for goal in campaign.goals],
+            'n_ads': len(campaign.ad_requests),
+            'n_unassigned_ads': len([ad for ad in campaign.ad_requests if not ad.influencer_id])
         })
     return jsonify(data)
 
@@ -106,9 +111,39 @@ from app.utils import form_hard_coded
 def registration_form_data():
     return jsonify(form_hard_coded())
 
+
 @app.route('/sponsor-budget')
 @auth_required("token")
 @roles_required("Sponsor")
 def sponsor_budget():
     budget = current_user.sponsor.budget
     return jsonify({ 'budget': budget })
+
+
+@app.route('/influencer/<int:influencer_id>')
+def influencer_details(influencer_id):
+    influencer = db.session.get(Influencer, influencer_id)
+    influencer_out = {
+        'id': influencer.id,
+        'name': influencer.name,
+    }
+    return jsonify({ 'influencer': influencer_out })
+
+
+# @app.route('/unassigned-ads')
+# def ads_unassigned():
+#     pass
+
+@app.route('/assign-ad', methods=['POST'])
+@auth_required("token")
+@roles_accepted('Sponsor', 'Influencer')
+def ad_assign():
+    content = request.json
+    print(content)
+    
+    ad_request = db.session.get(AdRequest, content['ad_request_id'])
+    ad_request.influencer_id = content['influencer_id']
+
+    db.session.commit()
+
+    return jsonify({ 'message': 'Successfully assigned ad request.' })

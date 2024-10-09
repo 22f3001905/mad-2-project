@@ -9,12 +9,15 @@ const props = defineProps({
     title: String
 });
 
+const influencerId = ref(route.query.influencer_id || null);
+const influencerName = ref('influencer_name');
+
 const form = reactive({
     requirement: '',
     message: '',
     payment_amount: null,
     campaign_goal_id: null,
-    sender_user_id: null,
+    sender_user_id: JSON.parse(localStorage.getItem('user')).id,
     campaign: {
         id: null,
         // name: null,
@@ -34,7 +37,7 @@ onMounted(async () => {
     try {
         const res = await fetch('/api/all-campaigns', {
             method: 'GET',
-            headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
+            headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
         const data = await res.json();
         console.log(data.campaigns);
@@ -69,7 +72,7 @@ onMounted(async () => {
         try {
             const res = await fetch(`/api/ad-request/${adRequestId.value}`, {
                 method: 'GET',
-                headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
+                headers: { 'Authentication-Token': localStorage.getItem('authToken') }
             });
             const data = await res.json();
             console.log(data);
@@ -90,6 +93,17 @@ onMounted(async () => {
             console.error('Error fetching ad request data.', error);
         }
     }
+
+    if (influencerId.value) {
+        console.log('Fetch influencer name.');
+        try {
+            const res = await fetch(`/api/influencer/${influencerId.value}`);
+            const data = await res.json();
+            influencerName.value = data.influencer.name;
+        } catch (error) {
+            console.error('Error fetching influencer details.', error);
+        }
+    }
 });
 
 const createAdRequest = async () => {
@@ -98,17 +112,17 @@ const createAdRequest = async () => {
         const res = await fetch(`/api/ad-request`, {
             method: 'POST',
             headers: {
-                'Authentication-Token': sessionStorage.getItem('authToken'), 
+                'Authentication-Token': localStorage.getItem('authToken'), 
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 campaign_id: form.campaign.id,
-                influencer_id: null,
+                influencer_id: influencerId.value,
                 requirement: form.requirement,
                 message: form.message,
                 payment_amount: form.payment_amount,
                 status_id: 1,
-                sender_user_id: JSON.parse(sessionStorage.getItem('user')).id,
+                sender_user_id: form.sender_user_id,
                 campaign_goal_id: form.campaign_goal_id
             })
         });
@@ -126,7 +140,7 @@ const editAdRequest = async () => {
         const res = await fetch(`/api/ad-request/${adRequestId.value}`, {
             method: 'PUT',
             headers: {
-                'Authentication-Token': sessionStorage.getItem('authToken'), 
+                'Authentication-Token': localStorage.getItem('authToken'), 
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -163,18 +177,23 @@ const changeSelectedCampaign = () => {
     <h1 class="text-center mb-3">{{ props.title }} Ad Request</h1>
     <div class="row justify-content-center">
         <div class="col-md-6">
+            <p v-if="influencerId">Target Influencer: {{ influencerName }}</p>
             <form @submit.prevent="() => props.title == 'Create' ? createAdRequest() : editAdRequest()">
                 <div class="mb-3">
                     <label for="campaign">Campaign</label>
                     <select v-model="form.campaign.id" name="campaign" id="campaign" @change="changeSelectedCampaign" :disabled="props.title == 'Edit'">
-                        <option v-for="campaign in state.campaigns" :value="campaign.id">{{ campaign.name }}</option>
+                        <option v-for="campaign in state.campaigns" :value="campaign.id">
+                            {{ campaign.name }} {{ campaign.visibility == 'Private' ? '(Private)' : '' }}
+                        </option>
                     </select>
                 </div>
                 <div class="mb-3">
                     <label for="goal_id" class="form-label">Target Goal</label>
                     <select v-model="form.campaign_goal_id" name="goal_id" id="goal_id" class="form-select" required>
                         <option v-if="!form.campaign">Campaign Goal</option>
-                        <option v-else v-for="goal in form.campaign.goals" :value="goal.id">{{ goal.name }}</option>
+                        <option v-else v-for="goal in form.campaign.goals" :value="goal.id">
+                            {{ goal.name }}
+                        </option>
                     </select>
                 </div>
                 <div class="mb-3">

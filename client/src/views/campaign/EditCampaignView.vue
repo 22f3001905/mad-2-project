@@ -9,7 +9,7 @@ onMounted(async () => {
     try {
         const res = await fetch('/api/sponsor-budget', {
             headers: {
-                'Authentication-Token': sessionStorage.getItem('authToken')
+                'Authentication-Token': localStorage.getItem('authToken')
             }
         });
         const data = await res.json();

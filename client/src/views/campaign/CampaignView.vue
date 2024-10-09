@@ -25,7 +25,7 @@ async function deleteCampaign() {
     try {
         const res = await fetch(`/api/campaign/${campaignId.value}`, {
             method: 'DELETE',
-            headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
+            headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
         router.push('/campaigns');
     } catch (error) {
@@ -38,7 +38,7 @@ async function deleteAdRequest(adRequestId) {
     try {
         const res = await fetch(`/api/ad-request/${adRequestId}`, {
             method: 'DELETE',
-            headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
+            headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
         campaign.adRequests = campaign.adRequests.filter(ad => ad.id != adRequestId);
     } catch (error) {
@@ -50,7 +50,7 @@ onMounted(async () => {
     try {
         const res = await fetch(`/api/campaign/${campaignId.value}`, {
             method: 'GET',
-            headers: { 'Authentication-Token': sessionStorage.getItem('authToken') }
+            headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
         const data = await res.json();
         console.log(data);
@@ -90,17 +90,18 @@ onMounted(async () => {
         <h3>{{ ad.requirement }}</h3>
         <p>Status: {{ ad.status }} | Payment: Rs. {{ ad.payment_amount }}</p>
         <p>{{ ad.message }}</p>
+        <p>Influencer: {{ ad.influencer || 'Unassigned' }}</p>
         <div v-if="ad.status != 'Accepted'">
             <span>Actions: </span>
             <RouterLink :to="`/ad-request/${ad.id}/edit`">Edit</RouterLink> |
             <button @click="deleteAdRequest(ad.id)">Delete</button>
         </div>
-        <div v-else>
-            <p>Influencer: {{ ad.influencer }}</p>
-        </div>
     </div>
     <div>
-        <RouterLink :to="`/ad-request/create?campaign_id=${campaignId}`" v-if="campaign.visibility == 'Public'">Create Ad Request</RouterLink>
-        <RouterLink to="/ad-request/send" v-else>Send Ad Request</RouterLink>
+        <RouterLink :to="`/ad-request/create?campaign_id=${campaignId}`" v-if="campaign.visibility == 'Public'">
+            Create Ad Request
+        </RouterLink>
+        <br>
+        <RouterLink to="/search">Search for Influencers</RouterLink>
     </div>
 </template>

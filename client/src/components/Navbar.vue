@@ -15,8 +15,8 @@ const isLoggedIn = computed(() => store.isLoggedIn);
 const logoutUser = async () => {
     try {
         await fetch('/api/logout');
-        sessionStorage.removeItem('authToken');
-        sessionStorage.removeItem('user');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
         store.logout();
         clearCookie('session');
         router.push('/');
@@ -27,16 +27,18 @@ const logoutUser = async () => {
 </script>
 
 <template>
-    <nav>
-        <div>SponsorConnect</div>
-        <ul>
-            <li v-if="isLoggedIn"><RouterLink to="/dashboard">Dashboard</RouterLink></li>
-            <li v-if="isLoggedIn"><RouterLink to="/campaigns">Campaigns</RouterLink></li>
-            <li v-if="isLoggedIn"><RouterLink to="/search">Search</RouterLink></li>
-            <li>
-                <button v-if="isLoggedIn" @click="logoutUser">Logout</button>
-                <RouterLink v-else to="/login">Login</RouterLink>
-            </li>
-        </ul>
+    <nav class="navbar justify-content-end">
+        <div class="container-fluid">
+            <RouterLink class="navbar-brand" to="/">💻 SponsorConnect</RouterLink>
+            <ul class="nav">
+                <li v-if="isLoggedIn" class="nav-item"><RouterLink class="nav-link" to="/dashboard">Dashboard</RouterLink></li>
+                <li v-if="isLoggedIn" class="nav-item"><RouterLink class="nav-link" to="/campaigns">Campaigns</RouterLink></li>
+                <li v-if="isLoggedIn" class="nav-item"><RouterLink class="nav-link" to="/search">Search</RouterLink></li>
+                <li class="nav-item">
+                    <button class="nav-link" v-if="isLoggedIn" @click="logoutUser">Logout</button>
+                    <RouterLink class="nav-link" v-else to="/login">Login</RouterLink>
+                </li>
+            </ul>
+        </div>
     </nav>
 </template>

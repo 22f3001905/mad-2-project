@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar.vue';
 import SearchInfluencers from '@/components/SearchInfluencers.vue';
 import SearchCampaigns from '@/components/SearchCampaigns.vue';
 
-const userRole = JSON.parse(sessionStorage.getItem('user')).role;
+const userRole = JSON.parse(localStorage.getItem('user')).role;
 </script>
 
 <template>

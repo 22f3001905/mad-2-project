@@ -20,6 +20,7 @@ import AllCampaignsView from '@/views/campaign/AllCampaignsView.vue';
 import CreateAdRequestView from '@/views/ad-request/CreateAdRequestView.vue';
 import EditAdRequestView from '@/views/ad-request/EditAdRequestView.vue';
 import SearchView from '@/views/SearchView.vue';
+import AssignAdRequestView from '@/views/ad-request/AssignAdRequestView.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,12 +35,13 @@ const router = createRouter({
         { path: '/campaign/create', name: 'create-campaign', component: CreateCampaignView },
         { path: '/ad-request/create', name: 'create-ad', component: CreateAdRequestView },
         { path: '/ad-request/:id/edit', name: 'edit-ad', component: EditAdRequestView },
+        { path: '/ad-request/assign', name: 'assign-ad', component: AssignAdRequestView },
         { path: '/search', name: 'search', component: SearchView },
     ]
 });
 
 router.beforeEach((to, from, next) => {
-    const isAuthenticated = sessionStorage.getItem('authToken');
+    const isAuthenticated = localStorage.getItem('authToken');
 
     if (to.path === '/dashboard' && !isAuthenticated) {
         next('/login');
