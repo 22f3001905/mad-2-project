@@ -35,7 +35,7 @@ const state = reactive({
 onMounted(async () => {
     // fetch sponsor goals
     try {
-        const res = await fetch('/api/all-campaigns', {
+        const res = await fetch('/api/sponsor/campaigns', {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });

@@ -4,6 +4,8 @@ from flask_security import current_user, auth_required, roles_required, roles_ac
 from app.models import db
 from app.models import *
 
+from datetime import date
+
 # @roles_required("Student", "Instructor") -> User should have both Student and Instructor. { AND condition }
 # @roles_accepted("Student", "Instructor") -> User should have either Student or Instructor. { OR condition }
 
@@ -50,15 +52,14 @@ def sponsor_info():
 
     return jsonify(info)
 
-@app.route("/all-campaigns")
+@app.route("/sponsor/campaigns")
 @auth_required('token')
-@roles_required("Sponsor")
+@roles_required('Sponsor')
 def all_campaigns():
-    data = {
-        'campaigns': []
-    }
+    data = { 'campaigns': [] }
+    # Sponsor Campaigns
     for campaign in current_user.sponsor.campaigns:
-        data['campaigns'].append({
+        camp = {
             'id': campaign.id,
             'name': campaign.name,
             'description': campaign.description,
@@ -71,7 +72,72 @@ def all_campaigns():
             'goals': [{ 'id': goal.id, 'name': goal.name, 'status': goal.status } for goal in campaign.goals],
             'n_ads': len(campaign.ad_requests),
             'n_unassigned_ads': len([ad for ad in campaign.ad_requests if not ad.influencer_id])
-        })
+        }
+        data['campaigns'].append(camp)
+
+    return jsonify(data)
+    
+
+@app.route('/influencer/campaigns')
+@auth_required('token')
+@roles_required('Influencer')
+def public_campaigns():
+    data = { 'campaigns': [] }
+    # All Public Campaigns
+    campaigns = db.session.query(Campaign).filter(Campaign.visibility_id == 1).all()
+    
+    for campaign in campaigns:
+        camp = {
+            'id': campaign.id,
+            'name': campaign.name,
+            'description': campaign.description,
+            'start_date': campaign.start_date,
+            'end_date': campaign.end_date,
+            'budget': campaign.budget,
+            'visibility': campaign.campaign_visibility.name,
+            'niche': campaign.niche.name,
+            'flagged': campaign.flagged,
+            'goals': [{ 'id': goal.id, 'name': goal.name, 'status': goal.status } for goal in campaign.goals],
+            'n_ads': len(campaign.ad_requests),
+            'n_unassigned_ads': len([ad for ad in campaign.ad_requests if not ad.influencer_id])
+        }
+        data['campaigns'].append(camp)
+
+    return jsonify(data)
+
+@app.route('/active-campaigns')
+@auth_required("token")
+@roles_accepted('Sponsor', 'Influencer')
+def active_campaigns():
+    data = { 'campaigns': [] }
+
+    if current_user.sponsor:
+        for campaign in current_user.sponsor.campaigns:
+            camp = {
+                'id': campaign.id,
+                'name': campaign.name,
+                'flagged': campaign.flagged,
+                'end_date': campaign.end_date,
+                'visibility': campaign.campaign_visibility.name,
+            }
+            if campaign.end_date > date.today():
+                data['campaigns'].append(camp)
+        
+        return jsonify(data)
+    
+    for ad in current_user.influencer.assigned_ads:
+        campaign = ad.campaign
+        camp = {
+            'id': campaign.id,
+            'name': campaign.name,
+            'flagged': campaign.flagged,
+            'end_date': campaign.end_date,
+            'visibility': campaign.campaign_visibility.name,
+        }
+        camp_ids = [camp['id'] for camp in data['campaigns']]
+        if (campaign.end_date > date.today()) and (camp['id'] not in camp_ids):
+            data['campaigns'].append(camp)
+
     return jsonify(data)
 
 @app.route("/info/influencer")

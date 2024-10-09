@@ -211,13 +211,20 @@ class CampaignAPI(Resource):
         if not campaign:
             raise NotFoundError(error_message="Campaign not found.")
         
-        sponsor_id = current_user.sponsor.id
-        
-        if campaign.sponsor_id != sponsor_id:
-            raise BusinessValidationError(
-                status_code=403, 
-                error_message="Campaign does not belong to the sponsor."
-            )
+        if current_user.influencer:
+            if current_user.influencer.id not in [ad.influencer_id for ad in campaign.ad_requests]:
+                raise BusinessValidationError(
+                    status_code=403, 
+                    error_message="Campaign does not belong to the sponsor."
+                )
+
+        if current_user.sponsor:
+            sponsor_id = current_user.sponsor.id
+            if campaign.sponsor_id != sponsor_id:
+                raise BusinessValidationError(
+                    status_code=403, 
+                    error_message="Campaign does not belong to the sponsor."
+                )
         
         ad_requests = []
         for ad_request in campaign.ad_requests:
@@ -345,9 +352,16 @@ class CampaignAPI(Resource):
     @roles_required('Sponsor')
     def delete(self, campaign_id):
         campaign = db.session.get(Campaign, campaign_id)
+        sponsor = current_user.sponsor
 
         if not campaign:
             raise NotFoundError(error_message="Campaign not found.")
+        
+        if campaign.sponsor_id != sponsor.id:
+            raise BusinessValidationError(
+                status_code=403, 
+                error_message="Campaign does not belong to the sponsor."
+            )
         
         sponsor = current_user.sponsor
         sponsor.budget += campaign.budget

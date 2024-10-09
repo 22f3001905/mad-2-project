@@ -7,6 +7,7 @@ import Navbar from '@/components/Navbar.vue';
 const route = useRoute();
 const router = useRouter();
 const campaignId = ref(route.params.id);
+const user = JSON.parse(localStorage.getItem('user'));
 
 const campaign = reactive({
     id: null,
@@ -74,7 +75,7 @@ onMounted(async () => {
     <Navbar />
     <h1>{{ campaign.name }}</h1>
     <p>{{ campaign.description }}</p>
-    <div>
+    <div v-if="user.role == 'Sponsor'">
         <span>Actions: </span>
         <RouterLink :to="`/campaign/${campaignId}/edit`">Edit</RouterLink> |
         <button @click="deleteCampaign">Delete</button>
@@ -91,16 +92,16 @@ onMounted(async () => {
         <p>Status: {{ ad.status }} | Payment: Rs. {{ ad.payment_amount }}</p>
         <p>{{ ad.message }}</p>
         <p>Influencer: {{ ad.influencer || 'Unassigned' }}</p>
-        <div v-if="ad.status != 'Accepted'">
+        <div v-if="ad.status != 'Accepted' && user.role == 'Sponsor'">
             <span>Actions: </span>
             <RouterLink :to="`/ad-request/${ad.id}/edit`">Edit</RouterLink> |
             <button @click="deleteAdRequest(ad.id)">Delete</button>
         </div>
     </div>
-    <div>
-        <RouterLink :to="`/ad-request/create?campaign_id=${campaignId}`" v-if="campaign.visibility == 'Public'">
+    <div v-if="user.role == 'Sponsor'">
+        <RouterLink :to="`/ad-request/create?campaign_id=${campaignId}`">
             Create Ad Request
-        </RouterLink>
+        </RouterLink> <span v-if="campaign.visibility == 'Private'">(Manual)</span>
         <br>
         <RouterLink to="/search">Search for Influencers</RouterLink>
     </div>

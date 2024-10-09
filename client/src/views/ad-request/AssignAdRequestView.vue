@@ -74,7 +74,7 @@ const assignAd = async () => {
 
 onMounted(async () => {
     try {
-        const res = await fetch('/api/all-campaigns', {
+        const res = await fetch('/api/sponsor/campaigns', {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });

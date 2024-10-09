@@ -3,9 +3,9 @@ import { onMounted, reactive } from 'vue';
 
 import Navbar from '@/components/Navbar.vue';
 import UserInfo from '@/components/UserInfo.vue';
-import CampaignList from '@/components/CampaignList.vue';
+import ActiveCampaignList from '@/components/ActiveCampaignList.vue';
 
-import { userLoggedInRedirect } from '@/utils';
+// import { userLoggedInRedirect } from '@/utils';
 
 const user = reactive({
     id: null,
@@ -82,5 +82,5 @@ onMounted(async () => {
         :sponsor="{ budget: sponsor.budget, industry: sponsor.industry }" 
         :influencer="{ niche: influencer.niche, reach: influencer.reach, wallet_balance: influencer.wallet_balance, category: influencer.category }" 
     />
-    <CampaignList :campaigns="sponsor.campaigns" />
+    <ActiveCampaignList :role="user.role" />
 </template>
