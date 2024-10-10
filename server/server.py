@@ -1,21 +1,25 @@
 from flask import Flask
 from flask_cors import CORS
+from flask_mail import Mail
 from flask_security import Security, SQLAlchemyUserDatastore
 
 from app.config import LocalDevConfig
 from app.models import db, User, Role
 from app.resources import api
 from app.utils import create_user
+from app.mail import mail
 
 app = None
 
 def create_app():
     app = Flask(__name__)
-    cors = CORS(app, origins=["http://localhost:8000"])
     app.config.from_object(LocalDevConfig)
+
+    CORS(app, origins=["http://localhost:8000"])
 
     db.init_app(app)
     api.init_app(app)
+    mail.init_app(app)
 
     datastore = SQLAlchemyUserDatastore(db, User, Role)
     app.security = Security(app, datastore)

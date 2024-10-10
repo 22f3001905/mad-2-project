@@ -181,7 +181,10 @@ def pending_ad_requests():
                     'status': ad_request.status.name,
                     'sender_user_id': ad_request.sender_user_id,
                     'influencer_id': ad_request.influencer_id,
+                    'influencer_name': ad_request.influencer.name if ad_request.influencer_id else None,
+                    'sponsor_name': ad_request.campaign.sponsor.name,
                 }
+
                 if (ad_request.status.name == "Pending") and (ad_request.influencer_id) and (not ad_request.campaign.flagged):
                     if ad_request.sender_user_id == current_user.id:
                         data['pending_ad_requests']['sent'].append(ad)
@@ -199,6 +202,8 @@ def pending_ad_requests():
             'status': ad_request.status.name,
             'sender_user_id': ad_request.sender_user_id,
             'influencer_id': ad_request.influencer_id,
+            'influencer_name': ad_request.influencer.name if ad_request.influencer_id else None,
+            'sponsor_name': ad_request.campaign.sponsor.name,
         }
 
         if (ad_request.status.name == "Pending") and (not ad_request.campaign.flagged):

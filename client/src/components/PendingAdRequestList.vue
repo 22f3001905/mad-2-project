@@ -1,5 +1,9 @@
 <script setup>
-import { reactive, onMounted } from 'vue';
+import { reactive, onMounted, computed } from 'vue';
+import { useUserStore } from '@/stores/user';
+
+const store = useUserStore();
+const userRole = computed(() => store.getUserRole);
 
 const state = reactive({
     pending_sent: [],
@@ -25,12 +29,16 @@ onMounted(async () => {
 <template>
     <div>
         <h2>Pending Ad Requests</h2>
+        <p>These are the pending ad requests that require user action.</p>
         <div>
             <h3>Sent</h3>
+            <p>Wait for the ad request to be accepted or modify it.</p>
             <div v-for="ad in state.pending_sent" style="border: 1px solid black;">
                 <h4>{{ ad.requirement }}</h4>
                 <p>{{ ad.message }}</p>
-                <p>Rs. {{ ad.payment_amount }}</p>
+                <p v-if="userRole == 'Sponsor'">Influencer: {{ ad.influencer_name }}</p>
+                <p v-else>Sponsor: {{ ad.sponsor_name }}</p>
+                <p>Payout: Rs. {{ ad.payment_amount }}</p>
                 <div>
                     <RouterLink :to="`/ad-request/${ad.id}/edit`">Edit</RouterLink> | 
                     <button @click="deleteAdRequest(ad.id)">Delete</button>
@@ -39,10 +47,13 @@ onMounted(async () => {
         </div>
         <div>
             <h3>Received</h3>
+            <p>Accept, reject, or negotiate a better payout for these ad request.</p>
             <div v-for="ad in state.pending_received" style="border: 1px solid black;">
                 <h4>{{ ad.requirement }}</h4>
                 <p>{{ ad.message }}</p>
-                <p>Rs. {{ ad.payment_amount }}</p>
+                <p v-if="userRole == 'Sponsor'">Influencer: {{ ad.influencer_name }}</p>
+                <p v-else>Sponsor: {{ ad.sponsor_name }}</p>
+                <p>Payout: Rs. {{ ad.payment_amount }}</p>
                 <div>
                     Accept | Reject | Negotiate
                 </div>
