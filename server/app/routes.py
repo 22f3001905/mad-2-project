@@ -111,11 +111,9 @@ def public_campaigns():
 def active_campaigns():
     data = {
         'campaigns': [], 
-        'pending_ad_requests': {
-            'sent': [],
-            'received': []
-        }
     }
+
+    # TODO: Admin can access this.
 
     if current_user.sponsor:
         for campaign in current_user.sponsor.campaigns:
@@ -143,14 +141,6 @@ def active_campaigns():
             
             if campaign.end_date > date.today():
                 data['campaigns'].append(camp)
-        
-        for campaign in data['campaigns']:
-            for ad_request in campaign['ad_requests']:
-                if (ad_request['status'] == "Pending") and (ad_request['influencer_id']):
-                    if ad_request['sender_user_id'] == current_user.id:
-                        data['pending_ad_requests']['sent'].append(ad_request)
-                    else:
-                        data['pending_ad_requests']['received'].append(ad_request)
 
         return jsonify(data)
     
@@ -167,6 +157,40 @@ def active_campaigns():
         if (campaign.end_date > date.today()) and (camp['id'] not in camp_ids):
             data['campaigns'].append(camp)
 
+    return jsonify(data)
+
+@app.route('/pending-ad-requests')
+@auth_required("token")
+@roles_accepted('Sponsor', 'Influencer')
+def pending_ad_requests():
+    data = {
+        'pending_ad_requests': {
+            'sent': [],
+            'received': []
+        }
+    }
+
+    if current_user.sponsor:
+        for campaign in current_user.sponsor.campaigns:
+            for ad_request in campaign.ad_requests:
+                ad = {
+                    'id': ad_request.id,
+                    'requirement': ad_request.requirement,
+                    'payment_amount': ad_request.payment_amount,
+                    'message': ad_request.message,
+                    'status': ad_request.status.name,
+                    'sender_user_id': ad_request.sender_user_id,
+                    'influencer_id': ad_request.influencer_id,
+                }
+                if (ad_request.status.name == "Pending") and (ad_request.influencer_id) and (not ad_request.campaign.flagged):
+                    if ad_request.sender_user_id == current_user.id:
+                        data['pending_ad_requests']['sent'].append(ad)
+                    else:
+                        data['pending_ad_requests']['received'].append(ad)
+        
+        return jsonify(data)
+    
+    for ad_request in current_user.influencer.assigned_ads:
         ad = {
             'id': ad_request.id,
             'requirement': ad_request.requirement,
@@ -182,7 +206,7 @@ def active_campaigns():
                 data['pending_ad_requests']['sent'].append(ad)
             else:
                 data['pending_ad_requests']['received'].append(ad)
-
+    
     return jsonify(data)
 
 @app.route("/info/influencer")

@@ -2,15 +2,27 @@ import { ref, computed, reactive } from 'vue';
 import { defineStore } from 'pinia';
 
 export const useUserStore = defineStore('user', () => {
-    const loggingStatus = ref(localStorage.getItem('authToken') != null);
-    const isLoggedIn = computed(() => loggingStatus.value);
-    
-    function login() {
-        loggingStatus.value = true;
-    }
+    const user = reactive(JSON.parse(localStorage.getItem('user')) || { id: '', email: '', role: '' });
+    const authToken = ref(localStorage.getItem('authToken') || null);
+
+    const getUserId = computed(() => user.id);
+    const getUserRole = computed(() => user.role);
+    const getAuthToken = computed(() => authToken.value);
+
     function logout() {
-        loggingStatus.value = false;
+        authToken.value = null;
+        user.id = '';
+        user.email = '';
+        user.role = '';
     }
-    
-    return { loggingStatus, isLoggedIn, login, logout };
+    function login() {
+        authToken.value = localStorage.getItem('authToken');
+
+        const loggedInUser = JSON.parse(localStorage.getItem('user'));
+        user.id = loggedInUser.id;
+        user.email = loggedInUser.email;
+        user.role = loggedInUser.role;
+    }
+
+    return { getUserId, getUserRole, getAuthToken, logout, login };
 });

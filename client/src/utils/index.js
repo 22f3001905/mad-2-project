@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 const userLoggedInRedirect = () => {
     const store = useUserStore();
     const router = useRouter();
-    if (store.isLoggedIn) {
+    if (store.getAuthToken) {
         router.push('/');
         return true;
     }

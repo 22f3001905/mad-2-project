@@ -21,6 +21,7 @@ async function fetchUserInfo(authenticationToken) {
             headers: { 'Authentication-Token': authenticationToken }
         });
         const data = await res.json();
+        console.log(data);
         localStorage.setItem('user', JSON.stringify(data));
     } catch (error) {
         console.error('Error in fetching user info.', error);
@@ -44,8 +45,8 @@ const loginUser = async () => {
             state.incorrectCreds = false;
             const authenticationToken = data.response.user.authentication_token;
             localStorage.setItem('authToken', authenticationToken);
+            const res = await fetchUserInfo(authenticationToken);
             store.login();
-            fetchUserInfo(authenticationToken);
             router.push('/dashboard');
         }
     } catch (error) {
