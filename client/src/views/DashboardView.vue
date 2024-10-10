@@ -4,6 +4,7 @@ import { onMounted, reactive } from 'vue';
 import Navbar from '@/components/Navbar.vue';
 import UserInfo from '@/components/UserInfo.vue';
 import ActiveCampaignList from '@/components/ActiveCampaignList.vue';
+import PendingAdRequestList from '@/components/PendingAdRequestList.vue';
 
 // import { userLoggedInRedirect } from '@/utils';
 
@@ -83,4 +84,5 @@ onMounted(async () => {
         :influencer="{ niche: influencer.niche, reach: influencer.reach, wallet_balance: influencer.wallet_balance, category: influencer.category }" 
     />
     <ActiveCampaignList :role="user.role" />
+    <PendingAdRequestList />
 </template>

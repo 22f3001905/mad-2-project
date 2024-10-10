@@ -59,6 +59,7 @@ onMounted(async () => {
 </script>
 
 <template>
+    <h2>Search for Campaigns</h2>
     <form @submit.prevent="searchCampaigns">
         <div class="mb-3">
             <label for="min_budget" class="form-label">Campaign Budget <span>&#8805;</span></label>
