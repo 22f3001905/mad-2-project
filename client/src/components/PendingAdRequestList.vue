@@ -10,7 +10,37 @@ const state = reactive({
     pending_received: [],
 });
 
-onMounted(async () => {
+async function acceptAdRequest(adRequestId) {
+    console.log('Ad Request Accepted!');
+    try {
+        const res = await fetch(`/api/ad-request/${adRequestId}/accept`, {
+            method: 'GET',
+            headers: { 'Authentication-Token': localStorage.getItem('authToken') }
+        });
+        const data = await res.json();
+        console.log(data);
+        await getPendingAdRequests();
+    } catch (error) {
+        console.error('Error in accepting ad request.', error);
+    }
+}
+
+async function rejectAdRequest(adRequestId) {
+    console.log('Ad Request Accepted!');
+    try {
+        const res = await fetch(`/api/ad-request/${adRequestId}/reject`, {
+            method: 'GET',
+            headers: { 'Authentication-Token': localStorage.getItem('authToken') }
+        });
+        const data = await res.json();
+        console.log(data);
+        await getPendingAdRequests();
+    } catch (error) {
+        console.error('Error in accepting ad request.', error);
+    }
+}
+
+async function getPendingAdRequests() {
     try {
         const res = await fetch('/api/pending-ad-requests', {
             method: 'GET',
@@ -23,6 +53,14 @@ onMounted(async () => {
     } catch (error) {
         console.error('Error fetching active campaigns', error);
     }
+}
+
+const deleteAdRequest = async () => {
+    console.log('delete ad request.')
+}
+
+onMounted(async () => {
+    await getPendingAdRequests();
 });
 </script>
 
@@ -55,7 +93,10 @@ onMounted(async () => {
                 <p v-else>Sponsor: {{ ad.sponsor_name }}</p>
                 <p>Payout: Rs. {{ ad.payment_amount }}</p>
                 <div>
-                    Accept | Reject | Negotiate
+                    <span>Action: </span>
+                    <button @click="acceptAdRequest(ad.id)">Accept</button> | 
+                    <button @click="rejectAdRequest(ad.id)">Reject</button> | 
+                    <RouterLink :to="`/ad-request/${ad.id}/negotiate`">Negotiate</RouterLink>
                 </div>
             </div>
         </div>

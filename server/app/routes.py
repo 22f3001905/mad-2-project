@@ -1,4 +1,4 @@
-from flask import current_app as app, jsonify, request
+from flask import current_app as app, jsonify, request, abort
 from flask_security import current_user, auth_required, roles_required, roles_accepted, login_user, logout_user
 
 from app.models import db
@@ -287,3 +287,107 @@ def ad_assign():
     db.session.commit()
 
     return jsonify({ 'message': 'Successfully assigned ad request.' })
+
+
+@app.route("/ad-request/<int:ad_request_id>/accept")
+@auth_required("token")
+@roles_accepted('Sponsor', 'Influencer')
+def accept_ad_request(ad_request_id):
+    ad_request = db.session.get(AdRequest, ad_request_id)
+
+    # if not ad_request:
+    #     abort(404, description="Ad request not found.")
+
+    # if ad_request.sender_user_id == current_user.id:
+    #     abort(405, description="You cannot accept your own ad request.")
+
+    # if ad_request.status.name != "Pending":
+    #     abort(405, description="You cannot accept this request.")
+    
+    # if ad_request.campaign.flagged:
+    #     abort(405, description="Campaign is flagged by the admin.")
+    
+    # if current_user.influencer:
+    #     if ad_request.influencer == None:
+    #         ad_request.influencer = current_user.influencer
+    #     else:
+    #         if ad_request.influencer_id != current_user.influencer.id:
+    #             abort(405, description="Ad request is not assigned to you.")
+    
+    # if current_user.sponsor:
+    #     if ad_request.campaign.sponsor.id != current_user.sponsor.id:
+    #         abort(405, description="Ad request does not belong to your campaign.")
+
+    ad_request.status_id = 2  # Accepted
+    db.session.commit()
+
+    return jsonify({ 'message': 'Successfully accepted ad request.' })
+
+
+@app.route("/ad-request/<int:ad_request_id>/reject")
+@auth_required("token")
+@roles_accepted('Sponsor', 'Influencer')
+def reject_ad_request(ad_request_id):
+    ad_request = db.session.get(AdRequest, ad_request_id)
+
+    # if not ad_request:
+    #     abort(404, description="Ad request not found.")
+
+    # if ad_request.sender_user_id == current_user.id:
+    #     abort(403, description="You cannot reject your own ad Request!")
+    
+    # if ad_request.status.name != "Pending":
+    #     abort(403, description="You cannot reject this ad request.")
+    
+    # if ad_request.campaign.flagged:
+    #     abort(403, description="Campaign is flagged by the admin.")
+    
+    # if ad_request.influencer == None:
+    #     abort(405, description="You cannot reject this ad request.")
+    
+    # if current_user.influencer:
+    #     if ad_request.influencer_id != current_user.influencer.id:
+    #         abort(405, description="Ad request is not assigned to you.")
+    
+    # if current_user.sponsor:
+    #     if ad_request.campaign.sponsor.id != current_user.sponsor.id:
+    #         abort(405, description="Ad request does not belong to your campaign.")
+    
+    ad_request.status_id = 3
+    db.session.commit()
+
+    return jsonify({ 'message': 'Successfully rejected ad request.' })
+
+@app.route("/ad-request/<int:ad_request_id>/negotiate", methods=["POST"])
+@auth_required("token")
+@roles_accepted('Sponsor', 'Influencer')
+def negotiate_ad_request(ad_request_id):
+    content = request.json
+    ad_request = db.session.get(AdRequest, ad_request_id)
+
+    if ad_request.influencer == None:
+        ad_request.influencer = current_user.influencer
+
+    try:
+        payment_amount = float(content.get("payment_amount", 0))
+    except (ValueError, TypeError) as e:
+        # logging.error(f"Error converting payment_amount to float: {e}")
+        payment_amount = 0
+    
+    if payment_amount < 0:
+        abort(405, description="Payment amount cannot be negative.")
+    
+    campaign_budget = ad_request.campaign.budget + ad_request.payment_amount
+    if payment_amount > campaign_budget:
+        abort(405, description="Payment Amount cannot be greater than the Campaign Budget.")
+    
+    ad_request.campaign.budget = campaign_budget - payment_amount
+    
+    ad_request.payment_amount = payment_amount
+    ad_request.message = content.get("message", None)
+    ad_request.requirement = content.get("requirement", None)
+    ad_request.sender_user_id = current_user.id
+
+    db.session.commit()
+
+    return jsonify({ 'message': 'Successfully negotiated ad request.' })

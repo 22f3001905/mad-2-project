@@ -84,6 +84,11 @@ onMounted(async () => {
         </div>
     </form>
     <div>
-        <div v-for="campaign in searchResults">{{ campaign.name }}</div>
+        <div v-for="campaign in searchResults">
+            {{ campaign.name }}
+            <div>
+                <RouterLink :to="`/campaign/${campaign.id}`">View Campaign</RouterLink>
+            </div>
+        </div>
     </div>
 </template>

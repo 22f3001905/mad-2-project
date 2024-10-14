@@ -47,14 +47,14 @@ async function deleteAdRequest(adRequestId) {
     }
 }
 
-onMounted(async () => {
+async function getCampaignInfo(campaign_id) {
     try {
         const res = await fetch(`/api/campaign/${campaignId.value}`, {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
         const data = await res.json();
-        console.log(data);
+        // console.log(data);
         
         campaign.id = data.id;
         campaign.name = data.name;
@@ -68,6 +68,25 @@ onMounted(async () => {
     } catch (error) {
         console.error('Error in fetching campaign data.', error);
     }
+}
+
+async function acceptAdRequest(adRequestId) {
+    // console.log('Ad Request Accepted!');
+    try {
+        const res = await fetch(`/api/ad-request/${adRequestId}/accept`, {
+            method: 'GET',
+            headers: { 'Authentication-Token': localStorage.getItem('authToken') }
+        });
+        const data = await res.json();
+        console.log(data);
+        await getCampaignInfo();
+    } catch (error) {
+        console.error('Error in accepting ad request.', error);
+    }
+}
+
+onMounted(async () => {
+    await getCampaignInfo();
 });
 </script>
 
@@ -91,13 +110,14 @@ onMounted(async () => {
         <h3>{{ ad.requirement }}</h3>
         <p>Status: {{ ad.status }} | Payment: Rs. {{ ad.payment_amount }}</p>
         <p>{{ ad.message }}</p>
-        <p>Influencer: {{ ad.influencer || 'Unassigned' }}</p>
-        <div v-if="ad.status != 'Accepted' && user.role == 'Sponsor'">
+        <p>Influencer: {{ ad.influencer.name || 'Unassigned' }}</p>
+        <div v-if="ad.status != 'Accepted' && ad.status != 'Completed' && user.role == 'Sponsor'">
             <span>Actions: </span>
-            <RouterLink :to="`/ad-request/${ad.id}/edit`">Edit</RouterLink> |
+            <RouterLink :to="(ad.influencer.id && ad.status == 'Pending') ? `/ad-request/${ad.id}/edit?influencer_id=${ad.influencer.id}` : `/ad-request/${ad.id}/edit`">Edit</RouterLink> |
+            <!-- <RouterLink :to="`/ad-request/${ad.id}/edit`">Edit</RouterLink> |  -->
             <button @click="deleteAdRequest(ad.id)">Delete</button>
         </div>
-        <div v-if="user.role == 'Influencer' && ad.influencer == null">
+        <div v-if="user.role == 'Influencer' && ad.influencer.id == null">
             <span>Action: </span>
             <button @click="acceptAdRequest(ad.id)">Accept</button> | 
             <RouterLink :to="`/ad-request/${ad.id}/negotiate`">Negotiate</RouterLink>
@@ -105,8 +125,8 @@ onMounted(async () => {
     </div>
     <div v-if="user.role == 'Sponsor'">
         <RouterLink :to="`/ad-request/create?campaign_id=${campaignId}`">
-            Create Ad Request
-        </RouterLink> <span v-if="campaign.visibility == 'Private'">(Manual)</span>
+            Create Ad Request <span v-if="campaign.visibility == 'Private'">(Manual Assignment of Ad Request)</span>
+        </RouterLink>
         <br>
         <RouterLink to="/search">Search for Influencers</RouterLink>
     </div>

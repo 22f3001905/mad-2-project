@@ -14,6 +14,7 @@ from app.tasks import add_together, send_daily_reminder
 @celery_app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
+        # 30.0,
         crontab(hour=17, minute=0), 
         send_daily_reminder.s(), 
         name='Daily influencer reminder.'

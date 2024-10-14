@@ -69,10 +69,10 @@ class UserAPI(Resource):
 
 api.add_resource(UserAPI, "/user/create")
 
-# influencer_fields = {
-#     'id': fields.Integer,
-#     'name': fields.String
-# }
+influencer_fields = {
+    'id': fields.Integer,
+    'name': fields.String
+}
 ad_fields = {
     'id': fields.Integer,
     'requirement': fields.String,
@@ -80,7 +80,7 @@ ad_fields = {
     'message': fields.String,
     'status': fields.String,
     'sender_user_id': fields.Integer,
-    'influencer': fields.String
+    'influencer': fields.Nested(influencer_fields)
 }
 goal_fields = {
     'name': fields.String,
@@ -236,11 +236,10 @@ class CampaignAPI(Resource):
                 'message': ad_request.message,
                 'status': ad_request.status.name,
                 'sender_user_id': ad_request.sender_user_id,
-                # 'influencer': {
-                #     'id': ad_request.influencer.id or None,
-                #     'name': ad_request.influencer.name or None
-                # }
-                'influencer': influencer.name if influencer else None
+                'influencer': {
+                    'id': influencer.id if influencer else None,
+                    'name': influencer.name if influencer else None
+                }
             }
             ad_requests.append(ad)
         
@@ -470,6 +469,7 @@ class AdRequestAPI(Resource):
         requirement = ad_request_args.get('requirement')
         payment_amount = ad_request_args.get('payment_amount')
         campaign_goal_id = ad_request_args.get('campaign_goal_id')
+        influencer_id = ad_request_args.get('influencer_id', None)
 
         campaign = db.session.get(Campaign, campaign_id)
         ad_request = db.session.get(AdRequest, ad_request_id)
@@ -484,7 +484,10 @@ class AdRequestAPI(Resource):
         ad_request.message = message
         ad_request.requirement = requirement
         ad_request.payment_amount = payment_amount
+        ad_request.influencer_id = influencer_id
         ad_request.campaign_goal_id = campaign_goal_id
+        ad_request.sender_user_id = current_user.id
+        ad_request.status_id = 1
 
         db.session.commit()
 
