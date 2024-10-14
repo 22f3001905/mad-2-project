@@ -1,5 +1,6 @@
 import time
 from celery import shared_task
+from celery.schedules import crontab
 
 from app.worker import celery_init_app
 from server import app
@@ -12,4 +13,8 @@ from app.tasks import add_together, send_daily_reminder
 # Scheduled Tasks (Celery Beat)
 @celery_app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(10.0, send_daily_reminder.s(), name='Daily influencer reminder.')
+    sender.add_periodic_task(
+        crontab(hour=17, minute=0), 
+        send_daily_reminder.s(), 
+        name='Daily influencer reminder.'
+    )

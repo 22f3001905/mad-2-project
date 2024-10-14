@@ -10,3 +10,4 @@ Commands to run:
 3. Redis: redis-server --port 6375
 4. Celery Worker: celery -A celery_service.celery_app worker --loglevel INFO
 5. Celery Beat: celery -A celery_service.celery_app beat --max-interval 1 --loglevel INFO
+6. Mailhog: MailHog

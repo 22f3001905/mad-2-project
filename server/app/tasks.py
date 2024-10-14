@@ -16,6 +16,11 @@ def send_daily_reminder():
         print("Celery Function Triggered: send_daily_reminder")
         influencers = get_influencers_with_pending_requests()
 
+        # Test for only one influencer.
+        # influencer = influencers[0]
+        # print('Sending a mail to:', influencer['name'])
+        # send_email_reminder(influencer)
+
         for influencer in influencers:
             print('Sending a mail to:', influencer['name'])
             send_email_reminder(influencer)

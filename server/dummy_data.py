@@ -126,7 +126,7 @@ def input_data():
             "budget":150_000
         },
         {
-            "email": "contact@nord_vpn.com", 
+            "email": "contact@nordvpn.com", 
             "password": "nordic", 
             "company_name": "Nord VPN", 
             "industry_id": 10, 
