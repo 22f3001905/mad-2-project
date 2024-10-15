@@ -295,28 +295,28 @@ def ad_assign():
 def accept_ad_request(ad_request_id):
     ad_request = db.session.get(AdRequest, ad_request_id)
 
-    # if not ad_request:
-    #     abort(404, description="Ad request not found.")
+    if not ad_request:
+        abort(404, description="Ad request not found.")
 
-    # if ad_request.sender_user_id == current_user.id:
-    #     abort(405, description="You cannot accept your own ad request.")
+    if ad_request.sender_user_id == current_user.id:
+        abort(405, description="You cannot accept your own ad request.")
 
-    # if ad_request.status.name != "Pending":
-    #     abort(405, description="You cannot accept this request.")
+    if ad_request.status.name != "Pending":
+        abort(405, description="You cannot accept this request.")
     
-    # if ad_request.campaign.flagged:
-    #     abort(405, description="Campaign is flagged by the admin.")
+    if ad_request.campaign.flagged:
+        abort(405, description="Campaign is flagged by the admin.")
     
-    # if current_user.influencer:
-    #     if ad_request.influencer == None:
-    #         ad_request.influencer = current_user.influencer
-    #     else:
-    #         if ad_request.influencer_id != current_user.influencer.id:
-    #             abort(405, description="Ad request is not assigned to you.")
+    if current_user.influencer:
+        if ad_request.influencer == None:
+            ad_request.influencer = current_user.influencer
+        else:
+            if ad_request.influencer_id != current_user.influencer.id:
+                abort(405, description="Ad request is not assigned to you.")
     
-    # if current_user.sponsor:
-    #     if ad_request.campaign.sponsor.id != current_user.sponsor.id:
-    #         abort(405, description="Ad request does not belong to your campaign.")
+    if current_user.sponsor:
+        if ad_request.campaign.sponsor.id != current_user.sponsor.id:
+            abort(405, description="Ad request does not belong to your campaign.")
 
     ad_request.status_id = 2  # Accepted
     db.session.commit()
@@ -330,28 +330,28 @@ def accept_ad_request(ad_request_id):
 def reject_ad_request(ad_request_id):
     ad_request = db.session.get(AdRequest, ad_request_id)
 
-    # if not ad_request:
-    #     abort(404, description="Ad request not found.")
+    if not ad_request:
+        abort(404, description="Ad request not found.")
 
-    # if ad_request.sender_user_id == current_user.id:
-    #     abort(403, description="You cannot reject your own ad Request!")
+    if ad_request.sender_user_id == current_user.id:
+        abort(403, description="You cannot reject your own ad Request!")
     
-    # if ad_request.status.name != "Pending":
-    #     abort(403, description="You cannot reject this ad request.")
+    if ad_request.status.name != "Pending":
+        abort(403, description="You cannot reject this ad request.")
     
-    # if ad_request.campaign.flagged:
-    #     abort(403, description="Campaign is flagged by the admin.")
+    if ad_request.campaign.flagged:
+        abort(403, description="Campaign is flagged by the admin.")
     
-    # if ad_request.influencer == None:
-    #     abort(405, description="You cannot reject this ad request.")
+    if ad_request.influencer == None:
+        abort(405, description="You cannot reject this ad request.")
     
-    # if current_user.influencer:
-    #     if ad_request.influencer_id != current_user.influencer.id:
-    #         abort(405, description="Ad request is not assigned to you.")
+    if current_user.influencer:
+        if ad_request.influencer_id != current_user.influencer.id:
+            abort(405, description="Ad request is not assigned to you.")
     
-    # if current_user.sponsor:
-    #     if ad_request.campaign.sponsor.id != current_user.sponsor.id:
-    #         abort(405, description="Ad request does not belong to your campaign.")
+    if current_user.sponsor:
+        if ad_request.campaign.sponsor.id != current_user.sponsor.id:
+            abort(405, description="Ad request does not belong to your campaign.")
     
     ad_request.status_id = 3
     db.session.commit()
@@ -391,3 +391,24 @@ def negotiate_ad_request(ad_request_id):
     db.session.commit()
 
     return jsonify({ 'message': 'Successfully negotiated ad request.' })
+
+@app.route("/ad-request/<int:ad_request_id>/complete")
+@auth_required("token")
+@roles_required('Influencer')
+def complete_ad_request(ad_request_id):
+    ad_request = db.session.get(AdRequest, ad_request_id)
+
+    if not ad_request:
+        abort(404, description="Ad request not found.")
+
+    is_assigned_ad = ad_request in current_user.influencer.assigned_ads
+    
+    if (not is_assigned_ad) or (ad_request.status.name != "Accepted"):
+        abort(405, description="You're not allowed to complete this ad request.")
+    
+    ad_request.status_id = 4
+    ad_request.influencer.wallet_balance += ad_request.payment_amount
+    
+    db.session.commit()
+
+    return jsonify({ 'message': 'Successfully completed ad request.' })

@@ -107,21 +107,25 @@ onMounted(async () => {
     </div>
     <h2>Ad Requests</h2>
     <div v-for="ad in campaign.adRequests" style="border: 1px solid black;">
+
         <h3>{{ ad.requirement }}</h3>
         <p>Status: {{ ad.status }} | Payment: Rs. {{ ad.payment_amount }}</p>
         <p>{{ ad.message }}</p>
-        <p>Influencer: {{ ad.influencer.name || 'Unassigned' }}</p>
-        <div v-if="ad.status != 'Accepted' && ad.status != 'Completed' && user.role == 'Sponsor'">
+        <p>Influencer: {{ ad.influencer.name || 'Not Assigned' }}</p>
+
+        <div v-if="(user.role == 'Sponsor') && (ad.status != 'Accepted') && (ad.status != 'Completed')">
             <span>Actions: </span>
-            <RouterLink :to="(ad.influencer.id && ad.status == 'Pending') ? `/ad-request/${ad.id}/edit?influencer_id=${ad.influencer.id}` : `/ad-request/${ad.id}/edit`">Edit</RouterLink> |
+            <RouterLink :to="(ad.influencer.id > 0 && ad.status == 'Pending') ? `/ad-request/${ad.id}/edit?influencer_id=${ad.influencer.id}` : `/ad-request/${ad.id}/edit`">Edit</RouterLink> |
             <!-- <RouterLink :to="`/ad-request/${ad.id}/edit`">Edit</RouterLink> |  -->
             <button @click="deleteAdRequest(ad.id)">Delete</button>
         </div>
-        <div v-if="user.role == 'Influencer' && ad.influencer.id == null">
+
+        <div v-if="user.role == 'Influencer' && ad.influencer.id == 0">
             <span>Action: </span>
             <button @click="acceptAdRequest(ad.id)">Accept</button> | 
             <RouterLink :to="`/ad-request/${ad.id}/negotiate`">Negotiate</RouterLink>
         </div>
+        
     </div>
     <div v-if="user.role == 'Sponsor'">
         <RouterLink :to="`/ad-request/create?campaign_id=${campaignId}`">

@@ -22,6 +22,7 @@ import EditAdRequestView from '@/views/ad-request/EditAdRequestView.vue';
 import SearchView from '@/views/SearchView.vue';
 import AssignAdRequestView from '@/views/ad-request/AssignAdRequestView.vue';
 import NegotiateAdRequestView from '@/views/ad-request/NegotiateAdRequestView.vue';
+import ProfileView from '@/views/ProfileView.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,6 +40,8 @@ const router = createRouter({
         { path: '/ad-request/assign', name: 'assign-ad', component: AssignAdRequestView },
         { path: '/search', name: 'search', component: SearchView },
         { path: '/ad-request/:id/negotiate', name: 'negotiate-ad', component: NegotiateAdRequestView },
+        { path: '/profile', name: 'profile', component: ProfileView },
+        { path: '/influencer/:id', name: 'influencer-profile', component: ProfileView },
     ]
 });
 

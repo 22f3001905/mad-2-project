@@ -230,6 +230,7 @@ const negotiateAdRequest = async () => {
         });
         const data = await res.json();
         console.log(data);
+        router.push(`/campaign/${form.campaign.id}`);
     } catch (error) {
         console.error('Error posting form data for negotiation of ad request.', error);
     }
