@@ -1,5 +1,5 @@
 <script setup>
-import Login from '@/components/Login.vue';
+import Login from '@/components/auth/Login.vue';
 import Navbar from '@/components/Navbar.vue';
 
 import { userLoggedInRedirect, clearCookie } from '@/utils';

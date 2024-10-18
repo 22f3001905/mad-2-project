@@ -1,6 +1,6 @@
 <script setup>
 import Navbar from '@/components/Navbar.vue';
-import AdRequestForm from '@/components/AdRequestForm.vue';
+import AdRequestForm from '@/components/ad-request/AdRequestForm.vue';
 </script>
 
 <template>

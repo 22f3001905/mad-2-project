@@ -35,7 +35,7 @@ const changeSelectedCampaign = async () => {
         // console.log(data);
         const validAds = [];
         for (const ad of data.ad_requests) {
-            if (ad.influencer.id == null) {
+            if (ad.influencer.id == 0) {
                 validAds.push(ad);
             }
         }
@@ -115,7 +115,7 @@ onMounted(async () => {
         // console.log('hehehehehe', data);
         const validAds = [];
         for (const ad of data.ad_requests) {
-            if (ad.influencer.id == null) {
+            if (ad.influencer.id == 0) {
                 validAds.push(ad);
             }
         }

@@ -1,6 +1,6 @@
 <script setup>
 import Navbar from '@/components/Navbar.vue';
-import CampaignList from '@/components/CampaignList.vue';
+import CampaignList from '@/components/campaign/CampaignList.vue';
 import { RouterLink } from 'vue-router';
 
 const user = JSON.parse(localStorage.getItem('user'));

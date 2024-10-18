@@ -1,7 +1,7 @@
 <script setup>
 import Navbar from '@/components/Navbar.vue';
-import SearchInfluencers from '@/components/SearchInfluencers.vue';
-import SearchCampaigns from '@/components/SearchCampaigns.vue';
+import SearchInfluencers from '@/components/search/SearchInfluencers.vue';
+import SearchCampaigns from '@/components/search/SearchCampaigns.vue';
 
 const userRole = JSON.parse(localStorage.getItem('user')).role;
 </script>

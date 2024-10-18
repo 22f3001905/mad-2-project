@@ -3,8 +3,8 @@ import { onMounted, reactive } from 'vue';
 
 import Navbar from '@/components/Navbar.vue';
 import UserInfo from '@/components/UserInfo.vue';
-import ActiveCampaignList from '@/components/ActiveCampaignList.vue';
-import PendingAdRequestList from '@/components/PendingAdRequestList.vue';
+import ActiveCampaignList from '@/components/campaign/ActiveCampaignList.vue';
+import PendingAdRequestList from '@/components/ad-request/PendingAdRequestList.vue';
 
 // import { userLoggedInRedirect } from '@/utils';
 

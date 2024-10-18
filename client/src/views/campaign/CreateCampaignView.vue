@@ -1,6 +1,6 @@
 <script setup>
 import Navbar from '@/components/Navbar.vue';
-import CampaignForm from '@/components/CampaignForm.vue';
+import CampaignForm from '@/components/campaign/CampaignForm.vue';
 import { onMounted, ref } from 'vue';
 
 const budget = ref(0);
