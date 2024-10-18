@@ -440,7 +440,51 @@ def stats_influencer():
         monthly_ad_revenue=monthly_ad_revenue, 
         ad_request_initialize=ad_request_initialize, 
         ad_request_status=ad_request_status, 
-        n_ad_request=sum([count for count in ad_request_status.values()])
+    )
+
+    return jsonify(data)
+
+@app.route("/sponsor/stats")
+@auth_required("token")
+@roles_required('Sponsor')
+def stats_sponsor():
+    sponsor = current_user.sponsor
+    
+    statuses = [status.name for status in db.session.query(Status).all()]
+    ad_request_status = { status: 0 for status in statuses }
+    ad_request_payout_agg = { status: 0 for status in statuses }
+    ad_request_payout = []
+
+    campaigns = [
+        {
+            'name': 'Unallocated',
+            'budget': sponsor.budget
+        }
+    ]
+    for campaign in sponsor.campaigns:
+
+        payout_by_status = { status: 0 for status in statuses }
+        
+        for ad_request in campaign.ad_requests:
+            ad_request_status[ad_request.status.name] += 1
+
+            ad_request_payout_agg[ad_request.status.name] += ad_request.payment_amount
+            payout_by_status[ad_request.status.name] += ad_request.payment_amount
+
+        payout_by_status['campaign_name'] = campaign.name
+        
+        ad_request_payout.append(payout_by_status)
+        
+        campaigns.append({
+            'name': campaign.name,
+            'budget': campaign.budget,
+        })
+    
+    data = dict(
+        ad_request_status=ad_request_status, 
+        campaigns=campaigns, 
+        ad_request_payout=ad_request_payout,
+        ad_request_payout_agg=ad_request_payout_agg,
     )
 
     return jsonify(data)

@@ -102,7 +102,7 @@ onMounted(async () => {
         </div>
         <div class="row mt-5" v-if="chartData.adRequestStatusData.labels">
             <h2>Ad Request Status</h2>
-            <Chart :chartData="chartData.adRequestStatusData" chartType="doughnut" style="width: 325px;" />
+            <Chart :chartData="chartData.adRequestStatusData" chartType="pie" style="width: 325px;" />
             <table class="table table-bordered border-secondary align-middle text-center col">
                 <thead>
                     <tr>
