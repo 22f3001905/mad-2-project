@@ -7,7 +7,7 @@ const userRole = JSON.parse(localStorage.getItem('user')).role;
 </script>
 
 <template>
-    <Navbar :role="userRole" />
+    <Navbar />
     <div v-if="userRole == 'Sponsor'">
         <SearchInfluencers />
     </div>

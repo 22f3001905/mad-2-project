@@ -412,3 +412,35 @@ def complete_ad_request(ad_request_id):
     db.session.commit()
 
     return jsonify({ 'message': 'Successfully completed ad request.' })
+
+
+@app.route("/influencer/stats")
+@auth_required("token")
+@roles_required('Influencer')
+def stats_influencer():
+    influencer = current_user.influencer
+    monthly_ad_revenue = [0 for _ in range(12)]
+    ad_request_initialize = {"sent": 0, "received": 0}
+
+    statuses = [status.name for status in db.session.query(Status).all()]
+    ad_request_status = { status: 0 for status in statuses }
+
+    for ad_request in influencer.assigned_ads:
+        ad_request_status[ad_request.status.name] += 1
+
+        if ad_request.sender_user_id == influencer.user.id:
+            ad_request_initialize["sent"] += 1
+        else:
+            ad_request_initialize["received"] += 1
+
+        if ad_request.status.name not in ("Rejected"):
+            monthly_ad_revenue[ad_request.campaign.end_date.month - 1] += ad_request.payment_amount
+
+    data = dict(
+        monthly_ad_revenue=monthly_ad_revenue, 
+        ad_request_initialize=ad_request_initialize, 
+        ad_request_status=ad_request_status, 
+        n_ad_request=sum([count for count in ad_request_status.values()])
+    )
+
+    return jsonify(data)
