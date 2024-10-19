@@ -1,7 +1,7 @@
 from flask import current_app as app
 from flask_security import hash_password
 
-from app.models import db, Influencer, AdRequest
+from app.models import db, Influencer, AdRequest, Sponsor
 
 def create_user(email, password, roles: list):
     user_exists = app.security.datastore.find_user(email=email)
@@ -50,10 +50,42 @@ def get_influencers_with_pending_requests():
             influ['pending_ads_sponsor_names'] = sponsor_names
             influencers.append(influ)
 
-    # Testing
-    # for influencer in influencers:
-    #     sponsors = '\n'.join(f'{idx + 1}. ' + sponsor_name for (idx, sponsor_name) in enumerate(influencer['pending_ads_sponsor_names']))
-    #     print('---'*30)
-    #     print(f"Hi {influencer['name']},\n\nYou have pending ad requests from:\n{sponsors}\n\nPlease visit our website to take action.\nAlso don't forget to check out the Public Campaigns listed on our website.\n\nThanks,\nTeam SponsorConnect")
-
     return influencers
+
+from datetime import datetime
+
+def get_sponsors():
+    sponsors = db.session.query(Sponsor).all()
+
+    spons = []
+    for sponsor in sponsors:
+        campaigns = []
+        for camp in sponsor.campaigns:
+            if camp.end_date > datetime.today().date():
+
+                goals_achieved = []
+                for ad in camp.ad_requests:
+                    if ad.status.name == 'Completed':
+                        if ad.campaign_goal.name not in goals_achieved:
+                            goals_achieved.append(ad.campaign_goal.name)
+                
+                campaigns.append({
+                    'name': camp.name,
+                    'start_date': camp.start_date,
+                    'end_date': camp.end_date,
+                    'budget': camp.budget,
+                    # 'goals': [goal.name for goal in camp.goals],
+                    'goals_achieved': goals_achieved,
+                    'n_goals_achieved': len(goals_achieved),
+                    'n_ads': len(camp.ad_requests),
+                    'completed_ads': len([ad for ad in camp.ad_requests if ad.status.name == 'Completed'])
+                })
+        
+        spons.append({
+            'id': sponsor.id,
+            'name': sponsor.name,
+            'email': sponsor.user.email,
+            'campaigns': campaigns,
+        })
+    
+    return spons

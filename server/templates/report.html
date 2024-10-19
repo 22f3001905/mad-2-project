@@ -1,0 +1,41 @@
+<html>
+<body>
+    <h1>Monthly Activity Report - SponsorConnect</h1>
+    <p>Dear {{ sponsor.name }},</p>
+    <p>Here is the summary of your campaign activities for the month.</p>
+
+    <h2>Campaigns</h2>
+
+    <div>
+        {% for campaign in sponsor.campaigns %}
+            <div>
+                <h3>Name: {{ campaign.name }}</h3>
+                <ul>
+                    <li>Start: {{ campaign.start_date }} | End: {{ campaign.end_date }}</li>
+                    <li>Remaining Budget: Rs. {{ campaign.budget }}</li>
+                    <li>Ad Requests: {{ campaign.completed_ads }} / {{ campaign.n_ads }} Completed</li>
+                </ul>
+                <h4>Goals Achieved</h4>
+                {% if campaign.n_goals_achieved > 0 %}
+                    <ul>
+                        {% for goal in campaign.goals_achieved %}
+                            <li>{{ goal }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <ul>
+                        <li>No completed ad requests</li>
+                    </ul>
+                {% endif %}
+            </div>
+            <hr>
+        {% endfor %}
+    </div>
+
+    <p>For more information please visit our website.</p>
+
+    <p>--</p>
+    <p>Thanks,</p>
+    <p>Team SponsorConnect</p>
+</body>
+</html>
