@@ -8,6 +8,7 @@ from app.models import db, User, Role
 from app.resources import api
 from app.utils import create_user
 from app.mail import mail
+from app.worker import celery_init_app
 
 app = None
 
@@ -28,6 +29,7 @@ def create_app():
     return app
 
 app = create_app()
+celery_app = celery_init_app(app)
 
 # Only run once.
 with app.app_context():

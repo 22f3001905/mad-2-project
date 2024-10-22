@@ -89,3 +89,6 @@ def get_sponsors():
         })
     
     return spons
+
+def create_csv_file(data):
+    pass

@@ -488,3 +488,49 @@ def stats_sponsor():
     )
 
     return jsonify(data)
+
+from app.tasks import export_campaigns_data
+
+@app.route('/campaigns/download')
+@auth_required("token")
+@roles_required('Sponsor')
+def download_campaigns():
+    campaigns = []
+    for camp in current_user.sponsor.campaigns:
+        goals_achieved = []
+        for ad in camp.ad_requests:
+            if ad.status.name == 'Completed':
+                if ad.campaign_goal.name not in goals_achieved:
+                    goals_achieved.append(ad.campaign_goal.name)
+        
+        campaigns.append({
+            'name': camp.name,
+            'start_date': camp.start_date.strftime("%Y-%m-%d"),
+            'end_date': camp.end_date.strftime("%Y-%m-%d"),
+            'budget': camp.budget,
+            'goals': [goal.name for goal in camp.goals],
+            'goals_achieved': goals_achieved,
+            'n_goals_achieved': len(goals_achieved),
+            'n_ads': len(camp.ad_requests),
+            'completed_ads': len([ad for ad in camp.ad_requests if ad.status.name == 'Completed'])
+        })
+    
+    task = export_campaigns_data.delay(campaigns)
+    return jsonify({ 'message': 'Your .csv file is being generated.', 'task_id': task.id })
+
+from celery.result import AsyncResult
+
+# Used to poll the pending task.
+@app.route("/exports/<task_id>")
+@auth_required("token")
+@roles_required('Sponsor')
+def task_exports(task_id):
+    result = AsyncResult(id=task_id)
+    output = {
+        "id": result.id,
+        "ready": result.ready(),
+        "status": result.status,
+        "value": result.result if result.ready() else None
+    }
+    print(output)
+    return jsonify(output)

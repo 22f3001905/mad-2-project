@@ -35,3 +35,12 @@ def send_monthly_sponsor_report():
 
     except Exception as e:
         print('Error in send_monthly_sponsor_report:', e)
+
+@shared_task(ignore_result=False)
+def export_campaigns_data(campaigns):
+    print("Celery Function Triggered: export_campaigns_data")
+    
+    print(campaigns)
+    time.sleep(30)
+
+    return { 'message': '.csv file is ready.', 'file_link': 'some_linke!!!!!!!!!!!' }

@@ -1,6 +1,8 @@
 <script setup>
-import { ref, defineProps, reactive, onMounted } from 'vue';
+import { reactive, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
+
+import DownloadCampaignData from '@/components/campaign/DownloadCampaignData.vue';
 
 const state = reactive({
     campaigns: []
@@ -25,6 +27,7 @@ onMounted(async () => {
 <template>
     <section>
         <h2>{{ user.role == 'Influencer' ? 'Public' : '' }} Campaign List</h2>
+        <DownloadCampaignData />
         <div>
             <div v-for="campaign in state.campaigns" style="border: 1px solid black;">
                 <h3>{{ campaign.name }}</h3>
