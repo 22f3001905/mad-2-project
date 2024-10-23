@@ -2,7 +2,7 @@ import time
 from celery import shared_task
 
 from app.mail import send_email_reminder, send_email_report
-from app.utils import get_influencers_with_pending_requests, get_sponsors
+from app.utils import get_influencers_with_pending_requests, get_sponsors, save_data_to_csv, random_file_name
 
 @shared_task(ignore_result=False)
 def add_together(x, y):
@@ -37,10 +37,11 @@ def send_monthly_sponsor_report():
         print('Error in send_monthly_sponsor_report:', e)
 
 @shared_task(ignore_result=False)
-def export_campaigns_data(campaigns):
+def export_campaigns_data(campaigns, sponsor_name):
     print("Celery Function Triggered: export_campaigns_data")
+    time.sleep(10)
     
-    print(campaigns)
-    time.sleep(30)
+    file_name = random_file_name(sponsor_name)
+    file_path = save_data_to_csv(campaigns, file_name)
 
-    return { 'message': '.csv file is ready.', 'file_link': 'some_linke!!!!!!!!!!!' }
+    return { 'message': '.csv file is ready.', 'download_link': f'api/campaigns/download/{file_path}' }

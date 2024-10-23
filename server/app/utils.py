@@ -1,3 +1,8 @@
+import os
+import re
+import uuid
+import pandas as pd
+
 from flask import current_app as app
 from flask_security import hash_password
 
@@ -90,5 +95,17 @@ def get_sponsors():
     
     return spons
 
-def create_csv_file(data):
-    pass
+def random_file_name(sponsor_name):
+    sanitized_name = re.sub(r'[^a-zA-Z0-9]+', '-', sponsor_name.strip().lower()).strip('-')
+    random_hash = uuid.uuid4().hex[:8]
+    return f"{sanitized_name}-{random_hash}"
+
+def save_data_to_csv(data, file_name):
+    df = pd.DataFrame(data)
+    df['goals'] = df['goals'].apply(lambda x: ';'.join(x))
+    df['goals_achieved'] = df['goals_achieved'].apply(lambda x: '; '.join(x))
+
+    file_path = os.path.join('exports', f'{file_name}.csv')
+    df.to_csv(file_path, index=False)
+
+    return file_path

@@ -2,6 +2,9 @@
 import { onMounted, ref, reactive } from 'vue';
 
 const showDownloadButton = ref(true);
+const exportCompleted = ref(false);
+const downloadButtonManual = ref(null);
+
 const message = ref('Waiting for download...');
 
 const state = reactive({
@@ -10,6 +13,33 @@ const state = reactive({
 });
 
 let intervalId = null; // Declare the intervalId outside to manage it properly
+
+const downloadCampaignsCSVFile = async (url) => {
+    try {
+        const res = await fetch(url, {
+            method: 'GET',
+            headers: { 'Authentication-Token': localStorage.getItem('authToken') }
+        });
+
+        if (res.ok) {
+            exportCompleted.value = true;
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            
+            downloadButtonManual.value.href = url;
+            downloadButtonManual.value.download="campaigns.csv";
+            downloadButtonManual.value.click();
+
+            setTimeout(() => {
+                window.URL.revokeObjectURL(url);
+            }, 10000);
+        } else {
+            console.error('Error in download request.', res.statusText);
+        }
+    } catch (error) {
+        console.error('Error in downloading .csv file.', error);
+    }
+}
 
 const triggerExport = async () => {
     try {
@@ -54,7 +84,8 @@ const poll = async (taskId) => {
             localStorage.removeItem('taskId');
 
             // TODO: Trigger .csv file download.
-            console.log('DATA IS READY TO BE DOWNLOADED.');
+            console.log('DATA IS READY TO BE DOWNLOADED.', data.value);
+            await downloadCampaignsCSVFile(data.value.download_link);
 
         } else {
             message.value = 'Still processing export...';
@@ -87,5 +118,8 @@ onMounted(() => {
         <p>Export campaign data as a .csv file: </p>
         <button @click="triggerExport" v-if="showDownloadButton">Download</button>
         <p v-else>{{ message }}</p>
+        <p v-if="exportCompleted">
+            Didn't download automatically? <a ref="downloadButtonManual">Click Here</a>
+        </p>
     </div>
 </template>

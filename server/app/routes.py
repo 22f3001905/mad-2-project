@@ -1,4 +1,5 @@
-from flask import current_app as app, jsonify, request, abort
+import os
+from flask import current_app as app, jsonify, request, abort,send_file
 from flask_security import current_user, auth_required, roles_required, roles_accepted, login_user, logout_user
 
 from app.models import db
@@ -515,7 +516,7 @@ def download_campaigns():
             'completed_ads': len([ad for ad in camp.ad_requests if ad.status.name == 'Completed'])
         })
     
-    task = export_campaigns_data.delay(campaigns)
+    task = export_campaigns_data.delay(campaigns, current_user.sponsor.name)
     return jsonify({ 'message': 'Your .csv file is being generated.', 'task_id': task.id })
 
 from celery.result import AsyncResult
@@ -532,5 +533,14 @@ def task_exports(task_id):
         "status": result.status,
         "value": result.result if result.ready() else None
     }
-    print(output)
+
     return jsonify(output)
+
+@auth_required("token")
+@roles_required('Sponsor')
+@app.route('/campaigns/download/<path:file_path>')
+def download_csv(file_path):
+    response = send_file(file_path, as_attachment=True)
+    # os.remove(file_path)
+
+    return response

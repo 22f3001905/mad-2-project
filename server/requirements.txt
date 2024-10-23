@@ -26,6 +26,8 @@ itsdangerous==2.2.0
 Jinja2==3.1.4
 kombu==5.4.2
 MarkupSafe==2.1.5
+numpy==2.1.2
+pandas==2.2.3
 passlib==1.7.4
 prompt_toolkit==3.0.48
 python-dateutil==2.9.0.post0

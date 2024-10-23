@@ -123,3 +123,4 @@ coverage
 # Additional
 generate_keys.py
 *.rdb
+exports/
