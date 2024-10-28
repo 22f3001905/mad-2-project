@@ -37,7 +37,7 @@ const logoutUser = async () => {
                 </li>
                 <li v-if="isLoggedIn" class="nav-item">
                     <RouterLink v-if="userRole == 'Sponsor'" class="nav-link" to="/campaigns">Campaigns</RouterLink>
-                    <RouterLink v-else class="nav-link" to="/profile">Profile</RouterLink>
+                    <RouterLink v-else-if="userRole == 'Influencer'" class="nav-link" to="/profile">Profile</RouterLink>
                 </li>
                 <li v-if="isLoggedIn" class="nav-item">
                     <RouterLink class="nav-link" to="/search">Search</RouterLink>

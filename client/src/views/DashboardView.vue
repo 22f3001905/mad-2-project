@@ -35,6 +35,7 @@ onMounted(async () => {
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
         const data = await res.json();
+        // console.log(data);
         user.id = data.id;
         user.email = data.email;
         user.role = data.role;
@@ -71,6 +72,9 @@ onMounted(async () => {
         } catch (error) {
             console.error('Error in fetching influencer info.', error);
         }
+    } else {
+        user.name = 'Admin';
+        user.role = 'Admin';
     }
 });
 </script>
@@ -84,5 +88,5 @@ onMounted(async () => {
         :influencer="{ niche: influencer.niche, reach: influencer.reach, wallet_balance: influencer.wallet_balance, category: influencer.category }" 
     />
     <ActiveCampaignList :role="user.role" />
-    <PendingAdRequestList />
+    <PendingAdRequestList v-if="user.name && user.role != 'Admin'" />
 </template>

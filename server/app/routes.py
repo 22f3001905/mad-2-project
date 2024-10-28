@@ -14,10 +14,11 @@ from datetime import date
 @auth_required("token")
 def user_info():
     # current_user: Proxy of the logged in user. Comes from the Session.
+    user_roles = [role.name for role in current_user.roles]
     info = {
         "id": current_user.id,
         "email": current_user.email,
-        "role": current_user.roles[0].name
+        "role": current_user.roles[0].name if 'Admin' not in user_roles else 'Admin'
     }
     return jsonify(info)
 
@@ -108,16 +109,19 @@ def public_campaigns():
 
 @app.route('/active-campaigns')
 @auth_required("token")
-@roles_accepted('Sponsor', 'Influencer')
+@roles_accepted('Sponsor', 'Influencer', 'Admin')
 def active_campaigns():
     data = {
         'campaigns': [], 
     }
 
-    # TODO: Admin can access this.
-
-    if current_user.sponsor:
-        for campaign in current_user.sponsor.campaigns:
+    if current_user.sponsor or current_user.id == 1:
+        if current_user.id == 1:
+            campaigns = db.session.query(Campaign).all()
+        else:
+            campaigns = current_user.sponsor.campaigns
+        
+        for campaign in campaigns:
             camp = {
                 'id': campaign.id,
                 'name': campaign.name,
@@ -536,11 +540,78 @@ def task_exports(task_id):
 
     return jsonify(output)
 
+@app.route('/campaigns/download/<path:file_path>')
 @auth_required("token")
 @roles_required('Sponsor')
-@app.route('/campaigns/download/<path:file_path>')
 def download_csv(file_path):
     response = send_file(file_path, as_attachment=True)
     # os.remove(file_path)
 
     return response
+
+@app.route("/user/<int:user_id>/flag")
+@auth_required("token")
+@roles_required('Admin')
+def flag_user(user_id):
+    user = db.session.get(User, user_id)
+
+    if not user:
+        abort(404, description="User not found!")
+    
+    if user.flagged:
+        abort(403, description="User is already flagged.")
+
+    user.flagged = True
+    db.session.commit()
+
+    return jsonify({ 'message': 'User was flagged successfully.' })
+
+@app.route("/user/<int:user_id>/unflag")
+@auth_required("token")
+@roles_required('Admin')
+def unflag_user(user_id):
+    user = db.session.get(User, user_id)
+
+    if not user:
+        abort(404, description="User not found!")
+    
+    if not user.flagged:
+        abort(403, description="User is not flagged.")
+
+    user.flagged = False
+    db.session.commit()
+
+    return jsonify({ 'message': 'User was unflagged successfully.' })
+
+
+@app.route("/campaign/<int:campaign_id>/flag")
+@auth_required("token")
+@roles_required('Admin')
+def flag_campaign(campaign_id):
+    campaign = db.session.get(Campaign, campaign_id)
+    if not campaign:
+        abort(404, description="Campaign not found!")
+    
+    if campaign.flagged:
+        abort(403, description="Campaign is already flagged.")
+
+    campaign.flagged = True
+    db.session.commit()
+
+    return jsonify({ 'message': 'Campaign was flagged successfully.' })
+
+@app.route("/campaign/<int:campaign_id>/unflag")
+@auth_required("token")
+@roles_required('Admin')
+def unflag_campaign(campaign_id):
+    campaign = db.session.get(Campaign, campaign_id)
+    if not campaign:
+        abort(404, description="Campaign not found!")
+    
+    if not campaign.flagged:
+        abort(403, description="Campaign is not flagged.")
+
+    campaign.flagged = False
+    db.session.commit()
+
+    return jsonify({ 'message': 'Campaign was unflagged successfully.' })

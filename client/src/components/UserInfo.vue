@@ -17,11 +17,14 @@ defineProps({
                 <li>Budget: Rs. {{ sponsor.budget }}</li>
                 <li>Industry: {{ sponsor.industry }}</li>
             </div>
-            <div v-else>
+            <div v-else-if="user.role == 'Influencer'">
                 <li>Niche: {{ influencer.niche }}</li>
                 <li>Reach: {{ influencer.reach }} people</li>
                 <li>Wallet: Rs. {{ influencer.wallet_balance }}</li>
                 <li>Category: {{ influencer.category }}</li>
+            </div>
+            <div v-else>
+                <li>ADMIN USER</li>
             </div>
         </ul>
     </section>
