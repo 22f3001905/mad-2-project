@@ -275,17 +275,48 @@ def influencer_details(influencer_id):
     return jsonify({ 'influencer': influencer_out })
 
 
-# @app.route('/unassigned-ads')
-# def ads_unassigned():
-#     pass
+@app.route('/search/users', methods=['POST'])
+def search_users():
+    content = request.json
+    keyword = content.get('keyword')
+
+    users = db.session.query(User).filter((User.id != 1)).all()
+    out = []
+    for user in users:
+        if user.sponsor:
+            out.append({
+                'user_id': user.id,
+                'email': user.email,
+                'role': 'Sponsor',
+                'flagged': user.flagged,
+                'id': user.sponsor.id,
+                'name': user.sponsor.name,
+                'wallet': user.sponsor.budget,
+            })
+        else:
+            out.append({
+                'user_id': user.id,
+                'email': user.email,
+                'role': 'Influencer',
+                'flagged': user.flagged,
+                'id': user.influencer.id,
+                'name': user.influencer.name,
+                'wallet': user.influencer.wallet_balance,
+            })
+    
+    if keyword:
+        keyword = keyword.strip().lower()
+        out = [user for user in out if (keyword in user['name'].lower()) or (keyword in user['email'].lower())]
+    
+    return jsonify({ 'data': out })
+
 
 @app.route('/assign-ad', methods=['POST'])
 @auth_required("token")
 @roles_accepted('Sponsor', 'Influencer')
 def ad_assign():
     content = request.json
-    print(content)
-    
+
     ad_request = db.session.get(AdRequest, content['ad_request_id'])
     ad_request.influencer_id = content['influencer_id']
 

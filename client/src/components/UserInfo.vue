@@ -24,7 +24,7 @@ defineProps({
                 <li>Category: {{ influencer.category }}</li>
             </div>
             <div v-else>
-                <li>ADMIN USER</li>
+                <li>User: ADMIN</li>
             </div>
         </ul>
     </section>

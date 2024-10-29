@@ -10,7 +10,6 @@ const searchForm = reactive({
 const searchResults = ref([]);
 
 const searchCampaigns = async () => {
-    console.log('Search campaigns.');
     try {
         const res = await fetch('/api/search/campaigns', {
             method: 'POST',
