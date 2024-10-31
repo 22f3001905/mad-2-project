@@ -27,10 +27,16 @@ def user_info():
 @roles_required("Sponsor")
 def sponsor_info():
     if current_user.sponsor == None:
-        return jsonify({ 'message': 'Sponsor not found.' }), 404
+        user_id = request.args.get('userId')
+        if not user_id:
+            return jsonify({ 'message': 'Sponsor not found.' }), 404
+        user = db.session.get(User, user_id)
+        sponsor = user.sponsor
+    else:
+        sponsor = current_user.sponsor
     
     campaigns = []
-    for campaign in current_user.sponsor.campaigns:
+    for campaign in sponsor.campaigns:
         campaigns.append({
             'id': campaign.id,
             'name': campaign.name,
@@ -46,9 +52,9 @@ def sponsor_info():
         })
     
     info = {
-        "name": current_user.sponsor.name,
-        "industry": current_user.sponsor.industry.name,
-        "budget": current_user.sponsor.budget,
+        "name": sponsor.name,
+        "industry": sponsor.industry.name,
+        "budget": sponsor.budget,
         "campaigns": campaigns
     }
 
@@ -224,11 +230,17 @@ def pending_ad_requests():
 @roles_required("Influencer")
 def influencer_info():
     if current_user.influencer == None:
-        return jsonify({ 'message': 'Influencer not found.' }), 404
+        user_id = request.args.get('userId')
+        if not user_id:
+            return jsonify({ 'message': 'Influencer not found.' }), 404
+        user = db.session.get(User, user_id)
+        influencer = user.influencer
+    else:
+        influencer = current_user.influencer
     
     assigned_ads = []
 
-    for ad_request in current_user.influencer.assigned_ads:
+    for ad_request in influencer.assigned_ads:
         ad = {
             'id': ad_request.id,
             'requirement': ad_request.requirement,
@@ -240,11 +252,11 @@ def influencer_info():
         assigned_ads.append(ad)
     
     info = {
-        "name": current_user.influencer.name,
-        "category": current_user.influencer.category.name,
-        "niche": current_user.influencer.niche,
-        "reach": current_user.influencer.reach,
-        "wallet_balance": current_user.influencer.wallet_balance,
+        "name": influencer.name,
+        "category": influencer.category.name,
+        "niche": influencer.niche,
+        "reach": influencer.reach,
+        "wallet_balance": influencer.wallet_balance,
         "assigned_ads": assigned_ads
     }
 
@@ -276,6 +288,8 @@ def influencer_details(influencer_id):
 
 
 @app.route('/search/users', methods=['POST'])
+@auth_required("token")
+@roles_accepted('Admin')
 def search_users():
     content = request.json
     keyword = content.get('keyword')
@@ -309,6 +323,37 @@ def search_users():
         out = [user for user in out if (keyword in user['name'].lower()) or (keyword in user['email'].lower())]
     
     return jsonify({ 'data': out })
+
+@app.route('/user/<int:user_id>')
+@auth_required("token")
+@roles_accepted('Admin')
+def user_profile(user_id):
+    user = db.session.get(User, user_id)
+
+    if user.sponsor:
+        user_info = {
+            'user_id': user.id,
+            'email': user.email,
+            'role': 'Sponsor',
+            'flagged': user.flagged,
+            'id': user.sponsor.id,
+            'name': user.sponsor.name,
+            'wallet': user.sponsor.budget,
+        }
+
+        return jsonify({ 'data': user_info })
+
+    user_info = {
+        'user_id': user.id,
+        'email': user.email,
+        'role': 'Influencer',
+        'flagged': user.flagged,
+        'id': user.influencer.id,
+        'name': user.influencer.name,
+        'wallet': user.influencer.wallet_balance,
+    }
+    
+    return jsonify({ 'data': user_info })
 
 
 @app.route('/assign-ad', methods=['POST'])

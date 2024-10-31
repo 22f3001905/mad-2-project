@@ -77,7 +77,7 @@ const unflagUser = async (userId) => {
         <div v-for="user in searchResults">
             {{ user.name }}
             <div>
-                <RouterLink :to="`/user/${user.id}`">View User</RouterLink>
+                <RouterLink :to="`/user/${user.user_id}`">View User</RouterLink>
                 <button @click="!user.flagged ? flagUser(user.user_id) : unflagUser(user.user_id)">{{ !user.flagged ? 'Flag' : 'Unflag' }}</button>
             </div>
         </div>
