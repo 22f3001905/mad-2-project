@@ -570,6 +570,63 @@ def stats_sponsor():
 
     return jsonify(data)
 
+@app.route('/admin/stats')
+@auth_required("token")
+@roles_required('Admin')
+def stats_admin():
+    users = db.session.query(User).all()
+    active_users = {
+        'Sponsor': 0,
+        'Influencer': 0,
+        'Flagged': 0
+    }
+    for user in users:
+        if user.flagged:
+            active_users['Flagged'] += 1
+        else:
+            if user.sponsor:
+                active_users['Sponsor'] += 1
+            elif user.influencer:
+                active_users['Influencer'] += 1
+
+    campaigns = db.session.query(Campaign).all()
+    campaigns_info = {
+        'Public': 0,
+        'Private': 0,
+        'Flagged': 0
+    }
+    monthly_campaigns = [0 for _ in range(12)]
+    for campaign in campaigns:
+        monthly_campaigns[campaign.start_date.month - 1] += 1
+        
+        if campaign.flagged:
+            campaigns_info['Flagged'] += 1
+        else:
+            if campaign.campaign_visibility.name == 'Public':
+                campaigns_info['Public'] += 1
+            else:
+                campaigns_info['Private'] += 1
+
+    ad_request_statuses = { status.name: 0 for status in db.session.query(Status).all() }
+    monthly_ad_request_payments = [0 for _ in range(12)]
+
+    ad_requests = db.session.query(AdRequest).all()
+    for ad in ad_requests:
+        ad_request_statuses[ad.status.name] += 1
+        if ad.status.name == "Completed":
+            monthly_ad_request_payments[ad.campaign.end_date.month - 1] += (ad.payment_amount * 0.05)
+
+    data = dict(
+        active_users=active_users,
+        campaigns_info=campaigns_info,
+        monthly_campaigns=monthly_campaigns,
+        ad_request_statuses=ad_request_statuses,
+        monthly_ad_request_payments=monthly_ad_request_payments
+    )
+
+    return jsonify(data)
+
+
 from app.tasks import export_campaigns_data
 
 @app.route('/campaigns/download')
