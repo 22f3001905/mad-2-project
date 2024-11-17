@@ -35,33 +35,35 @@ class UserAPI(Resource):
         roles = user_args.get("roles")
 
         user = create_user(email, password, roles)
-
         if user == None:
             return { "message": "User cannot be created." }, 402
 
+        # Needs ADMIN Approval
         if roles[0] == "Sponsor":
             company_name = user_args.get("companyName")
             industry_id = user_args.get("industryId")
             sponsor = Sponsor(
                 name=company_name,
                 industry_id=industry_id,
-                user=user
+                user=user,
+                approved=False
             )
             db.session.add(sponsor)
-        else:
-            influencer_name = user_args.get("influencerName")
-            category_id = user_args.get("categoryId")
-            niche = user_args.get("niche")
-            reach = user_args.get("reach")
-            influencer = Influencer(
-                name=influencer_name,
-                category_id=category_id,
-                niche=niche,
-                reach=reach,
-                user=user
-            )
-            db.session.add(influencer)
-
+            db.session.commit()
+            return {"message": "User waiting to be approved by the admin."}, 201
+        
+        influencer_name = user_args.get("influencerName")
+        category_id = user_args.get("categoryId")
+        niche = user_args.get("niche")
+        reach = user_args.get("reach")
+        influencer = Influencer(
+            name=influencer_name,
+            category_id=category_id,
+            niche=niche,
+            reach=reach,
+            user=user
+        )
+        db.session.add(influencer)
         db.session.commit()
 
         return { "message": "User created successfully." }, 201

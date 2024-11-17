@@ -6,9 +6,10 @@ from app.models import db
 from app.models import *
 
 from datetime import date
+from app.utils import not_flagged, not_approved
 
-# @roles_required("Student", "Instructor") -> User should have both Student and Instructor. { AND condition }
-# @roles_accepted("Student", "Instructor") -> User should have either Student or Instructor. { OR condition }
+# @roles_required { AND condition }
+# @roles_accepted { OR condition }
 
 @app.route("/info/user")
 @auth_required("token")
@@ -25,6 +26,8 @@ def user_info():
 @app.route("/info/sponsor")
 @auth_required("token")
 @roles_required("Sponsor")
+@not_flagged()
+@not_approved()
 def sponsor_info():
     if current_user.sponsor == None:
         user_id = request.args.get('userId')
@@ -63,6 +66,8 @@ def sponsor_info():
 @app.route("/sponsor/campaigns")
 @auth_required('token')
 @roles_required('Sponsor')
+@not_flagged()
+@not_approved()
 def all_campaigns():
     data = { 'campaigns': [] }
     campaigns = current_user.sponsor.campaigns  # Sponsor Campaigns
@@ -90,6 +95,7 @@ def all_campaigns():
 @app.route('/influencer/campaigns')
 @auth_required('token')
 @roles_required('Influencer')
+@not_flagged()
 def public_campaigns():
     data = { 'campaigns': [] }
     campaigns = db.session.query(Campaign).filter(Campaign.visibility_id == 1).all()  # All Public Campaigns
@@ -116,6 +122,8 @@ def public_campaigns():
 @app.route('/active-campaigns')
 @auth_required("token")
 @roles_accepted('Sponsor', 'Influencer', 'Admin')
+@not_flagged()
+@not_approved()
 def active_campaigns():
     data = {
         'campaigns': [], 
@@ -173,6 +181,8 @@ def active_campaigns():
 @app.route('/pending-ad-requests')
 @auth_required("token")
 @roles_accepted('Sponsor', 'Influencer')
+@not_flagged()
+@not_approved()
 def pending_ad_requests():
     data = {
         'pending_ad_requests': {
@@ -228,6 +238,7 @@ def pending_ad_requests():
 @app.route("/info/influencer")
 @auth_required("token")
 @roles_required("Influencer")
+@not_flagged()
 def influencer_info():
     if current_user.influencer == None:
         user_id = request.args.get('userId')
@@ -272,6 +283,8 @@ def registration_form_data():
 @app.route('/sponsor-budget')
 @auth_required("token")
 @roles_required("Sponsor")
+@not_flagged()
+@not_approved()
 def sponsor_budget():
     budget = current_user.sponsor.budget
     return jsonify({ 'budget': budget })
@@ -359,6 +372,8 @@ def user_profile(user_id):
 @app.route('/assign-ad', methods=['POST'])
 @auth_required("token")
 @roles_accepted('Sponsor', 'Influencer')
+@not_flagged()
+@not_approved()
 def ad_assign():
     content = request.json
 
@@ -373,6 +388,8 @@ def ad_assign():
 @app.route("/ad-request/<int:ad_request_id>/accept")
 @auth_required("token")
 @roles_accepted('Sponsor', 'Influencer')
+@not_flagged()
+@not_approved()
 def accept_ad_request(ad_request_id):
     ad_request = db.session.get(AdRequest, ad_request_id)
 
@@ -408,6 +425,8 @@ def accept_ad_request(ad_request_id):
 @app.route("/ad-request/<int:ad_request_id>/reject")
 @auth_required("token")
 @roles_accepted('Sponsor', 'Influencer')
+@not_flagged()
+@not_approved()
 def reject_ad_request(ad_request_id):
     ad_request = db.session.get(AdRequest, ad_request_id)
 
@@ -442,6 +461,8 @@ def reject_ad_request(ad_request_id):
 @app.route("/ad-request/<int:ad_request_id>/negotiate", methods=["POST"])
 @auth_required("token")
 @roles_accepted('Sponsor', 'Influencer')
+@not_flagged()
+@not_approved()
 def negotiate_ad_request(ad_request_id):
     content = request.json
     ad_request = db.session.get(AdRequest, ad_request_id)
@@ -476,6 +497,7 @@ def negotiate_ad_request(ad_request_id):
 @app.route("/ad-request/<int:ad_request_id>/complete")
 @auth_required("token")
 @roles_required('Influencer')
+@not_flagged()
 def complete_ad_request(ad_request_id):
     ad_request = db.session.get(AdRequest, ad_request_id)
 
@@ -498,6 +520,7 @@ def complete_ad_request(ad_request_id):
 @app.route("/influencer/stats")
 @auth_required("token")
 @roles_required('Influencer')
+@not_flagged()
 def stats_influencer():
     influencer = current_user.influencer
     monthly_ad_revenue = [0 for _ in range(12)]
@@ -528,6 +551,8 @@ def stats_influencer():
 @app.route("/sponsor/stats")
 @auth_required("token")
 @roles_required('Sponsor')
+@not_flagged()
+@not_approved()
 def stats_sponsor():
     sponsor = current_user.sponsor
     
@@ -632,6 +657,8 @@ from app.tasks import export_campaigns_data
 @app.route('/campaigns/download')
 @auth_required("token")
 @roles_required('Sponsor')
+@not_flagged()
+@not_approved()
 def download_campaigns():
     campaigns = []
     for camp in current_user.sponsor.campaigns:
@@ -662,6 +689,8 @@ from celery.result import AsyncResult
 @app.route("/exports/<task_id>")
 @auth_required("token")
 @roles_required('Sponsor')
+@not_flagged()
+@not_approved()
 def task_exports(task_id):
     result = AsyncResult(id=task_id)
     output = {
@@ -676,10 +705,11 @@ def task_exports(task_id):
 @app.route('/campaigns/download/<path:file_path>')
 @auth_required("token")
 @roles_required('Sponsor')
+@not_flagged()
+@not_approved()
 def download_csv(file_path):
     response = send_file(file_path, as_attachment=True)
     # os.remove(file_path)
-
     return response
 
 @app.route("/user/<int:user_id>/flag")
@@ -748,3 +778,30 @@ def unflag_campaign(campaign_id):
     db.session.commit()
 
     return jsonify({ 'message': 'Campaign was unflagged successfully.' })
+
+from app.utils import get_sponsors
+
+@app.route("/sponsors-approval-pending")
+@auth_required("token")
+@roles_required('Admin')
+def pending_approval_sponsors():
+    sponsors = get_sponsors()
+    approval_pending_sponsors = [sponsor for sponsor in sponsors if not sponsor['approved']]
+    return jsonify({ 'data': approval_pending_sponsors })
+
+
+@app.route("/sponsor-approval/<int:sponsor_id>")
+@auth_required("token")
+@roles_required('Admin')
+def approve_sponsor(sponsor_id):
+    sponsor = db.session.get(Sponsor, sponsor_id)
+
+    if not sponsor:
+        abort(404, description='Sponsor not found!')
+    if sponsor.approved:
+        abort(403, description='Sponsor is already approved.')
+    
+    sponsor.approved = True
+
+    db.session.commit()
+    return jsonify({ 'message': 'Sponsor was approved.' })

@@ -91,6 +91,7 @@ def get_sponsors():
             'name': sponsor.name,
             'email': sponsor.user.email,
             'campaigns': campaigns,
+            'approved': sponsor.approved,
         })
     
     return spons
@@ -109,3 +110,27 @@ def save_data_to_csv(data, file_name):
     df.to_csv(file_path, index=False)
 
     return file_path
+
+from functools import wraps
+from flask_security import current_user
+from flask import jsonify
+
+def not_flagged():
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if (not current_user.is_authenticated) or (current_user.flagged):
+                return jsonify(dict(status_code=403, description="Your account has been flagged. Please contact the support team for access.")), 403
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
+def not_approved():
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if (current_user.sponsor) and (not current_user.sponsor.approved):
+                return jsonify(dict(status_code=403, description="Your account has not been approved yet. Please wait or contact the support team for access.")), 403
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator

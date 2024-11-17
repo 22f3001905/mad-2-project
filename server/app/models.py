@@ -43,6 +43,7 @@ class Sponsor(db.Model):
     budget = db.Column(db.Float, nullable=False, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, unique=True)
     campaigns = db.relationship("Campaign", backref="sponsor")
+    approved = db.Column(db.Boolean, nullable=False, default=True)
 
 class InfluencerCategory(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -3,6 +3,7 @@ import { onMounted, reactive } from 'vue';
 
 import Navbar from '@/components/Navbar.vue';
 import UserInfo from '@/components/UserInfo.vue';
+import ApproveSponsor from '@/components/ApproveSponsor.vue';
 import ActiveCampaignList from '@/components/campaign/ActiveCampaignList.vue';
 import PendingAdRequestList from '@/components/ad-request/PendingAdRequestList.vue';
 
@@ -48,6 +49,9 @@ onMounted(async () => {
                 headers: { 'Authentication-Token': localStorage.getItem('authToken') }
             });
             const data = await res.json();
+            if (!res.ok) {
+                throw new Error('Something went wrong.');
+            }
             console.log(data);
             user.name = data.name;
             sponsor.budget = data.budget;
@@ -87,6 +91,7 @@ onMounted(async () => {
         :sponsor="{ budget: sponsor.budget, industry: sponsor.industry }" 
         :influencer="{ niche: influencer.niche, reach: influencer.reach, wallet_balance: influencer.wallet_balance, category: influencer.category }" 
     />
+    <ApproveSponsor v-if="user.role == 'Admin'" />
     <ActiveCampaignList :role="user.role" />
     <PendingAdRequestList v-if="user.name && user.role != 'Admin'" />
 </template>

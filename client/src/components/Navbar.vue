@@ -1,6 +1,6 @@
 <script setup>
 import { RouterLink, useRouter } from 'vue-router';
-import { reactive, computed, defineProps, ref, onUnmounted } from 'vue';
+import { reactive, computed, defineProps, ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { clearCookie } from '@/utils';
 

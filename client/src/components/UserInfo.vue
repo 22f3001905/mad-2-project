@@ -14,7 +14,7 @@ defineProps({
         <ul>
             <li>Email: {{ user.email }}</li>
             <div v-if="user.role == 'Sponsor'">
-                <li>Budget: Rs. {{ sponsor.budget }}</li>
+                <li>Budget: Rs. {{ sponsor.budget }} <button>Add Money</button></li>
                 <li>Industry: {{ sponsor.industry }}</li>
             </div>
             <div v-else-if="user.role == 'Influencer'">
