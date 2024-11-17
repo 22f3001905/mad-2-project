@@ -9,6 +9,7 @@ from app.resources import api
 from app.utils import create_user
 from app.mail import mail
 from app.worker import celery_init_app
+from app.cache import cache
 
 app = None
 
@@ -21,6 +22,7 @@ def create_app():
     db.init_app(app)
     api.init_app(app)
     mail.init_app(app)
+    cache.init_app(app)
 
     datastore = SQLAlchemyUserDatastore(db, User, Role)
     app.security = Security(app, datastore)

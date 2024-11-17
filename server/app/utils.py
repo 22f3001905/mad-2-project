@@ -134,3 +134,7 @@ def not_approved():
             return f(*args, **kwargs)
         return decorated_function
     return decorator
+
+def user_specific_key(suffix=""):
+    """Generate a unique key prefix for the current user."""
+    return f"user_{current_user.id}_{suffix}"

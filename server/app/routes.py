@@ -6,13 +6,17 @@ from app.models import db
 from app.models import *
 
 from datetime import date
-from app.utils import not_flagged, not_approved
+from app.utils import not_flagged, not_approved, user_specific_key
+from app.cache import cache
 
 # @roles_required { AND condition }
 # @roles_accepted { OR condition }
 
+# import time
+
 @app.route("/info/user")
 @auth_required("token")
+@cache.cached(60, key_prefix=lambda: user_specific_key('info'))
 def user_info():
     # current_user: Proxy of the logged in user. Comes from the Session.
     user_roles = [role.name for role in current_user.roles]
@@ -28,6 +32,7 @@ def user_info():
 @roles_required("Sponsor")
 @not_flagged()
 @not_approved()
+@cache.cached(60, key_prefix=lambda: user_specific_key('sponsor_info'))
 def sponsor_info():
     if current_user.sponsor == None:
         user_id = request.args.get('userId')
@@ -68,6 +73,7 @@ def sponsor_info():
 @roles_required('Sponsor')
 @not_flagged()
 @not_approved()
+@cache.cached(60, key_prefix=lambda: user_specific_key('campaigns'))
 def all_campaigns():
     data = { 'campaigns': [] }
     campaigns = current_user.sponsor.campaigns  # Sponsor Campaigns
@@ -96,6 +102,7 @@ def all_campaigns():
 @auth_required('token')
 @roles_required('Influencer')
 @not_flagged()
+@cache.cached(60, key_prefix=lambda: user_specific_key('public_campaigns'))
 def public_campaigns():
     data = { 'campaigns': [] }
     campaigns = db.session.query(Campaign).filter(Campaign.visibility_id == 1).all()  # All Public Campaigns
@@ -124,6 +131,7 @@ def public_campaigns():
 @roles_accepted('Sponsor', 'Influencer', 'Admin')
 @not_flagged()
 @not_approved()
+@cache.cached(60, key_prefix=lambda: user_specific_key('active_campaigns'))
 def active_campaigns():
     data = {
         'campaigns': [], 
@@ -183,6 +191,7 @@ def active_campaigns():
 @roles_accepted('Sponsor', 'Influencer')
 @not_flagged()
 @not_approved()
+@cache.cached(60, key_prefix=lambda: user_specific_key('pending_requests'))
 def pending_ad_requests():
     data = {
         'pending_ad_requests': {
@@ -239,6 +248,7 @@ def pending_ad_requests():
 @auth_required("token")
 @roles_required("Influencer")
 @not_flagged()
+@cache.cached(60, key_prefix=lambda: user_specific_key('influencer_info'))
 def influencer_info():
     if current_user.influencer == None:
         user_id = request.args.get('userId')
@@ -276,21 +286,24 @@ def influencer_info():
 from app.utils import form_hard_coded
 
 @app.route("/hard-coded-form-data")
+# @cache.cached(60, key_prefix=lambda: user_specific_key('hard_coded_form_data'))
+@cache.cached(60)
 def registration_form_data():
     return jsonify(form_hard_coded())
-
 
 @app.route('/sponsor-budget')
 @auth_required("token")
 @roles_required("Sponsor")
 @not_flagged()
 @not_approved()
+@cache.cached(60, key_prefix=lambda: user_specific_key('sponsor_budget'))
 def sponsor_budget():
     budget = current_user.sponsor.budget
     return jsonify({ 'budget': budget })
 
 
 @app.route('/influencer/<int:influencer_id>')
+# @cache.cached(timeout=60, key_prefix=lambda: user_specific_key(f"influencer_{request.view_args['influencer_id']}"))
 def influencer_details(influencer_id):
     influencer = db.session.get(Influencer, influencer_id)
     influencer_out = {
@@ -521,6 +534,7 @@ def complete_ad_request(ad_request_id):
 @auth_required("token")
 @roles_required('Influencer')
 @not_flagged()
+@cache.cached(timeout=60, key_prefix=lambda: user_specific_key("influencer_stats"))
 def stats_influencer():
     influencer = current_user.influencer
     monthly_ad_revenue = [0 for _ in range(12)]
@@ -553,6 +567,7 @@ def stats_influencer():
 @roles_required('Sponsor')
 @not_flagged()
 @not_approved()
+@cache.cached(timeout=60, key_prefix=lambda: user_specific_key("sponsor_stats"))
 def stats_sponsor():
     sponsor = current_user.sponsor
     
@@ -598,6 +613,7 @@ def stats_sponsor():
 @app.route('/admin/stats')
 @auth_required("token")
 @roles_required('Admin')
+@cache.cached(timeout=60, key_prefix=lambda: user_specific_key("admin_stats"))
 def stats_admin():
     users = db.session.query(User).all()
     active_users = {

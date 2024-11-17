@@ -28,23 +28,33 @@ const logoutUser = async () => {
     <nav class="navbar justify-content-end">
         <div class="container-fluid">
             <RouterLink class="navbar-brand" to="/">💻 SponsorConnect</RouterLink>
-            <ul class="nav">
-                <li v-if="isLoggedIn" class="nav-item">
+            <ul class="nav" v-if="isLoggedIn">
+                <li class="nav-item">
                     <RouterLink class="nav-link" to="/dashboard">Dashboard</RouterLink>
                 </li>
-                <li v-if="isLoggedIn" class="nav-item">
+                <li class="nav-item">
                     <RouterLink class="nav-link" to="/stats">Stats</RouterLink>
                 </li>
-                <li v-if="isLoggedIn" class="nav-item">
+                <li class="nav-item">
                     <RouterLink v-if="userRole == 'Sponsor'" class="nav-link" to="/campaigns">Campaigns</RouterLink>
                     <RouterLink v-else-if="userRole == 'Influencer'" class="nav-link" to="/profile">Profile</RouterLink>
                 </li>
-                <li v-if="isLoggedIn" class="nav-item">
+                <li class="nav-item">
                     <RouterLink class="nav-link" to="/search">Search</RouterLink>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link" v-if="isLoggedIn" @click="logoutUser">Logout</button>
-                    <RouterLink class="nav-link" v-else to="/login">Login</RouterLink>
+                    <button class="nav-link" @click="logoutUser">Logout</button>
+                </li>
+            </ul>
+            <ul class="nav" v-else>
+                <li class="nav-item">
+                    <RouterLink class="nav-link" to="/about">About</RouterLink>
+                </li>
+                <li class="nav-item">
+                    <RouterLink class="nav-link" to="/register">Register</RouterLink>
+                </li>
+                <li class="nav-item">
+                    <RouterLink class="nav-link" to="/login">Login</RouterLink>
                 </li>
             </ul>
         </div>

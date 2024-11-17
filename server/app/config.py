@@ -33,3 +33,7 @@ class LocalDevConfig(Config):
     MAIL_USERNAME = None
     MAIL_PASSWORD = None
     MAIL_DEFAULT_SENDER = ('SponsorConnect', 'bot@sponsorconnect.com')
+
+    # Caching
+    CACHE_TYPE = 'SimpleCache'
+    CACHE_DEFAULT_TIMEOUT = 500  # Cache timeout in seconds
