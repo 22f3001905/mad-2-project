@@ -155,7 +155,7 @@ def input_data():
     
     dummy_influencers: list = [
         {
-            "email": "healthy_gamer@website.com",
+            "email": "healthy.gamer@website.com",
             "password": "gamer",
             "influencer_name": "Healthy Gamer",
             "category_id": 7,
@@ -163,7 +163,7 @@ def input_data():
             "reach": 500_000
         },
         {
-            "email": "kurt_vlogs@website.com",
+            "email": "kurt.vlogs@website.com",
             "password": "travel",
             "influencer_name": "Kurt Caz Vlogs",
             "category_id": 3,
@@ -179,7 +179,7 @@ def input_data():
             "reach": 300_000
         },
         {
-            "email": "fit_emma@website.com",
+            "email": "fit.emma@website.com",
             "password": "fitness",
             "influencer_name": "Emma Fitness",
             "category_id": 2,
@@ -187,7 +187,7 @@ def input_data():
             "reach": 600_000
         },
         {
-            "email": "tech_guru@website.com",
+            "email": "tech.guru@website.com",
             "password": "gadgets",
             "influencer_name": "Tech Guru",
             "category_id": 5,
@@ -195,7 +195,7 @@ def input_data():
             "reach": 200_000
         },
         {
-            "email": "anna_styles@website.com",
+            "email": "anna.styles@website.com",
             "password": "vogue",
             "influencer_name": "Anna Styles",
             "category_id": 1,
@@ -203,7 +203,7 @@ def input_data():
             "reach": 400_000
         },
         {
-            "email": "foodie_hana@website.com",
+            "email": "foodie.hana@website.com",
             "password": "gourmet",
             "influencer_name": "Foodie Hana",
             "category_id": 4,
@@ -211,7 +211,7 @@ def input_data():
             "reach": 280_000
         },
         {
-            "email": "coder_ada@website.com",
+            "email": "coder.ada@website.com",
             "password": "coding",
             "influencer_name": "Coder Ada",
             "category_id": 5,
@@ -219,7 +219,7 @@ def input_data():
             "reach": 630_000
         },
         {
-            "email": "live_learner@website.com",
+            "email": "live.learner@website.com",
             "password": "knowledge",
             "influencer_name": "Live Learner",
             "category_id": 7,
@@ -228,7 +228,7 @@ def input_data():
             "flagged": True
         },
         {
-            "email": "pixel_zoey@website.com",
+            "email": "pixel.zoey@website.com",
             "password": "pixel",
             "influencer_name": "Pixel Zoey",
             "category_id": 8,
@@ -236,7 +236,7 @@ def input_data():
             "reach": 420_000
         },
         {
-            "email": "gaming_god@website.com",
+            "email": "gaming.god@website.com",
             "password": "esports",
             "influencer_name": "Gaming God Gopal",
             "category_id": 8,
@@ -244,7 +244,7 @@ def input_data():
             "reach": 700_000
         },
         {
-            "email": "finance_master@website.com",
+            "email": "finance.master@website.com",
             "password": "wealth",
             "influencer_name": "Finance Master Mohit",
             "category_id": 9,
@@ -252,7 +252,7 @@ def input_data():
             "reach": 520_000
         },
         {
-            "email": "alice_art@website.com",
+            "email": "alice.art@website.com",
             "password": "creativity",
             "influencer_name": "Art with Alice",
             "category_id": 10,

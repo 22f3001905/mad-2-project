@@ -56,25 +56,28 @@ const loginUser = async () => {
 </script>
 
 <template>
-    <section>
-        <div v-if="state.incorrectCreds">
-            <p>Incorrect email/password, please try again.</p>
+    <h1 class="text-center mb-3">Login Form</h1>
+    <div v-if="state.incorrectCreds">
+        <p>Incorrect email/password, please try again.</p>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form @submit.prevent="loginUser" class="p-4 border rounded">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input class="form-control" v-model="form.email" type="email" name="email" id="email" required autocomplete="email" />
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input class="form-control" v-model="form.password" type="password" name="password" id="password" required autocomplete="current-password" />
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-primary" type="submit">Login</button>
+                </div>
+            </form>
+            <div class="mt-4">
+                <p>Don't have an account? <RouterLink to="/register">Register</RouterLink></p>
+            </div>
         </div>
-        <form @submit.prevent="loginUser">
-            <div>
-                <label for="email">Email</label>
-                <input v-model="form.email" type="email" name="email" id="email" required autocomplete="email" />
-            </div>
-            <div>
-                <label for="password">Password</label>
-                <input v-model="form.password" type="password" name="password" id="password" required autocomplete="current-password" />
-            </div>
-            <div>
-                <button type="submit">Login</button>
-            </div>
-        </form>
-        <div>
-            <p>Don't have an account? <RouterLink to="/register">Register</RouterLink></p>
-        </div>
-    </section>
+    </div>
 </template>

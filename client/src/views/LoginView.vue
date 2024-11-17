@@ -13,7 +13,6 @@ if (!redirect) {
 <template>
     <section>
         <Navbar />
-        <h1>Login</h1>
         <Login />
     </section>
 </template>

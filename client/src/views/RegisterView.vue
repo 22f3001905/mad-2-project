@@ -8,6 +8,5 @@ userLoggedInRedirect();
 
 <template>
     <Navbar />
-    <h1>Account Registration</h1>
     <Register />
 </template>
