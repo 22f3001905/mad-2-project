@@ -1,4 +1,3 @@
-import os
 from flask import current_app as app, jsonify, request, abort,send_file
 from flask_security import current_user, auth_required, roles_required, roles_accepted, login_user, logout_user
 
@@ -12,18 +11,18 @@ from app.cache import cache
 # @roles_required { AND condition }
 # @roles_accepted { OR condition }
 
-# import time
-
 @app.route("/info/user")
 @auth_required("token")
 @cache.cached(60, key_prefix=lambda: user_specific_key('info'))
 def user_info():
     # current_user: Proxy of the logged in user. Comes from the Session.
     user_roles = [role.name for role in current_user.roles]
+    
     info = {
         "id": current_user.id,
         "email": current_user.email,
-        "role": current_user.roles[0].name if 'Admin' not in user_roles else 'Admin'
+        "role": current_user.roles[0].name if 'Admin' not in user_roles else 'Admin',
+        "name": current_user.sponsor.name if current_user.sponsor else current_user.influencer.name if current_user.influencer else 'Admin'
     }
     return jsonify(info)
 

@@ -25,6 +25,7 @@ import NegotiateAdRequestView from '@/views/ad-request/NegotiateAdRequestView.vu
 import ProfileView from '@/views/ProfileView.vue';
 import StatsView from '@/views/StatsView.vue';
 import UserView from '@/views/UserView.vue';
+import AboutView from '@/views/AboutView.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,6 +47,7 @@ const router = createRouter({
         { path: '/influencer/:id', name: 'influencer-profile', component: ProfileView },
         { path: '/stats', name: 'user-stats', component: StatsView },
         { path: '/user/:id', name: 'user-profile', component: UserView },
+        { path: '/about', name: 'about', component: AboutView },
     ]
 });
 

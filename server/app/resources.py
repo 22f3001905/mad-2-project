@@ -2,7 +2,7 @@ from flask import current_app as app
 from flask_restful import Api, Resource, reqparse, fields, marshal_with
 from flask_security import auth_required, roles_required, current_user, roles_accepted
 
-from app.utils import create_user
+from app.utils import create_user, not_flagged, not_approved
 from app.models import db
 from app.models import *
 from app.validation import *
@@ -124,6 +124,8 @@ campaign_parser.add_argument("goals", type=str)
 class CampaignAPI(Resource):
     @auth_required('token')
     @roles_required('Sponsor')
+    @not_flagged()
+    @not_approved()
     def post(self):
         campaign_args = campaign_parser.parse_args()
         name = campaign_args.get("name")
@@ -407,6 +409,8 @@ ad_request_parser.add_argument("campaign_goal_id", type=int)
 class AdRequestAPI(Resource):
     @auth_required('token')
     @roles_accepted('Sponsor')
+    @not_flagged()
+    @not_approved()
     def post(self):
         ad_request_args = ad_request_parser.parse_args()
         campaign_id = ad_request_args.get('campaign_id')

@@ -7,6 +7,7 @@ export const useUserStore = defineStore('user', () => {
 
     const getUserId = computed(() => user.id);
     const getUserRole = computed(() => user.role);
+    const getUserName = computed(() => user.name);
     const getAuthToken = computed(() => authToken.value);
 
     function logout() {
@@ -14,6 +15,7 @@ export const useUserStore = defineStore('user', () => {
         user.id = '';
         user.email = '';
         user.role = '';
+        user.name = '';
     }
     function login() {
         authToken.value = localStorage.getItem('authToken');
@@ -22,7 +24,8 @@ export const useUserStore = defineStore('user', () => {
         user.id = loggedInUser.id;
         user.email = loggedInUser.email;
         user.role = loggedInUser.role;
+        user.name = loggedInUser.name;
     }
 
-    return { getUserId, getUserRole, getAuthToken, logout, login };
+    return { getUserId, getUserRole, getAuthToken, getUserName, logout, login };
 });
