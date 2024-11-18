@@ -121,7 +121,7 @@ onMounted(async () => {
 
         <div 
             v-if="user.role == 'Sponsor'" 
-            class="mb-4 p-3 border rounded shadow-sm alert alert-secondary"
+            class="mb-4 p-3 border rounded shadow-sm alert alert-light"
         >
             <div class="d-flex align-items-center justify-content-start">
                 <p class="mb-0">
@@ -254,11 +254,11 @@ onMounted(async () => {
         >
             <RouterLink 
                 :to="`/ad-request/create?campaign_id=${campaignId}`" 
-                class="btn btn-primary me-3"
+                class="btn btn-outline-primary me-3"
             >
                 Create Ad Request
             </RouterLink>
-            <RouterLink to="/search" class="btn btn-success">
+            <RouterLink to="/search" class="btn btn-outline-success">
                 Search for Influencers
             </RouterLink>
         </div>

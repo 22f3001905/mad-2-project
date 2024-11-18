@@ -114,6 +114,9 @@ onMounted(async () => {
                         </div>
                     </div>
                 </div>
+                <div v-if="state.pending_sent.length == 0">
+                    <p class="mb-0">No ad requests sent.</p>
+                </div>
             </div>
         </div>
 
@@ -166,6 +169,9 @@ onMounted(async () => {
                             </div>
                         </div>
                     </div>
+                </div>
+                <div v-if="state.pending_received.length == 0">
+                    <p class="mb-0">No ad requests received.</p>
                 </div>
             </div>
         </div>

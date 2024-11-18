@@ -95,11 +95,9 @@ onMounted(async () => {
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row" v-if="state.activeCampaigns.length == 0">
-            <p class="text-muted">
-                No active campaigns.
-            </p>
+            <div v-if="state.activeCampaigns.length == 0">
+                <p>No active campaigns yet.</p>
+            </div>
         </div>
     </div>
 </template>

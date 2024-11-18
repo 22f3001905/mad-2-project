@@ -13,7 +13,7 @@ const user = JSON.parse(localStorage.getItem('user'));
         <RouterLink 
             v-if="user.role == 'Sponsor'" 
             to="/campaign/create" 
-            class="btn btn-success"
+            class="btn btn-outline-success"
         >
             Create Campaign
         </RouterLink>

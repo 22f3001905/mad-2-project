@@ -34,7 +34,7 @@ defineProps({
                 </li>
             </div>
             <div v-else-if="user.role == 'Influencer'">
-                <li>
+                <li style="max-width: 400px;">
                     <strong>Niche: </strong>
                     <span class="badge bg-dark me-1" v-for="tag in influencer.niche.split(', ')">{{ tag }}</span>
                 </li>
