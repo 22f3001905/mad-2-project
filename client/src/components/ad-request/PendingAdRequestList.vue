@@ -66,7 +66,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="container my-4">
+    <div class="my-4">
         <h2 class="mb-3">Pending Ad Requests</h2>
         <p class="text-muted">These are the pending ad requests that require user action.</p>
 

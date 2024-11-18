@@ -25,26 +25,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <!-- <section class="container my-4">
-        <h2 class="mb-3">
-            {{ user.role == 'Influencer' ? 'Public' : '' }} Campaign List
-        </h2>
-        <DownloadCampaignData />
-        <div>
-            <div v-for="campaign in state.campaigns" style="border: 1px solid black;">
-                <h3>{{ campaign.name }}</h3>
-                <p>{{ campaign.description }}</p>
-                <p>Starts: {{ new Date(campaign.start_date).toDateString() }} | Ends: {{ new Date(campaign.end_date).toDateString() }}</p>
-                <p>{{ campaign.visibility }}</p>
-                <p>Budget: Rs. {{ campaign.budget }}</p>
-                <p>Niche: {{ campaign.niche }}</p>
-                <div>
-                    <RouterLink :to="`/campaign/${campaign.id}`">View</RouterLink>
-                </div>
-            </div>
-        </div>
-    </section> -->
-    <section class="container my-4">
+    <section class="my-4">
         <h2 class="mb-3">
             {{ user.role == 'Influencer' ? 'Public' : '' }} Campaign List
         </h2>
@@ -58,7 +39,7 @@ onMounted(async () => {
             <div 
                 v-for="campaign in state.campaigns" 
                 :key="campaign.id" 
-                class="col-md-6 col-lg-4 mb-4"
+                class="col-md-4 mb-4"
             >
                 <div class="card shadow-sm h-100">
                     <div class="card-body d-flex flex-column">

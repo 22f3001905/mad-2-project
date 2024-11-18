@@ -268,10 +268,15 @@ def influencer_info():
             'message': ad_request.message,
             'status': ad_request.status.name,
             'sender_user_id': ad_request.sender_user_id,
+            'campaign': {
+                'id': ad_request.campaign.id,
+                'name': ad_request.campaign.name,
+            }
         }
         assigned_ads.append(ad)
     
     info = {
+        "id": influencer.id,
         "name": influencer.name,
         "category": influencer.category.name,
         "niche": influencer.niche,

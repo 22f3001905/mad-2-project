@@ -114,15 +114,17 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="p-3 border rounded shadow-sm">
+    <div class="p-3 border rounded shadow-sm alert alert-primary">
         <div class="d-flex align-items-center justify-content-start">
             <p class="mb-0">
-                Export campaign data as a .csv file:
+                <strong>
+                    Export campaign data as a .csv file:
+                </strong>
             </p>
             <button 
                 @click="triggerExport" 
                 v-if="showDownloadButton" 
-                class="btn btn-outline-success ms-2"
+                class="btn btn-light ms-2"
             >
                 Download
             </button>

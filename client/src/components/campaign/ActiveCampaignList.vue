@@ -53,13 +53,13 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="container my-4">
+    <div class="my-4">
         <h2 class="mb-4">Active Campaigns</h2>
         <div class="row">
             <div 
                 v-for="campaign in state.activeCampaigns" 
                 :key="campaign.id" 
-                class="col-md-6 mb-4"
+                class="col-md-4 mb-4"
             >
                 <div class="card shadow-sm h-100">
                     <div class="card-body d-flex flex-column">

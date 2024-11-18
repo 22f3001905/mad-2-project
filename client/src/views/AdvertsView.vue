@@ -2,6 +2,7 @@
 import Navbar from '@/components/Navbar.vue';
 import { reactive, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { formatNumber } from '@/utils';
 
 const state = reactive({
     walletBalance: null,
@@ -74,26 +75,91 @@ onMounted(async () => {
 
 <template>
     <Navbar />
-    <h2>Adverts</h2>
-    <div>
-        <p>Wallet: Rs. {{ state.walletBalance }}</p>
+    <h2 class="pt-4 mb-3">Adverts List</h2>
+    
+    <div class="mb-4 p-3 border rounded shadow-sm alert alert-primary">
+        <strong>Wallet Balance:</strong> Rs. {{ formatNumber(state.walletBalance) }}
     </div>
-    <div>
-        <div v-for="ad in state.assignedAds" style="border: 1px solid black;">
-            <h3>{{ ad.requirement }}</h3>
-            <p>Status: {{ ad.status }} | Payment: Rs. {{ ad.payment_amount }}</p>
-            <p>{{ ad.message }}</p>
-            <div v-if="ad.status != 'Completed' && ad.status != 'Rejected'">
-                <span>Actions: </span>
-                <span v-if="ad.status == 'Pending'">
-                    <button @click="acceptAdRequest(ad.id)">Accept</button> | 
-                    <button @click="rejectAdRequest(ad.id)">Reject</button> |
-                    <RouterLink :to="`/ad-request/${ad.id}/negotiate`">Negotiate</RouterLink>
-                </span>
-                <span v-else>
-                    <button @click="completeAdRequest(ad.id)">Complete</button>
-                </span>
+    
+    <div class="row">
+        <div 
+            v-for="ad in state.assignedAds" 
+            :key="ad.id" 
+            class="col-md-6 mb-4" 
+        >
+            <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title">{{ ad.requirement }}</h3>
+                    <p class="card-text">{{ ad.message }}</p>
+
+                    <ul class="list-unstyled">
+                        <li>
+                            <strong>Campaign:</strong> <RouterLink :to="`/campaign/${ad.campaign.id}`">{{ ad.campaign.name }}</RouterLink>
+                        </li>
+                        <li>
+                            <strong>Status:</strong> {{ ad.status }}
+                        </li>
+                        <li>
+                            <strong>Payout:</strong> Rs. {{ formatNumber(ad.payment_amount) }}
+                        </li>
+                    </ul>
+
+                    <div 
+                        v-if="(ad.status != 'Completed') && (ad.status != 'Rejected')" 
+                        class="mt-auto"
+                    >
+                        <!-- Pending to Accept -->
+                        <div 
+                            v-if="ad.status == 'Pending'" 
+                            class="d-flex gap-2"
+                        >
+                            <button 
+                                @click="acceptAdRequest(ad.id)" 
+                                class="btn btn-success btn-sm"
+                            >
+                                Accept
+                            </button>
+                            <button 
+                                @click="rejectAdRequest(ad.id)" 
+                                class="btn btn-danger btn-sm"
+                            >
+                                Reject
+                            </button>
+                            <RouterLink 
+                                :to="`/ad-request/${ad.id}/negotiate`" 
+                                class="btn btn-warning btn-sm"
+                            >
+                                Negotiate
+                            </RouterLink>
+                        </div>
+                        <!-- Accepted On-going Action -->
+                        <div v-else>
+                            <button 
+                                @click="completeAdRequest(ad.id)" 
+                                class="btn btn-dark btn-sm"
+                            >
+                                Complete
+                            </button>
+                        </div>
+                    </div>
+                    <div v-else-if="ad.status == 'Completed'">
+                        <button class="btn btn-light btn-sm" disabled>
+                            Ad request has been completed
+                        </button>
+                    </div>
+                    <div v-else>
+                        <button class="btn btn-light btn-sm" disabled>
+                            Ad request has been rejected
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <RouterLink to="/search" class="btn btn-outline-primary">
+            Search For Campaigns
+        </RouterLink>
     </div>
 </template>

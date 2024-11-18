@@ -22,6 +22,10 @@ const campaign = reactive({
     adRequests: []
 });
 
+const state = reactive({
+    influencerId: null,
+});
+
 async function deleteCampaign() {
     console.log('Campaign Deleted!');
     try {
@@ -48,14 +52,14 @@ async function deleteAdRequest(adRequestId) {
     }
 }
 
-async function getCampaignInfo(campaign_id) {
+async function getCampaignInfo() {
     try {
         const res = await fetch(`/api/campaign/${campaignId.value}`, {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
         const data = await res.json();
-        // console.log(data);
+        console.log(data);
         
         campaign.id = data.id;
         campaign.name = data.name;
@@ -86,8 +90,26 @@ async function acceptAdRequest(adRequestId) {
     }
 }
 
+async function fetchInfluencerInfo() {
+    try {
+        const res = await fetch('/api/info/influencer', {
+            method: 'GET',
+            headers: { 'Authentication-Token': localStorage.getItem('authToken') }
+        });
+        const data = await res.json();
+        console.log(data);
+        state.influencerId = data.id;
+    } catch (error) {
+        console.error('Error in fetching influencer info.', error);
+    }
+}
+
 onMounted(async () => {
     await getCampaignInfo();
+    if (user.role == 'Influencer') {
+        console.log('GET the influencer_id!');
+        await fetchInfluencerInfo();
+    }
 });
 </script>
 
@@ -95,24 +117,29 @@ onMounted(async () => {
     <Navbar />
     <section class="my-4">
         <h2 class="mb-3">{{ campaign.name }}</h2>
-        <p class="mb-4">{{ campaign.description }}</p>
+        <p class="mb-3">{{ campaign.description }}</p>
 
-        <div v-if="user.role == 'Sponsor'" class="mb-4">
-            <span class="me-2">
-                <strong>Campaign Actions:</strong>
-            </span>
-            <RouterLink 
-                :to="`/campaign/${campaignId}/edit`" 
-                class="btn btn-warning btn-sm"
-            >
-                Edit
-            </RouterLink>
-            <button 
-                @click="deleteCampaign" 
-                class="btn btn-danger btn-sm ms-2"
-            >
-                Delete
-            </button>
+        <div 
+            v-if="user.role == 'Sponsor'" 
+            class="mb-4 p-3 border rounded shadow-sm alert alert-secondary"
+        >
+            <div class="d-flex align-items-center justify-content-start">
+                <p class="mb-0">
+                    <strong>Campaign Actions:</strong>
+                </p>
+                <RouterLink 
+                    :to="`/campaign/${campaignId}/edit`" 
+                    class="btn btn-warning btn-sm ms-2"
+                >
+                    Edit
+                </RouterLink>
+                <button 
+                    @click="deleteCampaign" 
+                    class="btn btn-danger btn-sm ms-2"
+                >
+                    Delete
+                </button>
+            </div>
         </div>
 
         <h3 class="mt-4">Campaign Info</h3>
@@ -203,6 +230,12 @@ onMounted(async () => {
                                     Negotiate
                                 </RouterLink>
                             </div>
+                            <!-- Assigned To Me (Simple Redirect) -->
+                             <div v-else-if="ad.influencer.id == state.influencerId">
+                                <RouterLink to="/adverts" class="btn btn-primary btn-sm">
+                                    View in Adverts
+                                </RouterLink>
+                             </div>
                             <div v-else>
                                 <button class="btn btn-light btn-sm" disabled>
                                     Ad request is not available
