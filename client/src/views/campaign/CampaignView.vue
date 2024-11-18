@@ -142,8 +142,8 @@ onMounted(async () => {
                 :key="ad.id" 
                 class="col-md-6 mb-3"
             >
-                <div class="card shadow-sm">
-                    <div class="card-body">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body d-flex flex-column">
                         <h4 class="card-title">{{ ad.requirement }}</h4>
                         <p class="card-text">{{ ad.message }}</p>
 
@@ -159,7 +159,7 @@ onMounted(async () => {
                             </li>
                         </ul>
 
-                        <div v-if="user.role == 'Sponsor'">
+                        <div v-if="user.role == 'Sponsor'" class="mt-auto">
                             <div 
                                 v-if="(ad.status != 'Accepted') && (ad.status != 'Completed')" 
                                 class="d-flex gap-2"
@@ -184,7 +184,7 @@ onMounted(async () => {
                             </div>
                         </div>
 
-                        <div v-if="user.role == 'Influencer'">
+                        <div v-if="user.role == 'Influencer'" class="mt-auto">
                             <!-- Unassigned Ad Request -->
                             <div
                                 v-if="ad.influencer.id == 0" 
@@ -225,7 +225,7 @@ onMounted(async () => {
             >
                 Create Ad Request
             </RouterLink>
-            <RouterLink to="/search" class="btn btn-secondary">
+            <RouterLink to="/search" class="btn btn-success">
                 Search for Influencers
             </RouterLink>
         </div>

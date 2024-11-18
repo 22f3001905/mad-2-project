@@ -11,7 +11,7 @@ defineProps({
 
 <template>
     <section class="pt-4">
-        <h2 class="card-title mb-3">Account Details</h2>
+        <h2 class="mb-3">Account Details</h2>
         <ul>
             <li>
                 <strong>Name:</strong> {{ user.name }}

@@ -80,10 +80,11 @@ onMounted(async () => {
                     :key="ad.id" 
                     class="col-md-6 mb-3"
                 >
-                    <div class="card shadow-sm">
-                        <div class="card-body">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body d-flex flex-column">
                             <h4 class="card-title">{{ ad.requirement }}</h4>
                             <p class="card-text">{{ ad.message }}</p>
+
                             <ul class="list-unstyled">
                                 <li v-if="userRole == 'Sponsor'">
                                     <strong>Influencer:</strong> {{ ad.influencer_name }}
@@ -95,7 +96,8 @@ onMounted(async () => {
                                     <strong>Payout:</strong> Rs. {{ formatNumber(ad.payment_amount) }}
                                 </li>
                             </ul>
-                            <div class="d-flex gap-2">
+
+                            <div class="d-flex gap-2 mt-auto">
                                 <RouterLink 
                                     :to="`/ad-request/${ad.id}/edit`" 
                                     class="btn btn-warning btn-sm"
@@ -125,8 +127,8 @@ onMounted(async () => {
                     :key="ad.id" 
                     class="col-md-6 mb-3"
                 >
-                    <div class="card shadow-sm">
-                        <div class="card-body">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body d-flex flex-column">
                             <h4 class="card-title">{{ ad.requirement }}</h4>
                             <p class="card-text">{{ ad.message }}</p>
 
@@ -142,7 +144,7 @@ onMounted(async () => {
                                 </li>
                             </ul>
 
-                            <div class="d-flex gap-2">
+                            <div class="d-flex gap-2 mt-auto">
                                 <button 
                                     @click="acceptAdRequest(ad.id)" 
                                     class="btn btn-success btn-sm"

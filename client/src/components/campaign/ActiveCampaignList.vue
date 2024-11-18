@@ -61,20 +61,23 @@ onMounted(async () => {
                 :key="campaign.id" 
                 class="col-md-6 mb-4"
             >
-                <div class="card shadow-sm">
-                    <div class="card-body">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body d-flex flex-column">
                         <h3 class="card-title">{{ campaign.name }}</h3>
-                        <p class="card-text text-muted">Ends: {{ new Date(campaign.end_date).toDateString() }}</p>
-                        <p class="card-text">
-                            <strong>Visibility:</strong> {{ campaign.visibility }}
-                        </p>
-                        <p 
-                            v-if="campaign.flagged" 
-                            class="card-text text-danger fw-bold"
-                        >
-                            Flagged!
-                        </p>
-                        <div class="d-flex gap-2">
+
+                        <ul class="list-unstyled">
+                            <li>
+                                <strong>Ends:</strong> {{ new Date(campaign.end_date).toDateString() }}
+                            </li>
+                            <li>
+                                <strong>Visibility:</strong> {{ campaign.visibility }}
+                            </li>
+                            <li v-if="campaign.flagged" class="badge bg-danger">
+                                Flagged
+                            </li>
+                        </ul>
+
+                        <div class="d-flex gap-2 mt-auto">
                             <RouterLink 
                                 :to="`/campaign/${campaign.id}`" 
                                 class="btn btn-primary btn-sm"
