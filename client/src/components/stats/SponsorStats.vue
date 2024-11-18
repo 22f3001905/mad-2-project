@@ -204,7 +204,7 @@ onMounted(async () => {
         </section>
 
         <section 
-            class="row mt-5" 
+            class="row mt-5 mb-5" 
             v-if="chartData.campaignsBudgetData.labels"
         >
             <div class="col-12 text-center">

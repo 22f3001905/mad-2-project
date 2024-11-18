@@ -63,17 +63,38 @@ onMounted(async () => {
 
 <template>
     <div>
-        <div class="row mt-2">
-            <div>
-                <h2>Monthly Ad Revenue <span>*Potential</span></h2>
+        <section 
+            class="row mt-4" 
+            v-if="chartData.adRevenueData.labels"
+        >
+            <div class="col-12 text-center">
+                <h2 class="mb-4">Monthly Potential Ad Revenue</h2>
             </div>
-            <Chart v-if="chartData.adRevenueData.labels" :chartData="chartData.adRevenueData" chartType="bar" />
-        </div>
-        <div class="row mt-5">
-            <h2>Ad Requests Sent</h2>
-            <div class="row" v-if="chartData.adRequestSentData.datasets">
-                <table class="table table-bordered border-secondary align-middle text-center col">
-                    <thead>
+
+            <div 
+                class="col-md-12 d-flex justify-content-center align-items-center"
+            >
+                <Chart 
+                    :chartData="chartData.adRevenueData" 
+                    chartType="bar" 
+                    style="width: 750px;"
+                />
+            </div>
+        </section>
+
+        <section 
+            class="row mt-5" 
+            v-if="chartData.adRequestSentData.datasets"
+        >
+            <div class="col-12 text-center">
+                <h2 class="mb-4">Ad Requests Sent</h2>
+            </div>
+
+            <div 
+                class="col-md-6 d-flex justify-content-center align-items-center"
+            >
+                <table class="table table-striped table-hover table-bordered border-secondary align-middle text-center">
+                    <thead class="table-dark">
                         <tr>
                             <th>Sender</th>
                             <th>No. of Requests</th>
@@ -96,30 +117,59 @@ onMounted(async () => {
                         </tr>
                     </tbody>
                 </table>
-                <Chart :chartData="chartData.adRequestSentData" chartType="doughnut" style="width: 300px;" />
             </div>
-        </div>
-        <div class="row mt-5" v-if="chartData.adRequestStatusData.labels">
-            <h2>Ad Request Status</h2>
-            <Chart :chartData="chartData.adRequestStatusData" chartType="pie" style="width: 325px;" />
-            <table class="table table-bordered border-secondary align-middle text-center col">
-                <thead>
-                    <tr>
-                        <th>Ad Request Status</th>
-                        <th>No. of Ad Requests</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="[status, val] in zip(chartData.adRequestStatusData.labels, chartData.adRequestStatusData.datasets[0].data)">
-                        <td>{{ status }}</td>
-                        <td>{{ val }}</td>
-                    </tr>
-                    <tr>
-                        <th>Total</th>
-                        <th>{{ chartData.adRequestStatusData.datasets[0].data.reduce((a, b) => a + b, 0) }}</th>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+
+            <div 
+                class="col-md-6 d-flex justify-content-center align-items-center"
+            >
+                <Chart 
+                    :chartData="chartData.adRequestSentData" 
+                    chartType="doughnut" 
+                    style="width: 350px;" 
+                />
+            </div>
+        </section>
+
+        <section 
+            class="row mt-5 mb-5" 
+            v-if="chartData.adRequestStatusData.labels"
+        >
+            <div class="col-12 text-center">
+                <h2 class="mb-4">Ad Request Status</h2>
+            </div>
+
+            <div 
+                class="col-md-6 d-flex justify-content-center align-items-center"
+            >
+                <Chart 
+                    :chartData="chartData.adRequestStatusData" 
+                    chartType="pie" 
+                    style="width: 350px;" 
+                />
+            </div>
+
+            <div 
+                class="col-md-6 d-flex justify-content-center align-items-center"
+            >
+                <table class="table table-striped table-hover table-bordered border-secondary align-middle text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Ad Request Status</th>
+                            <th>No. of Ad Requests</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="[status, val] in zip(chartData.adRequestStatusData.labels, chartData.adRequestStatusData.datasets[0].data)">
+                            <td>{{ status }}</td>
+                            <td>{{ val }}</td>
+                        </tr>
+                        <tr>
+                            <th>Total</th>
+                            <th>{{ chartData.adRequestStatusData.datasets[0].data.reduce((a, b) => a + b, 0) }}</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>
 </template>
