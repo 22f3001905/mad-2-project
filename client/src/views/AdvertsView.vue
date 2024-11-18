@@ -74,7 +74,7 @@ onMounted(async () => {
 
 <template>
     <Navbar />
-    <h2>Ongoing Ad Requests</h2>
+    <h2>Adverts</h2>
     <div>
         <p>Wallet: Rs. {{ state.walletBalance }}</p>
     </div>

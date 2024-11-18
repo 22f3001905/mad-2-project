@@ -22,7 +22,7 @@ import EditAdRequestView from '@/views/ad-request/EditAdRequestView.vue';
 import SearchView from '@/views/SearchView.vue';
 import AssignAdRequestView from '@/views/ad-request/AssignAdRequestView.vue';
 import NegotiateAdRequestView from '@/views/ad-request/NegotiateAdRequestView.vue';
-import ProfileView from '@/views/ProfileView.vue';
+import AdvertsView from '@/views/AdvertsView.vue';
 import StatsView from '@/views/StatsView.vue';
 import UserView from '@/views/UserView.vue';
 import AboutView from '@/views/AboutView.vue';
@@ -43,8 +43,7 @@ const router = createRouter({
         { path: '/ad-request/assign', name: 'assign-ad', component: AssignAdRequestView },
         { path: '/search', name: 'search', component: SearchView },
         { path: '/ad-request/:id/negotiate', name: 'negotiate-ad', component: NegotiateAdRequestView },
-        { path: '/profile', name: 'profile', component: ProfileView },
-        { path: '/influencer/:id', name: 'influencer-profile', component: ProfileView },
+        { path: '/adverts', name: 'adverts', component: AdvertsView },
         { path: '/stats', name: 'user-stats', component: StatsView },
         { path: '/user/:id', name: 'user-profile', component: UserView },
         { path: '/about', name: 'about', component: AboutView },

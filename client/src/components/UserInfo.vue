@@ -1,6 +1,7 @@
 <script setup>
 import  { defineProps } from 'vue';
 import { formatNumber } from '@/utils';
+import { RouterLink } from 'vue-router';
 
 defineProps({
     user: Object,
@@ -24,7 +25,7 @@ defineProps({
                     <strong>Budget:</strong> Rs. {{ formatNumber(sponsor.budget) }}
                     <ul>
                         <li>
-                            <button class="btn btn-link p-0">Add Money</button>
+                            <RouterLink to="/add-money">Add Money</RouterLink>
                         </li>
                     </ul>
                 </li>

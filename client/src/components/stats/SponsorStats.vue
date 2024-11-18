@@ -1,6 +1,7 @@
 <script setup>
 import Chart from '@/components/stats/Chart.vue';
 import { onMounted, reactive } from 'vue';
+import { formatNumber } from '@/utils';
 
 const zip = (a, b) => a.map((k, i) => [k, b[i]]);
 
@@ -84,80 +85,172 @@ onMounted(async () => {
 
 <template>
     <div>
-        <div class="row" v-if="chartData.adRequestStatusData.labels">
-            <h2>Ad Request Status</h2>
-            <Chart :chartData="chartData.adRequestStatusData" chartType="doughnut" style="width: 325px;" />
-            <table class="table table-bordered border-secondary align-middle text-center col">
-                <thead>
-                    <tr>
-                        <th>Ad Request Status</th>
-                        <th>No. of Ad Requests</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="[status, val] in zip(chartData.adRequestStatusData.labels, chartData.adRequestStatusData.datasets[0].data)">
-                        <td>{{ status }}</td>
-                        <td>{{ val }}</td>
-                    </tr>
-                    <tr>
-                        <th>Total</th>
-                        <th>{{ chartData.adRequestStatusData.datasets[0].data.reduce((a, b) => a + b, 0) }}</th>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="row mt-5" v-if="chartData.adRequestPayoutData.length">
-            <h2>Ad Request Payout</h2>
-            <div class="col-md-6 d-flex justify-content-center mt-3" v-for="[campaignName, adPayoutData] in zip(campaignNames, chartData.adRequestPayoutData)">
-                <div class="text-center">
+        <section 
+            class="row mt-4" 
+            v-if="chartData.adRequestStatusData.labels"
+        >
+            <div class="col-12 text-center">
+                <h2 class="mb-4">Ad Request Status</h2>
+            </div>
+
+            <div 
+                class="col-md-6 d-flex justify-content-center align-items-center"
+            >
+                <Chart 
+                    :chartData="chartData.adRequestStatusData" 
+                    chartType="doughnut" 
+                    style="width: 350px;" 
+                />
+            </div>
+
+            <div 
+                class="col-md-6 d-flex justify-content-center align-items-center"
+            >
+                <table 
+                    class="table table-striped table-hover table-bordered border-secondary align-middle text-center"
+                >
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Ad Request Status</th>
+                            <th>No. of Ad Requests</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="[status, val] in zip(chartData.adRequestStatusData.labels, chartData.adRequestStatusData.datasets[0].data)">
+                            <td>{{ status }}</td>
+                            <td>{{ val }}</td>
+                        </tr>
+                        <tr>
+                            <th>Total</th>
+                            <th>{{ chartData.adRequestStatusData.datasets[0].data.reduce((a, b) => a + b, 0) }}</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section 
+            class="row mt-5" 
+            v-if="chartData.adRequestPayoutData.length"
+        >
+            <div class="col-12 text-center">
+                <h2 class="mb-4">Ad Request Payout</h2>
+            </div>
+
+            <div 
+                class="col-md-6 d-flex justify-content-center align-items-center" 
+                v-for="[campaignName, adPayoutData] in zip(campaignNames, chartData.adRequestPayoutData)"
+            >
+                <div class="text-center mb-4">
                     <h3 class="mt-3">{{ campaignName }}</h3>
-                    <Chart :chartData="adPayoutData" chartType="bar" style="width: 375px;" :chartOptions="barChartOptions" />
+                    <Chart 
+                        :chartData="adPayoutData" 
+                        chartType="bar" 
+                        style="width: 350px;" 
+                        :chartOptions="barChartOptions" 
+                    />
                 </div>
             </div>
-        </div>
-        <div class="row mt-5" v-if="chartData.adRequestPayoutAggData.labels">
-            <h2>Ad Request Payout (Aggregated)</h2>
-            <table class="table table-bordered border-secondary align-middle text-center col">
-                <thead>
-                    <tr>
-                        <th>Ad Request Status</th>
-                        <th>Total Payout</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="[status, val] in zip(chartData.adRequestPayoutAggData.labels, chartData.adRequestPayoutAggData.datasets[0].data)">
-                        <td>{{ status }}</td>
-                        <td>{{ val }}</td>
-                    </tr>
-                    <tr>
-                        <th>Total</th>
-                        <th>{{ chartData.adRequestPayoutAggData.datasets[0].data.reduce((a, b) => a + b, 0) }}</th>
-                    </tr>
-                </tbody>
-            </table>
-            <Chart :chartData="chartData.adRequestPayoutAggData" chartType="pie" style="width: 325px;" />
-        </div>
-        <div class="row mt-5" v-if="chartData.campaignsBudgetData.labels">
-            <h2>Remaining Campaign Budget Allocation</h2>
-            <Chart :chartData="chartData.campaignsBudgetData" chartType="polarArea" style="width: 400px;" />
-            <table class="table table-bordered border-secondary align-middle text-center col">
-                <thead>
-                    <tr>
-                        <th>Campaign Name</th>
-                        <th>Budget</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="[campaign_name, val] in zip(chartData.campaignsBudgetData.labels, chartData.campaignsBudgetData.datasets[0].data)">
-                        <td>{{ campaign_name }}</td>
-                        <td>{{ val }}</td>
-                    </tr>
-                    <tr>
-                        <th>Total</th>
-                        <th>{{ chartData.campaignsBudgetData.datasets[0].data.reduce((a, b) => a + b, 0) }}</th>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        </section>
+
+        <section 
+            class="row mt-5" 
+            v-if="chartData.adRequestPayoutAggData.labels"
+        >
+            <div class="col-12 text-center">
+                <h2 class="mb-4">Ad Request Payout (Status)</h2>
+            </div>
+
+            <div 
+                class="col-md-6 d-flex justify-content-center align-items-center"
+            >
+                <table class="table table-striped table-hover table-bordered border-secondary align-middle">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>Ad Request Status</th>
+                            <th>Total Payout</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="[status, val] in zip(chartData.adRequestPayoutAggData.labels, chartData.adRequestPayoutAggData.datasets[0].data)">
+                            <td>{{ status }}</td>
+                            <td class="d-flex justify-content-between align-items-center">
+                                <span>Rs.</span>
+                                <span>{{ formatNumber(val) }}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Total</th>
+                            <th class="d-flex justify-content-between align-items-center">
+                                <span>Rs.</span>
+                                <span>
+                                    {{ formatNumber(chartData.adRequestPayoutAggData.datasets[0].data.reduce((a, b) => a + b, 0)) }}
+                                </span>
+                            </th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div 
+                class="col-md-6 d-flex justify-content-center align-items-center"
+            >
+                <Chart 
+                    :chartData="chartData.adRequestPayoutAggData" 
+                    chartType="doughnut" 
+                    style="width: 350px;" 
+                />
+            </div>
+        </section>
+
+        <section 
+            class="row mt-5" 
+            v-if="chartData.campaignsBudgetData.labels"
+        >
+            <div class="col-12 text-center">
+                <h2 class="mb-4">Campaign Budget Allocation</h2>
+            </div>
+
+            <div 
+                class="col-md-6 d-flex justify-content-center align-items-center"
+            >
+                <Chart 
+                    :chartData="chartData.campaignsBudgetData" 
+                    chartType="polarArea" 
+                    style="width: 350px;" 
+                />
+            </div>
+
+            <div 
+                class="col-md-6 d-flex justify-content-center align-items-center"
+            >
+                <table class="table table-striped table-hover table-bordered border-secondary align-middle">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>Campaign Name</th>
+                            <th>Budget</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="[campaign_name, val] in zip(chartData.campaignsBudgetData.labels, chartData.campaignsBudgetData.datasets[0].data)">
+                            <td>{{ campaign_name }}</td>
+                            <td class="d-flex justify-content-between align-items-center">
+                                <span>Rs.</span>
+                                <span>{{ formatNumber(val) }}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Total</th>
+                            <th class="d-flex justify-content-between align-items-center">
+                                <span>Rs.</span>
+                                <span>
+                                    {{ formatNumber(chartData.campaignsBudgetData.datasets[0].data.reduce((a, b) => a + b, 0)) }}
+                                </span>
+                            </th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>
 </template>

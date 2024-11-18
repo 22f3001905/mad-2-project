@@ -149,7 +149,7 @@ onMounted(async () => {
 
                         <ul class="list-unstyled">
                             <li>
-                                <strong>Influencer:</strong> {{ ad.influencer.name || 'Not Assigned' }}
+                                <strong>Influencer:</strong> {{ ad.influencer.name || '-' }}
                             </li>
                             <li>
                                 <strong>Status:</strong> {{ ad.status }}
