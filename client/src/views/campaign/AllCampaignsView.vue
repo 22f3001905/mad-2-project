@@ -9,5 +9,13 @@ const user = JSON.parse(localStorage.getItem('user'));
 <template>
     <Navbar />
     <CampaignList />
-    <RouterLink v-if="user.role == 'Sponsor'" to="/campaign/create">Create Campaign</RouterLink>
+    <div class="d-flex justify-content-center my-4">
+        <RouterLink 
+            v-if="user.role == 'Sponsor'" 
+            to="/campaign/create" 
+            class="btn btn-success"
+        >
+            Create Campaign
+        </RouterLink>
+    </div>
 </template>

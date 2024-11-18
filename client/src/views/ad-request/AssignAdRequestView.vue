@@ -132,7 +132,7 @@ onMounted(async () => {
 
 <template>
     <Navbar />
-    <h1 class="text-center mb-3">Assign Ad Request</h1>
+    <h2 class="text-center mb-3">Assign Ad Request</h2>
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="mb-3">Target Influencer: {{ influencerName }}</div>

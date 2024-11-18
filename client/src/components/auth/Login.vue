@@ -56,7 +56,7 @@ const loginUser = async () => {
 </script>
 
 <template>
-    <h1 class="text-center mb-3">Login Form</h1>
+    <h2 class="text-center mb-3 pt-2">Login Form</h2>
     <div v-if="state.incorrectCreds">
         <p>Incorrect email/password, please try again.</p>
     </div>

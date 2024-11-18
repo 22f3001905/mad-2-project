@@ -15,5 +15,9 @@ function clearCookie(cookieName) {
     document.cookie = cookieName + '=; Max-Age=-99999999;';
 }
 
+function formatNumber(value) {
+    return new Intl.NumberFormat().format(value);
+}
 
-export { userLoggedInRedirect, clearCookie };
+
+export { userLoggedInRedirect, clearCookie, formatNumber };

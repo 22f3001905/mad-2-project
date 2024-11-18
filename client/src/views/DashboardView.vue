@@ -85,7 +85,6 @@ onMounted(async () => {
 
 <template>
     <Navbar />
-    <h1>Welcome, {{ user.name }}</h1>
     <UserInfo 
         :user="user" 
         :sponsor="{ budget: sponsor.budget, industry: sponsor.industry }" 

@@ -249,14 +249,17 @@ function submitForm() {
 </script>
 
 <template>
-    <h1 class="text-center mb-3">{{ props.title }} Ad Request</h1>
+    <h2 class="text-center mb-3 pt-2">{{ props.title }} Ad Request</h2>
     <div class="row justify-content-center">
         <div class="col-md-6">
             <p v-if="influencerId">Target Influencer: {{ influencerName }}</p>
-            <form @submit.prevent="submitForm">
+            <form 
+                @submit.prevent="submitForm" 
+                class="p-4 border rounded"
+            >
                 <div class="mb-3" v-if="props.title != 'Negotiate'">
-                    <label for="campaign">Campaign</label>
-                    <select v-model="form.campaign.id" name="campaign" id="campaign" @change="changeSelectedCampaign" :disabled="props.title == 'Edit'">
+                    <label for="campaign" class="form-label">Campaign</label>
+                    <select class="form-select" v-model="form.campaign.id" name="campaign" id="campaign" @change="changeSelectedCampaign" :disabled="props.title == 'Edit'">
                         <option v-for="campaign in state.campaigns" :value="campaign.id">
                             {{ campaign.name }} {{ campaign.visibility == 'Private' ? '(Private)' : '' }}
                         </option>

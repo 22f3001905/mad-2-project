@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, reactive } from 'vue';
 import { useRoute, RouterLink, useRouter } from 'vue-router';
+import { formatNumber } from '@/utils';
 
 import Navbar from '@/components/Navbar.vue';
 
@@ -92,46 +93,146 @@ onMounted(async () => {
 
 <template>
     <Navbar />
-    <h1>{{ campaign.name }}</h1>
-    <p>{{ campaign.description }}</p>
-    <div v-if="user.role == 'Sponsor'">
-        <span>Actions: </span>
-        <RouterLink :to="`/campaign/${campaignId}/edit`">Edit</RouterLink> |
-        <button @click="deleteCampaign">Delete</button>
-    </div>
-    <h2>Campaign Info</h2>
-    <div>
-        <p>Budget: Rs. {{ campaign.budget }}</p>
-        <p>{{ campaign.startDate }} to {{ campaign.endDate }}</p>
-        <p>{{ campaign.niche }} | {{ campaign.visibility }}</p>
-    </div>
-    <h2>Ad Requests</h2>
-    <div v-for="ad in campaign.adRequests" style="border: 1px solid black;">
+    <section class="my-4">
+        <h2 class="mb-3">{{ campaign.name }}</h2>
+        <p class="mb-4">{{ campaign.description }}</p>
 
-        <h3>{{ ad.requirement }}</h3>
-        <p>Status: {{ ad.status }} | Payment: Rs. {{ ad.payment_amount }}</p>
-        <p>{{ ad.message }}</p>
-        <p>Influencer: {{ ad.influencer.name || 'Not Assigned' }}</p>
-
-        <div v-if="(user.role == 'Sponsor') && (ad.status != 'Accepted') && (ad.status != 'Completed')">
-            <span>Actions: </span>
-            <RouterLink :to="(ad.influencer.id > 0 && ad.status == 'Pending') ? `/ad-request/${ad.id}/edit?influencer_id=${ad.influencer.id}` : `/ad-request/${ad.id}/edit`">Edit</RouterLink> |
-            <!-- <RouterLink :to="`/ad-request/${ad.id}/edit`">Edit</RouterLink> |  -->
-            <button @click="deleteAdRequest(ad.id)">Delete</button>
+        <div v-if="user.role == 'Sponsor'" class="mb-4">
+            <span class="me-2">
+                <strong>Campaign Actions:</strong>
+            </span>
+            <RouterLink 
+                :to="`/campaign/${campaignId}/edit`" 
+                class="btn btn-warning btn-sm"
+            >
+                Edit
+            </RouterLink>
+            <button 
+                @click="deleteCampaign" 
+                class="btn btn-danger btn-sm ms-2"
+            >
+                Delete
+            </button>
         </div>
 
-        <div v-if="user.role == 'Influencer' && ad.influencer.id == 0">
-            <span>Action: </span>
-            <button @click="acceptAdRequest(ad.id)">Accept</button> | 
-            <RouterLink :to="`/ad-request/${ad.id}/negotiate`">Negotiate</RouterLink>
+        <h3 class="mt-4">Campaign Info</h3>
+        <ul class="mb-4">
+            <li>
+                <strong>Budget:</strong> Rs. {{ formatNumber(campaign.budget) }}
+            </li>
+            <li>
+                <strong>Duration:</strong> {{ campaign.startDate }} to {{ campaign.endDate }}
+            </li>
+            <li>
+                <strong>Niche:</strong> {{ campaign.niche }}
+            </li>
+            <li>
+                <strong>Visibility:</strong> {{ campaign.visibility }}
+            </li>
+        </ul>
+
+        <h3 class="mt-4">Ad Requests</h3>
+        <p class="text-muted">
+            Advertisement requests sent to influencers on the platform. 
+        </p>
+
+        <div class="row">
+            <div 
+                v-for="ad in campaign.adRequests" 
+                :key="ad.id" 
+                class="col-md-6 mb-3"
+            >
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title">{{ ad.requirement }}</h4>
+                        <p class="card-text">{{ ad.message }}</p>
+
+                        <ul class="list-unstyled">
+                            <li>
+                                <strong>Influencer:</strong> {{ ad.influencer.name || 'Not Assigned' }}
+                            </li>
+                            <li>
+                                <strong>Status:</strong> {{ ad.status }}
+                            </li>
+                            <li>
+                                <strong>Payout:</strong> Rs. {{ formatNumber(ad.payment_amount) }}
+                            </li>
+                        </ul>
+
+                        <div v-if="user.role == 'Sponsor'">
+                            <div 
+                                v-if="(ad.status != 'Accepted') && (ad.status != 'Completed')" 
+                                class="d-flex gap-2"
+                            >
+                                <RouterLink 
+                                    :to="(ad.influencer.id > 0 && ad.status == 'Pending') ? `/ad-request/${ad.id}/edit?influencer_id=${ad.influencer.id}` : `/ad-request/${ad.id}/edit`" 
+                                    class="btn btn-warning btn-sm"
+                                >
+                                    Edit
+                                </RouterLink>
+                                <button 
+                                    @click="deleteAdRequest(ad.id)" 
+                                    class="btn btn-danger btn-sm"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                            <div v-else>
+                                <button class="btn btn-light btn-sm" disabled>
+                                    Ad request is not available
+                                </button>
+                            </div>
+                        </div>
+
+                        <div v-if="user.role == 'Influencer'">
+                            <!-- Unassigned Ad Request -->
+                            <div
+                                v-if="ad.influencer.id == 0" 
+                                class="d-flex gap-2"
+                            >
+                                <button 
+                                    @click="acceptAdRequest(ad.id)"
+                                    class="btn btn-success btn-sm"
+                                >
+                                    Accept
+                                </button>
+                                <RouterLink 
+                                    :to="`/ad-request/${ad.id}/negotiate`" 
+                                    class="btn btn-warning btn-sm"
+                                >
+                                    Negotiate
+                                </RouterLink>
+                            </div>
+                            <div v-else>
+                                <button class="btn btn-light btn-sm" disabled>
+                                    Ad request is not available
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         </div>
-        
-    </div>
-    <div v-if="user.role == 'Sponsor'">
-        <RouterLink :to="`/ad-request/create?campaign_id=${campaignId}`">
-            Create Ad Request <span v-if="campaign.visibility == 'Private'">(Manual Assignment of Ad Request)</span>
-        </RouterLink>
-        <br>
-        <RouterLink to="/search">Search for Influencers</RouterLink>
-    </div>
+
+        <div 
+            v-if="user.role == 'Sponsor'" 
+            class="text-center mt-4"
+        >
+            <RouterLink 
+                :to="`/ad-request/create?campaign_id=${campaignId}`" 
+                class="btn btn-primary me-3"
+            >
+                Create Ad Request
+            </RouterLink>
+            <RouterLink to="/search" class="btn btn-secondary">
+                Search for Influencers
+            </RouterLink>
+        </div>
+
+        <!-- <div v-if="campaign.visibility == 'Private'" class="mt-4 text-center">
+            <p>*Manual Assignment of Ad Request</p>
+        </div> -->
+
+    </section>
 </template>

@@ -84,7 +84,6 @@ onMounted(async () => {
 
 <template>
     <div>
-        <h1>Sponsor Statistics</h1>
         <div class="row" v-if="chartData.adRequestStatusData.labels">
             <h2>Ad Request Status</h2>
             <Chart :chartData="chartData.adRequestStatusData" chartType="doughnut" style="width: 325px;" />

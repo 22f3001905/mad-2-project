@@ -1,5 +1,6 @@
 <script setup>
 import  { defineProps } from 'vue';
+import { formatNumber } from '@/utils';
 
 defineProps({
     user: Object,
@@ -9,22 +10,42 @@ defineProps({
 </script>
 
 <template>
-    <section>
-        <h2>Account Details</h2>
+    <section class="pt-4">
+        <h2 class="card-title mb-3">Account Details</h2>
         <ul>
-            <li>Email: {{ user.email }}</li>
+            <li>
+                <strong>Name:</strong> {{ user.name }}
+            </li>
+            <li>
+                <strong>Email:</strong> {{ user.email }}
+            </li>
             <div v-if="user.role == 'Sponsor'">
-                <li>Budget: Rs. {{ sponsor.budget }} <button>Add Money</button></li>
-                <li>Industry: {{ sponsor.industry }}</li>
+                <li>
+                    <strong>Budget:</strong> Rs. {{ formatNumber(sponsor.budget) }}
+                    <ul>
+                        <li>
+                            <button class="btn btn-link p-0">Add Money</button>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Industry:</strong> {{ sponsor.industry }}
+                </li>
             </div>
             <div v-else-if="user.role == 'Influencer'">
-                <li>Niche: {{ influencer.niche }}</li>
-                <li>Reach: {{ influencer.reach }} people</li>
-                <li>Wallet: Rs. {{ influencer.wallet_balance }}</li>
-                <li>Category: {{ influencer.category }}</li>
-            </div>
-            <div v-else>
-                <li>User: ADMIN</li>
+                <li>
+                    <strong>Niche: </strong>
+                    <span class="badge bg-dark me-1" v-for="tag in influencer.niche.split(', ')">{{ tag }}</span>
+                </li>
+                <li>
+                    <strong>Reach:</strong> {{ formatNumber(influencer.reach) }} people
+                </li>
+                <li>
+                    <strong>Wallet:</strong> Rs. {{ formatNumber(influencer.wallet_balance) }}
+                </li>
+                <li>
+                    <strong>Category:</strong> {{ influencer.category }}
+                </li>
             </div>
         </ul>
     </section>

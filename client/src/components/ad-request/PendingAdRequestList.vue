@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, onMounted, computed } from 'vue';
 import { useUserStore } from '@/stores/user';
+import { formatNumber } from '@/utils';
 
 const store = useUserStore();
 const userRole = computed(() => store.getUserRole);
@@ -65,38 +66,104 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div>
-        <h2>Pending Ad Requests</h2>
-        <p>These are the pending ad requests that require user action.</p>
-        <div>
-            <h3>Sent</h3>
-            <p>Wait for the ad request to be accepted or modify it.</p>
-            <div v-for="ad in state.pending_sent" style="border: 1px solid black;">
-                <h4>{{ ad.requirement }}</h4>
-                <p>{{ ad.message }}</p>
-                <p v-if="userRole == 'Sponsor'">Influencer: {{ ad.influencer_name }}</p>
-                <p v-else>Sponsor: {{ ad.sponsor_name }}</p>
-                <p>Payout: Rs. {{ ad.payment_amount }}</p>
-                <div>
-                    <RouterLink :to="`/ad-request/${ad.id}/edit`">Edit</RouterLink> | 
-                    <button @click="deleteAdRequest(ad.id)">Delete</button>
+    <div class="container my-4">
+        <h2 class="mb-3">Pending Ad Requests</h2>
+        <p class="text-muted">These are the pending ad requests that require user action.</p>
+
+        <!-- Sent Ad Requests -->
+        <div class="mb-4">
+            <h3 class="mb-2">Sent</h3>
+            <p class="text-muted">Wait for the ad request to be accepted or modify it.</p>
+            <div class="row">
+                <div 
+                    v-for="ad in state.pending_sent" 
+                    :key="ad.id" 
+                    class="col-md-6 mb-3"
+                >
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h4 class="card-title">{{ ad.requirement }}</h4>
+                            <p class="card-text">{{ ad.message }}</p>
+                            <ul class="list-unstyled">
+                                <li v-if="userRole == 'Sponsor'">
+                                    <strong>Influencer:</strong> {{ ad.influencer_name }}
+                                </li>
+                                <li v-else>
+                                    <strong>Sponsor:</strong> {{ ad.sponsor_name }}
+                                </li>
+                                <li>
+                                    <strong>Payout:</strong> Rs. {{ formatNumber(ad.payment_amount) }}
+                                </li>
+                            </ul>
+                            <div class="d-flex gap-2">
+                                <RouterLink 
+                                    :to="`/ad-request/${ad.id}/edit`" 
+                                    class="btn btn-warning btn-sm"
+                                >
+                                    Edit
+                                </RouterLink>
+                                <button 
+                                    @click="deleteAdRequest(ad.id)" 
+                                    class="btn btn-danger btn-sm"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Received Ad Requests -->
         <div>
-            <h3>Received</h3>
-            <p>Accept, reject, or negotiate a better payout for these ad request.</p>
-            <div v-for="ad in state.pending_received" style="border: 1px solid black;">
-                <h4>{{ ad.requirement }}</h4>
-                <p>{{ ad.message }}</p>
-                <p v-if="userRole == 'Sponsor'">Influencer: {{ ad.influencer_name }}</p>
-                <p v-else>Sponsor: {{ ad.sponsor_name }}</p>
-                <p>Payout: Rs. {{ ad.payment_amount }}</p>
-                <div>
-                    <span>Action: </span>
-                    <button @click="acceptAdRequest(ad.id)">Accept</button> | 
-                    <button @click="rejectAdRequest(ad.id)">Reject</button> | 
-                    <RouterLink :to="`/ad-request/${ad.id}/negotiate`">Negotiate</RouterLink>
+            <h3 class="mb-2">Received</h3>
+            <p class="text-muted">Accept, reject, or negotiate a better payout for these ad requests.</p>
+            <div class="row">
+                <div 
+                    v-for="ad in state.pending_received" 
+                    :key="ad.id" 
+                    class="col-md-6 mb-3"
+                >
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h4 class="card-title">{{ ad.requirement }}</h4>
+                            <p class="card-text">{{ ad.message }}</p>
+
+                            <ul class="list-unstyled">
+                                <li v-if="userRole == 'Sponsor'">
+                                    <strong>Influencer:</strong> {{ ad.influencer_name }}
+                                </li>
+                                <li v-else>
+                                    <strong>Sponsor:</strong> {{ ad.sponsor_name }}
+                                </li>
+                                <li>
+                                    <strong>Payout:</strong> Rs. {{ formatNumber(ad.payment_amount) }}
+                                </li>
+                            </ul>
+
+                            <div class="d-flex gap-2">
+                                <button 
+                                    @click="acceptAdRequest(ad.id)" 
+                                    class="btn btn-success btn-sm"
+                                >
+                                    Accept
+                                </button>
+                                <button 
+                                    @click="rejectAdRequest(ad.id)" 
+                                    class="btn btn-danger btn-sm"
+                                >
+                                    Reject
+                                </button>
+                                <RouterLink 
+                                    :to="`/ad-request/${ad.id}/negotiate`" 
+                                    class="btn btn-warning btn-sm"
+                                >
+                                    Negotiate
+                                </RouterLink>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

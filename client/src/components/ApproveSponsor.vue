@@ -32,11 +32,15 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div>
-        <h2>Approve Sponsor Registration</h2>
+    <div class="pt-2">
+        <h2 class="mb-4">Approve Sponsor Registration</h2>
         <ul>
-            <li v-for="sponsor in state.sponsors">{{ sponsor.name }} | Email: {{ sponsor.email }} | <button @click="approveSponsor(sponsor.id)">Approve</button></li>
+            <li v-for="sponsor in state.sponsors" :key="sponsor.id">
+                <strong>{{ sponsor.name }}</strong> <button @click="approveSponsor(sponsor.id)" class="btn btn-outline-success btn-sm">Approve</button>
+            </li>
         </ul>
-        <p v-if="state.sponsors.length == 0">No more sponsors on the approval list.</p>
+        <p v-if="state.sponsors.length == 0">
+            No more sponsors on the approval list.
+        </p>
     </div>
 </template>

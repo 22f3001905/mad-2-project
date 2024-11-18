@@ -114,12 +114,27 @@ onMounted(() => {
 </script>
 
 <template>
-    <div>
-        <p>Export campaign data as a .csv file: </p>
-        <button @click="triggerExport" v-if="showDownloadButton">Download</button>
-        <p v-else>{{ message }}</p>
-        <p v-if="exportCompleted">
-            Didn't download automatically? <a ref="downloadButtonManual">Click Here</a>
+    <div class="p-3 border rounded shadow-sm">
+        <div class="d-flex align-items-center justify-content-start">
+            <p class="mb-0">
+                Export campaign data as a .csv file:
+            </p>
+            <button 
+                @click="triggerExport" 
+                v-if="showDownloadButton" 
+                class="btn btn-outline-success ms-2"
+            >
+                Download
+            </button>
+            <div v-else>
+                <p class="mb-0 ms-2"> {{ message }}</p>
+            </div>
+        </div>
+        <p v-if="exportCompleted" class="mb-0 mt-3">
+            Didn't download automatically? 
+            <a ref="downloadButtonManual" class="link">
+                Click Here
+            </a>
         </p>
     </div>
 </template>

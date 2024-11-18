@@ -63,7 +63,6 @@ onMounted(async () => {
 
 <template>
     <div>
-        <h1>Influencer Statistics</h1>
         <div class="row mt-2">
             <div>
                 <h2>Monthly Ad Revenue <span>*Potential</span></h2>

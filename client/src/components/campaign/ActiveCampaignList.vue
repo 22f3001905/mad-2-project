@@ -53,24 +53,50 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div>
-        <h2>Active Campaigns</h2>
-        <div>
-            <div v-for="campaign in state.activeCampaigns" style="border: 1px solid black;">
-                <h3>{{ campaign.name }}</h3>
-                <p>Ends: {{ new Date(campaign.end_date).toDateString() }}</p>
-                <p>{{ campaign.visibility }}</p>
-                <p v-if="campaign.flagged">Flagged! TODO: Color red!</p>
-                <div>
-                    <RouterLink :to="`/campaign/${campaign.id}`">View</RouterLink>
-                    <button 
-                        v-if="props.role == 'Admin'" 
-                        @click="!campaign.flagged ? flagCampaign(campaign.id) : unflagCampaign(campaign.id)"
-                    >
-                        {{ !campaign.flagged ? 'Flag' : 'Unflag' }}
-                    </button>
+    <div class="container my-4">
+        <h2 class="mb-4">Active Campaigns</h2>
+        <div class="row">
+            <div 
+                v-for="campaign in state.activeCampaigns" 
+                :key="campaign.id" 
+                class="col-md-6 mb-4"
+            >
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title">{{ campaign.name }}</h3>
+                        <p class="card-text text-muted">Ends: {{ new Date(campaign.end_date).toDateString() }}</p>
+                        <p class="card-text">
+                            <strong>Visibility:</strong> {{ campaign.visibility }}
+                        </p>
+                        <p 
+                            v-if="campaign.flagged" 
+                            class="card-text text-danger fw-bold"
+                        >
+                            Flagged!
+                        </p>
+                        <div class="d-flex gap-2">
+                            <RouterLink 
+                                :to="`/campaign/${campaign.id}`" 
+                                class="btn btn-primary btn-sm"
+                            >
+                                View
+                            </RouterLink>
+                            <button 
+                                v-if="props.role == 'Admin'" 
+                                class="btn btn-warning btn-sm"
+                                @click="!campaign.flagged ? flagCampaign(campaign.id) : unflagCampaign(campaign.id)"
+                            >
+                                {{ !campaign.flagged ? 'Flag' : 'Unflag' }}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+        <div class="row" v-if="state.activeCampaigns.length == 0">
+            <p class="text-muted">
+                No active campaigns.
+            </p>
         </div>
     </div>
 </template>

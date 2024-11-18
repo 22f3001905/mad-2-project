@@ -76,11 +76,11 @@ const registerUser = async () => {
 </script>
 
 <template>
-    <h1 class="text-center mb-3">Account Registration</h1>
+    <h2 class="text-center mb-3 pt-2">Account Registration</h2>
     <div class="row justify-content-center">
         <div class="col-md-6">
             <form @submit.prevent="registerUser" class="p-4 border rounded">
-                <h2 class="mb-2 text-center">Basic Info</h2>
+                <h3 class="mb-2 text-center">Basic Info</h3>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
                     <input class="form-control" v-model="form.email" type="text" name="email" id="email" required autocomplete="email" />
@@ -98,7 +98,7 @@ const registerUser = async () => {
                     </select>
                 </div>
                 <div v-if="form.accountType == 'Sponsor'" class="mt-4">
-                    <h2 class="mb-3 text-center">Sponsor Account</h2>
+                    <h3 class="mb-3 text-center">Sponsor Account</h3>
                     <div class="mb-3">
                         <label for="companyName" class="form-label">Company Name</label>
                         <input v-model="sponsor.companyName" class="form-control" type="text" name="companyName"
@@ -114,7 +114,7 @@ const registerUser = async () => {
                     </div>
                 </div>
                 <div v-else class="mt-4">
-                    <h2 class="mb-3 text-center">Influencer Account</h2>
+                    <h3 class="mb-3 text-center">Influencer Account</h3>
                     <div class="mb-3">
                         <label for="influencerName" class="form-label">Influencer Name</label>
                         <input v-model="influencer.influencerName" class="form-control" type="text"
