@@ -3,6 +3,7 @@ import { reactive, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 
 import DownloadCampaignData from '@/components/campaign/DownloadCampaignData.vue';
+import { formatNumber } from '@/utils';
 
 const state = reactive({
     campaigns: []
@@ -60,12 +61,13 @@ onMounted(async () => {
                                 <strong>Visibility:</strong> {{ campaign.visibility }}
                             </li>
                             <li>
-                                <strong>Budget:</strong> Rs. {{ campaign.budget }}
+                                <strong>Budget:</strong> Rs. {{ formatNumber(campaign.budget) }}
                             </li>
                             <li>
                                 <strong>Niche:</strong> {{ campaign.niche }}
                             </li>
                         </ul>
+
                         <div class="mt-auto">
                             <RouterLink 
                                 :to="`/campaign/${campaign.id}`" 

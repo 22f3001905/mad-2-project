@@ -17,7 +17,7 @@ const logoutUser = async () => {
         localStorage.removeItem('user');
         store.logout();
         clearCookie('session');
-        router.push('/');
+        return router.push('/');
     } catch (error) {
         console.error('Error logging out.', error);
     }

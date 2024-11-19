@@ -47,7 +47,7 @@ const loginUser = async () => {
             localStorage.setItem('authToken', authenticationToken);
             const res = await fetchUserInfo(authenticationToken);
             store.login();
-            router.push('/dashboard');
+            return router.push('/dashboard');
         }
     } catch (error) {
         console.error('Error logging in.', error);

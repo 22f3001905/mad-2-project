@@ -68,7 +68,7 @@ const registerUser = async () => {
         });
         const data = await response.json();
         console.log(data);
-        router.push('/login');
+        return router.push('/login');
     } catch (error) {
         console.error('Error creating user account.', error);
     }

@@ -63,7 +63,7 @@ onMounted(async () => {
                 state.campaignBudget = campaign.budget;
             } else {
                 console.log('No campaigns created yet!');
-                router.push('/campaign/create');
+                return router.push('/campaign/create');
             }
         } catch (error) {
             console.error('Error fetching all the campaigns for this user.', error);
@@ -165,7 +165,7 @@ const createAdRequest = async () => {
         });
         const data = await res.json();
         console.log(data);
-        router.push(`/campaign/${form.campaign.id}`);
+        return router.push(`/campaign/${form.campaign.id}`);
     } catch (error) {
         console.error('Error posting ad request data.', error);
     }
@@ -192,7 +192,7 @@ const editAdRequest = async () => {
         });
         const data = await res.json();
         console.log(data);
-        router.push(`/campaign/${data.campaign_id}`);
+        return router.push(`/campaign/${data.campaign_id}`);
     } catch (error) {
         console.error('Error in editing ad request data.', error);
     }
@@ -230,7 +230,7 @@ const negotiateAdRequest = async () => {
         });
         const data = await res.json();
         console.log(data);
-        router.push(`/campaign/${form.campaign.id}`);
+        return router.push(`/campaign/${form.campaign.id}`);
     } catch (error) {
         console.error('Error posting form data for negotiation of ad request.', error);
     }

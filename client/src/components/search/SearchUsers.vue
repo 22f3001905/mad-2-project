@@ -89,7 +89,7 @@ const unflagUser = async (userId) => {
 
                 <div class="d-flex justify-content-start gap-2 mt-4">
                     <button type="submit" class="btn btn-outline-primary">
-                        Refine Search
+                        Search
                     </button>
                     <button
                         id="reset"
@@ -112,7 +112,7 @@ const unflagUser = async (userId) => {
         >
             <div class="card shadow-sm h-100">
                 <div class="card-body d-flex flex-column">
-                    <h3>{{ user.name }}</h3>
+                    <h3 class="card-title">{{ user.name }}</h3>
 
                     <ul class="list-unstyled">
                         <li>

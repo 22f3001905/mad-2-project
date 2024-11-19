@@ -43,7 +43,7 @@ onMounted(async () => {
             >
                 <div class="card shadow-sm h-100">
                     <div class="card-body d-flex flex-column">
-                        <h3>{{ sponsor.name }}</h3>
+                        <h3 class="card-title">{{ sponsor.name }}</h3>
                         <ul class="list-unstyled">
                             <li>
                                 <strong>Email:</strong> {{ sponsor.email }}

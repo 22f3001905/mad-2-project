@@ -550,7 +550,7 @@ class InfluencerSearchAPI(Resource):
             influ = {
                 'id': influencer.id,
                 'name': influencer.name,
-                'category_id': influencer.category_id,
+                'category': influencer.category.name,
                 'niche': influencer.niche,
                 'reach': influencer.reach,
                 'user_id': influencer.user_id,
@@ -598,9 +598,9 @@ class CampaignSearchAPI(Resource):
                 'start_date': str(campaign.start_date),
                 'end_date': str(campaign.end_date),
                 'budget': campaign.budget,
-                'visibility_id': campaign.visibility_id,
-                'niche_id': campaign.niche_id,
-                'sponsor_id': campaign.sponsor_id,
+                'visibility': campaign.campaign_visibility.name,
+                'niche': campaign.niche.name,
+                'sponsor': campaign.sponsor.name,
                 'flagged': campaign.flagged,
             }
             campaigns.append(camp)

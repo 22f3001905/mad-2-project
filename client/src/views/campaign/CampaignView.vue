@@ -33,7 +33,7 @@ async function deleteCampaign() {
             method: 'DELETE',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
-        router.push('/campaigns');
+        return router.push('/campaigns');
     } catch (error) {
         console.error('Error in deleting campaign.', error);
     }
@@ -46,6 +46,7 @@ async function deleteAdRequest(adRequestId) {
             method: 'DELETE',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+        campaign.budget += campaign.adRequests.filter(ad => ad.id == adRequestId)[0].payment_amount;
         campaign.adRequests = campaign.adRequests.filter(ad => ad.id != adRequestId);
     } catch (error) {
         console.error('Error in deleting ad request.', error);

@@ -40,7 +40,7 @@ const changeSelectedCampaign = async () => {
             }
         }
         if (validAds.length == 0) {
-            router.push('/campaigns');
+            return router.push('/campaigns');
         }
         state.adRequests = validAds;
         form.ad_request_id = state.adRequests[0].id;
@@ -51,7 +51,6 @@ const changeSelectedCampaign = async () => {
 
 // TODO
 const assignAd = async () => {
-    console.log('assign ass.');
     try {
         const res = await fetch('/api/assign-ad', {
             method: 'POST',
@@ -66,7 +65,7 @@ const assignAd = async () => {
         })
         const data = await res.json()
         console.log(data);
-        router.push('/search');
+        return router.push('/search');
     } catch (error) {
         console.error('Error in assigning ad.', error);
     }
@@ -88,12 +87,13 @@ onMounted(async () => {
                 }
             }
             if (validCampaigns.length == 0) {
-                router.push('/campaigns');
+                console.log('No campaigns with unassigned ads.');
+                return router.push('/campaigns');
             }
             state.campaigns = [...validCampaigns];
             form.campaign_id = state.campaigns[0].id;
         } else {
-            router.push('/campaign/create');
+            return router.push('/campaign/create');
         }
     } catch (error) {
         console.error('Error fetching all the campaigns for this user.', error);
@@ -120,7 +120,7 @@ onMounted(async () => {
             }
         }
         if (validAds.length == 0) {
-            router.push('/campaigns');
+            return router.push('/campaigns');
         }
         state.adRequests = validAds;
         form.ad_request_id = state.adRequests[0].id;

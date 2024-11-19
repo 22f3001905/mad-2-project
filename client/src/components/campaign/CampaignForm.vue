@@ -84,7 +84,7 @@ const createCampaign = async () => {
         });
         const data = await res.json();
         console.log(data);
-        router.push(`/campaign/${data.id}`);
+        return router.push(`/campaign/${data.id}`);
     } catch (error) {
         console.error('Error in editing campaign data.', error);
     }
@@ -110,7 +110,7 @@ const editCampaign = async () => {
         });
         const data = await res.json();
         console.log(data);
-        router.push(`/campaign/${campaignId.value}`);
+        return router.push(`/campaign/${campaignId.value}`);
     } catch (error) {
         console.error('Error in editing campaign data.', error);
     }
