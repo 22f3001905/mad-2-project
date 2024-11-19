@@ -59,7 +59,7 @@ onMounted(async () => {
 
 <template>
     <h2>Search for Campaigns</h2>
-    <form @submit.prevent="searchCampaigns">
+    <form @submit.prevent="searchCampaigns" class="p-4 border rounded shadow-sm">
         <div class="mb-3">
             <label for="min_budget" class="form-label">Campaign Budget <span>&#8805;</span></label>
             <input v-model="searchForm.min_budget" class="form-control" type="number" name="min_budget" id="min_budget" aria-describedby="min-budget" min="0" step="1000">

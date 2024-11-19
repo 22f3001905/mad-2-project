@@ -92,6 +92,7 @@ def get_sponsors():
             'email': sponsor.user.email,
             'campaigns': campaigns,
             'approved': sponsor.approved,
+            'industry': sponsor.industry.name,
         })
     
     return spons

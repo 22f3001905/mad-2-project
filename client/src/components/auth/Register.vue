@@ -79,7 +79,7 @@ const registerUser = async () => {
     <h2 class="text-center mb-3 pt-2">Account Registration</h2>
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <form @submit.prevent="registerUser" class="p-4 border rounded">
+            <form @submit.prevent="registerUser" class="p-4 border rounded shadow-sm">
                 <h3 class="mb-2 text-center">Basic Info</h3>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
@@ -88,7 +88,8 @@ const registerUser = async () => {
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
                     <input class="form-control" v-model="form.password" type="password" name="password" id="password" required
-                        autocomplete="new-password" minlength="6" placeholder="At least 6 characters in length."/>
+                        autocomplete="new-password" minlength="6" aria-describedby="password-text" />
+                    <div id="password-text" class="form-text">At least 6 characters in length.</div>
                 </div>
                 <div>
                     <label for="accountType" class="form-label">Account Type</label>
@@ -131,13 +132,14 @@ const registerUser = async () => {
                     <div class="mb-3">
                         <label for="niche" class="form-label">Niches</label>
                         <input v-model="influencer.niche" class="form-control" type="text" name="niche"
-                            id="niche" required placeholder="Comma separated social media target niches." />
+                            id="niche" required aria-describedby="niche-text" />
+                        <div id="niche-text" class="form-text">Comma separated social media target niches.</div>
                     </div>
                     <div class="mb-3">
                         <label for="reach" class="form-label">Reach</label>
                         <input v-model="influencer.reach" class="form-control" type="number" name="reach"
-                            id="reach" required min="0"
-                            placeholder="Total no. of followers on all social media." />
+                            id="reach" required min="0" aria-describedby="reach-text" />
+                        <div id="reach-text" class="form-text">Total no. of followers on all social media.</div>
                     </div>
                 </div>
                 <div class="mt-4">

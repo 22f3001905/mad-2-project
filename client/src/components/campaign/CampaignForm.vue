@@ -125,7 +125,7 @@ const editCampaign = async () => {
         <div class="col-md-6">
             <form 
                 @submit.prevent="() => props.title == 'Create' ? createCampaign() : editCampaign()" 
-                class="p-4 border rounded"
+                class="p-4 border rounded shadow-sm"
             >
                 <div class="mb-3">
                     <label for="name" class="form-label">Campaign Name</label>
@@ -133,7 +133,8 @@ const editCampaign = async () => {
                 </div>
                 <div class="mb-3">
                     <label for="description" class="form-label">Description</label>
-                    <input v-model="form.description" class="form-control" type="text" name="description" id="description" required placeholder="Describe your campaign." maxlength="200">
+                    <input v-model="form.description" class="form-control" type="text" name="description" id="description" required maxlength="200" aria-describedby="description-text">
+                    <div id="description-text" class="form-text">Brief description of the campaign.</div>
                 </div>
                 <div class="mb-3">
                     <label for="niche" class="form-label">Niche</label>

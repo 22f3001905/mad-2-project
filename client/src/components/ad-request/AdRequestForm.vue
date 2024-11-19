@@ -255,7 +255,7 @@ function submitForm() {
             <p v-if="influencerId">Target Influencer: {{ influencerName }}</p>
             <form 
                 @submit.prevent="submitForm" 
-                class="p-4 border rounded"
+                class="p-4 border rounded shadow-sm"
             >
                 <div class="mb-3" v-if="props.title != 'Negotiate'">
                     <label for="campaign" class="form-label">Campaign</label>

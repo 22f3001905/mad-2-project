@@ -62,7 +62,7 @@ const loginUser = async () => {
     </div>
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <form @submit.prevent="loginUser" class="p-4 border rounded">
+            <form @submit.prevent="loginUser" class="p-4 border rounded shadow-sm">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
                     <input class="form-control" v-model="form.email" type="email" name="email" id="email" required autocomplete="email" />

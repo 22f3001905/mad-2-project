@@ -136,7 +136,7 @@ onMounted(async () => {
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="mb-3">Target Influencer: {{ influencerName }}</div>
-            <form @submit.prevent="assignAd">
+            <form @submit.prevent="assignAd" class="p-4 border rounded shadow-sm">
                 <div class="mb-3">
                     <label for="campaign_id" class="form-label">Campaign</label>
                     <select v-model="form.campaign_id" name="campaign_id" id="campaign_id" class="form-select" @change="changeSelectedCampaign" required>

@@ -323,6 +323,7 @@ def influencer_details(influencer_id):
 def search_users():
     content = request.json
     keyword = content.get('keyword')
+    user_type = content.get('user_type', 'Sponsor')
 
     users = db.session.query(User).filter((User.id != 1)).all()
     out = []
@@ -351,6 +352,9 @@ def search_users():
     if keyword:
         keyword = keyword.strip().lower()
         out = [user for user in out if (keyword in user['name'].lower()) or (keyword in user['email'].lower())]
+    
+    if user_type:
+        out = [user for user in out if user['role'] == user_type]
     
     return jsonify({ 'data': out })
 

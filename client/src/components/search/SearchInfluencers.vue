@@ -60,7 +60,7 @@ onMounted(async () => {
 
 <template>
     <h2>Search for Influencers</h2>
-    <form @submit.prevent="searchInfluencers">
+    <form @submit.prevent="searchInfluencers" class="p-4 border rounded shadow-sm">
         <div class="mb-3">
             <label for="min_reach" class="form-label">Reach <span>&#8805;</span></label>
             <input v-model="searchForm.min_reach" class="form-control" type="number" name="min_reach" id="min_reach" aria-describedby="min-reach" min="0" step="10000">
