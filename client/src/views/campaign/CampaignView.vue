@@ -1,7 +1,13 @@
 <script setup>
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted, reactive, computed } from 'vue';
 import { useRoute, RouterLink, useRouter } from 'vue-router';
 import { formatNumber } from '@/utils';
+import { useUserStore } from '@/stores/user';
+
+const store = useUserStore();
+const userId = computed(() => store.getUserId);
+
+console.log("USER ID:", userId.value);
 
 import Navbar from '@/components/Navbar.vue';
 
@@ -105,6 +111,36 @@ async function fetchInfluencerInfo() {
     }
 }
 
+async function rejectAdRequest(adRequestId) {
+    console.log('Ad Request rejected!');
+    try {
+        const res = await fetch(`/api/ad-request/${adRequestId}/reject`, {
+            method: 'GET',
+            headers: { 'Authentication-Token': localStorage.getItem('authToken') }
+        });
+        const data = await res.json();
+        console.log(data);
+        await getCampaignInfo();
+    } catch (error) {
+        console.error('Error in accepting ad request.', error);
+    }
+}
+
+async function unassignAdRequests(adRequestId) {
+    console.log('Ad request is unassigned');
+    try {
+        const res = await fetch(`/api/ad-request/${adRequestId}/unassign`, {
+            method: 'GET',
+            headers: { 'Authentication-Token': localStorage.getItem('authToken') }
+        });
+        const data = await res.json();
+        console.log(data);
+        await getCampaignInfo();
+    } catch (error) {
+        console.error('Error in unassigning ad request.', error);
+    }
+}
+
 onMounted(async () => {
     await getCampaignInfo();
     if (user.role == 'Influencer') {
@@ -189,15 +225,51 @@ onMounted(async () => {
 
                         <div v-if="user.role == 'Sponsor'" class="mt-auto">
                             <div 
-                                v-if="(ad.status != 'Accepted') && (ad.status != 'Completed')" 
-                                class="d-flex gap-2"
+                                v-if="ad.status == 'Pending'" 
                             >
-                                <RouterLink 
-                                    :to="(ad.influencer.id > 0 && ad.status == 'Pending') ? `/ad-request/${ad.id}/edit?influencer_id=${ad.influencer.id}` : `/ad-request/${ad.id}/edit`" 
-                                    class="btn btn-warning btn-sm"
+                                <div v-if="ad.sender_user_id == userId" class="d-flex gap-2">
+                                    <RouterLink 
+                                        :to="(ad.influencer.id > 0 && ad.status == 'Pending') ? `/ad-request/${ad.id}/edit?influencer_id=${ad.influencer.id}` : `/ad-request/${ad.id}/edit`" 
+                                        class="btn btn-warning btn-sm"
+                                    >
+                                        Edit
+                                    </RouterLink>
+                                    <button 
+                                        @click="deleteAdRequest(ad.id)" 
+                                        class="btn btn-danger btn-sm"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+
+                                <div v-else class="d-flex gap-2">
+                                    <button 
+                                        @click="acceptAdRequest(ad.id)" 
+                                        class="btn btn-success btn-sm"
+                                    >
+                                        Accept
+                                    </button>
+                                    <button 
+                                        @click="rejectAdRequest(ad.id)" 
+                                        class="btn btn-danger btn-sm"
+                                    >
+                                        Reject
+                                    </button>
+                                    <RouterLink 
+                                        :to="`/ad-request/${ad.id}/negotiate`" 
+                                        class="btn btn-warning btn-sm"
+                                    >
+                                        Negotiate
+                                    </RouterLink>
+                                </div>
+                            </div>
+                            <div v-else-if="ad.status == 'Rejected'" class="d-flex gap-2">
+                                <button
+                                    @click="unassignAdRequests(ad.id)"
+                                    class="btn btn-primary btn-sm"
                                 >
-                                    Edit
-                                </RouterLink>
+                                    Unassign
+                                </button>
                                 <button 
                                     @click="deleteAdRequest(ad.id)" 
                                     class="btn btn-danger btn-sm"

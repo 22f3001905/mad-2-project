@@ -12,7 +12,7 @@ const state = reactive({
 });
 
 async function acceptAdRequest(adRequestId) {
-    console.log('Ad Request Accepted!');
+    console.log('Ad Request accepted!');
     try {
         const res = await fetch(`/api/ad-request/${adRequestId}/accept`, {
             method: 'GET',
@@ -27,7 +27,7 @@ async function acceptAdRequest(adRequestId) {
 }
 
 async function rejectAdRequest(adRequestId) {
-    console.log('Ad Request Accepted!');
+    console.log('Ad Request rejected!');
     try {
         const res = await fetch(`/api/ad-request/${adRequestId}/reject`, {
             method: 'GET',
@@ -56,8 +56,17 @@ async function getPendingAdRequests() {
     }
 }
 
-const deleteAdRequest = async () => {
-    console.log('delete ad request.')
+async function deleteAdRequest(adRequestId) {
+    console.log('Ad Request Deleted!');
+    try {
+        const res = await fetch(`/api/ad-request/${adRequestId}`, {
+            method: 'DELETE',
+            headers: { 'Authentication-Token': localStorage.getItem('authToken') }
+        });
+        state.pending_sent = state.pending_sent.filter(ad => ad.id != adRequestId);
+    } catch (error) {
+        console.error('Error in deleting ad request.', error);
+    }
 }
 
 onMounted(async () => {
@@ -171,7 +180,7 @@ onMounted(async () => {
                     </div>
                 </div>
                 <div v-if="state.pending_received.length == 0">
-                    <p class="mb-0">No ad requests received.</p>
+                    <p>No ad requests received.</p>
                 </div>
             </div>
         </div>

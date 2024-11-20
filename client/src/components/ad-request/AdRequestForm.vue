@@ -1,6 +1,11 @@
 <script setup>
-import { defineProps, reactive, onMounted, ref } from 'vue';
+import { formatNumber } from '@/utils';
+import { defineProps, reactive, onMounted, ref, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router'; 
+import { useUserStore } from '@/stores/user';
+
+const store = useUserStore();
+const userRole = computed(() => store.getUserRole);
 
 const route = useRoute();
 const router = useRouter();
@@ -35,7 +40,8 @@ const state = reactive({
 
 onMounted(async () => {
     // fetch campaign goals
-    if (props.title != 'Negotiate') {
+    if (props.title != 'Negotiate' && userRole.value == 'Sponsor') {
+        // Edit or Create
         try {
             const res = await fetch('/api/sponsor/campaigns', {
                 method: 'GET',
@@ -81,7 +87,39 @@ onMounted(async () => {
             console.log(data);
 
             form.campaign.id = data.campaign_id;
-            const selectedCampaign = state.campaigns.filter(camp => camp.id ==  form.campaign.id)[0];
+
+            let selectedCampaign = {};
+
+            if (userRole.value == 'Sponsor') {
+                selectedCampaign = state.campaigns.filter(camp => camp.id ==  form.campaign.id)[0];
+            } else {
+
+                try {
+                    const r = await fetch(`/api/campaign/${data.campaign_id}`, {
+                        method: 'GET',
+                        headers: { 'Authentication-Token': localStorage.getItem('authToken') }
+                    });
+
+                    const d = await r.json();
+                    console.log("YOUOYO", d);
+
+                    selectedCampaign.flagged = d.flagged;
+                    selectedCampaign.goals = d.goals;
+                    selectedCampaign.budget = d.budget;
+
+                    state.campaigns = [
+                        {
+                            id: d.id,
+                            name: d.name,
+                            visibility: d.visibility.name
+                        }
+                    ];
+
+                } catch (error) {
+                    console.error('Error fetching campaign data.', error);
+                }
+            }
+
             form.campaign.flagged = selectedCampaign.flagged;
             form.campaign.goals = [...selectedCampaign.goals];
 
@@ -92,6 +130,9 @@ onMounted(async () => {
             form.sender_user_id = data.sender_user_id;
 
             state.campaignBudget = selectedCampaign.budget + data.payment_amount;
+
+            console.log(form.campaign);
+
         } catch (error) {
             console.error('Error fetching ad request data.', error);
         }
@@ -281,19 +322,23 @@ function submitForm() {
                 <div class="mb-3">
                     <label for="payment_amount" class="form-label">Payment Amount</label>
                     <input v-model="form.payment_amount" class="form-control" type="number" name="payment_amount" id="payment_amount" required aria-describedby="payment-budget" min="0" :max="state.campaignBudget" step="100">
-                    <div id="payment-budget" class="form-text">Remaining Campaign Budget: Rs. {{ state.campaignBudget }}</div>
+                    <div id="payment-budget" class="form-text">Remaining Campaign Budget: Rs. {{ formatNumber(state.campaignBudget) }}</div>
                 </div>
                 <div class="mb-3" v-if="props.title != 'Negotiate'">
                     <label for="message" class="form-label">Message</label>
                     <input v-model="form.message" class="form-control" type="text" name="message" id="message" required>
                 </div>
                 <div class="mb-3" v-else>
-                    <p>Previous Message<br>{{ form.message }}</p>
+                    <div class="mb-3">
+                        <label for="prev-message" class="form-label">Previous Message</label>
+                        <input class="form-control" type="text" name="prev-message" id="prev-message" :value="form.message" disabled>
+                    </div>
+
                     <label for="message" class="form-label">New Message</label>
                     <input v-model="form.newMessage" class="form-control" type="text" name="message" id="message" required>
                 </div>
                 <div>
-                    <button type="submit" class="btn btn-primary">{{ props.title }} Ad Request</button>
+                    <button type="submit" class="btn btn-primary">{{ props.title }}</button>
                 </div>
             </form>
         </div>

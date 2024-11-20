@@ -406,6 +406,25 @@ def ad_assign():
     return jsonify({ 'message': 'Successfully assigned ad request.' })
 
 
+@app.route('/ad-request/<int:ad_request_id>/unassign')
+@auth_required("token")
+@roles_accepted('Sponsor')
+@not_flagged()
+@not_approved()
+def unassign_ad_request(ad_request_id):
+    ad_request = db.session.get(AdRequest, ad_request_id)
+
+    if ad_request.status.name != 'Rejected':
+        pass  # TODO
+
+    ad_request.influencer_id = None
+    ad_request.status_id = 1
+
+    db.session.commit()
+
+    return jsonify({ 'message': 'Successfully unassigned ad request.' })
+
+
 @app.route("/ad-request/<int:ad_request_id>/accept")
 @auth_required("token")
 @roles_accepted('Sponsor', 'Influencer')

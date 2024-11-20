@@ -1,12 +1,19 @@
 <script setup>
 import Navbar from '@/components/Navbar.vue';
-import { reactive, onMounted } from 'vue';
+import { reactive, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { formatNumber } from '@/utils';
+import { useUserStore } from '@/stores/user';
+
+const store = useUserStore();
+const userId = computed(() => store.getUserId);
+
+console.log("USER ID:", userId.value);
 
 const state = reactive({
     walletBalance: null,
-    assignedAds: []
+    assignedAds: [],
+    influencerId: null
 })
 
 const getInfluencerInfo = async () => {
@@ -17,6 +24,7 @@ const getInfluencerInfo = async () => {
         });
         const data = await res.json();
         console.log(data);
+        state.influencerId = data.id;
         state.walletBalance = data.wallet_balance;
         state.assignedAds = [...data.assigned_ads];
     } catch (error) {
@@ -68,6 +76,19 @@ async function completeAdRequest(adRequestId) {
     }
 }
 
+async function deleteAdRequest(adRequestId) {
+    console.log('Ad Request Deleted!');
+    try {
+        const res = await fetch(`/api/ad-request/${adRequestId}`, {
+            method: 'DELETE',
+            headers: { 'Authentication-Token': localStorage.getItem('authToken') }
+        });
+        state.assignedAds = state.assignedAds.filter(ad => ad.id != adRequestId);
+    } catch (error) {
+        console.error('Error in deleting ad request.', error);
+    }
+}
+
 onMounted(async () => {
     await getInfluencerInfo();
 })
@@ -104,15 +125,27 @@ onMounted(async () => {
                         </li>
                     </ul>
 
-                    <div 
-                        v-if="(ad.status != 'Completed') && (ad.status != 'Rejected')" 
-                        class="mt-auto"
-                    >
-                        <!-- Pending to Accept -->
-                        <div 
-                            v-if="ad.status == 'Pending'" 
-                            class="d-flex gap-2"
-                        >
+                    <!-- ad.status in ('Pending', 'Accepted', 'Rejected', 'Completed') -->
+
+                    <div v-if="ad.status == 'Pending'" class="mt-auto">
+
+                        <!-- Sent By Influencer -->
+                        <div v-if="ad.sender_user_id == userId" class="d-flex gap-2">
+                            <RouterLink 
+                                :to="`/ad-request/${ad.id}/edit?influencer_id=${state.influencerId}`" 
+                                class="btn btn-warning btn-sm"
+                            >
+                                Edit
+                            </RouterLink>
+                            <button 
+                                @click="deleteAdRequest(ad.id)" 
+                                class="btn btn-danger btn-sm"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                        <!-- Received By Influencer -->
+                        <div v-else class="d-flex gap-2">
                             <button 
                                 @click="acceptAdRequest(ad.id)" 
                                 class="btn btn-success btn-sm"
@@ -132,26 +165,27 @@ onMounted(async () => {
                                 Negotiate
                             </RouterLink>
                         </div>
-                        <!-- Accepted On-going Action -->
-                        <div v-else>
-                            <button 
-                                @click="completeAdRequest(ad.id)" 
-                                class="btn btn-dark btn-sm"
-                            >
-                                Complete
-                            </button>
-                        </div>
+
                     </div>
-                    <div v-else-if="ad.status == 'Completed'">
-                        <button class="btn btn-light btn-sm" disabled>
-                            Ad request has been completed
+                    <div v-else-if="ad.status == 'Accepted'" class="mt-auto">
+                        <button 
+                            @click="completeAdRequest(ad.id)" 
+                            class="btn btn-dark btn-sm"
+                        >
+                            Complete
                         </button>
                     </div>
-                    <div v-else>
+                    <div v-else-if="ad.status == 'Rejected'" class="mt-auto">
                         <button class="btn btn-light btn-sm" disabled>
                             Ad request has been rejected
                         </button>
                     </div>
+                    <div v-else class="mt-auto">
+                        <button class="btn btn-light btn-sm" disabled>
+                            Ad request has been completed
+                        </button>
+                    </div>
+
                 </div>
             </div>
         </div>

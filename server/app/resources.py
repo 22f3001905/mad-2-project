@@ -85,6 +85,7 @@ ad_fields = {
     'influencer': fields.Nested(influencer_fields)
 }
 goal_fields = {
+    'id': fields.Integer,
     'name': fields.String,
     'status': fields.String,
     'n_ads': fields.Integer
@@ -250,6 +251,7 @@ class CampaignAPI(Resource):
         goals = []
         for goal in campaign.goals:
             g = {
+                'id': goal.id,
                 'name': goal.name,
                 'status': goal.status,
                 'n_ads': len(goal.ad_requests)
@@ -500,9 +502,12 @@ class AdRequestAPI(Resource):
         return { 'message': 'Ad Request created successfully.', 'id': ad_request.id, 'campaign_id': ad_request.campaign.id }
 
     @auth_required('token')
-    @roles_accepted('Sponsor')
+    @roles_accepted('Sponsor', 'Influencer')
     def delete(self, ad_request_id):
         ad_request = db.session.get(AdRequest, ad_request_id)
+
+        if ad_request.sender_user_id != current_user.id:
+            pass  # TODO: Error: NOT ALLOWED
 
         if not ad_request:
             pass  # error
