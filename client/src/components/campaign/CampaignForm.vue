@@ -172,7 +172,7 @@ const editCampaign = async () => {
                 </div>
                 <div>
                     <button type="submit" class="btn btn-primary">
-                        {{ title }} Campaign
+                        {{ title }}
                     </button>
                 </div>
             </form>

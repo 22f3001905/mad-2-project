@@ -2,6 +2,7 @@
 import { ref, reactive, onMounted } from 'vue';
 import Navbar from '@/components/Navbar.vue';
 import { useRoute } from 'vue-router';
+import { formatNumber } from '@/utils';
 
 const route = useRoute();
 const userId = ref(route.params.id);
@@ -81,52 +82,126 @@ onMounted(async () => {
 
 <template>
     <Navbar />
-    <h2>Account Details</h2>
-    <ul>
-        <li>Email: {{ user.email }}</li>
-        <div v-if="user.role == 'Sponsor' || user.role == 'Influencer'">
-            <li>Name: {{ user.name }}</li>
-            <li>Flagged: {{ user.flagged }}</li>
-        </div>
-        <div v-else>
-            <li>User: ADMIN</li>
-        </div>
-        <div v-if="user.role == 'Sponsor'">
-            <li>Budget: Rs. {{ sponsor.budget }}</li>
-            <li>Industry: {{ sponsor.industry }}</li>
-        </div>
-        <div v-else-if="user.role == 'Influencer'">
-            <li>Niche: {{ influencer.niche }}</li>
-            <li>Reach: {{ influencer.reach }} people</li>
-            <li>Wallet: Rs. {{ influencer.wallet_balance }}</li>
-            <li>Category: {{ influencer.category }}</li>
-        </div>
-    </ul>
+    <section class="pt-4">
+        <h2 class="mb-3">Account Details</h2>
+        <ul>
+            <li>
+                <strong>Name:</strong> {{ user.name }}
+            </li>
+            <li>
+                <strong>Email:</strong> {{ user.email }}
+            </li>
+            <div v-if="user.role == 'Sponsor'">
+                <li>
+                    <strong>Budget:</strong> Rs. {{ formatNumber(sponsor.budget) }}
+                </li>
+                <li>
+                    <strong>Industry:</strong> {{ sponsor.industry }}
+                </li>
+            </div>
+            <div v-else-if="user.role == 'Influencer'">
+                <li style="max-width: 400px;" v-if="influencer.niche">
+                    <strong>Niche: </strong>
+                    <span 
+                        class="badge bg-dark me-1" 
+                        v-for="tag in influencer.niche.split(', ')"
+                    >
+                    {{ tag }}
+                    </span>
+                </li>
+                <li>
+                    <strong>Reach:</strong> {{ formatNumber(influencer.reach) }} people
+                </li>
+                <li>
+                    <strong>Wallet:</strong> Rs. {{ formatNumber(influencer.wallet_balance) }}
+                </li>
+                <li>
+                    <strong>Category:</strong> {{ influencer.category }}
+                </li>
+            </div>
+        </ul>
+    </section>
+
     <section v-if="user.role == 'Sponsor'">
-        <h3>Campaigns</h3>
-        <div v-for="campaign in sponsor.campaigns">
-            <p>{{ campaign.name }}</p>
-            <ul>
-                <li>Ends: {{ new Date(campaign.end_date).toDateString() }}</li>
-                <li>Visibility: {{ campaign.visibility }}</li>
-                <li>Flagged: {{ campaign.flagged }}</li>
-            </ul>
+        <div class="row">
+            <div 
+                v-for="campaign in sponsor.campaigns" 
+                :key="campaign.id" 
+                class="col-md-4 mb-4"
+            >
+                <div class="card shadow-sm h-100">
+                    <div class="card-body d-flex flex-column">
+                        <h3 class="card-title">{{ campaign.name }}</h3>
+                        
+                        <ul class="list-unstyled">
+                            <li>
+                                <strong>Ends:</strong> {{ new Date(campaign.end_date).toDateString() }}
+                            </li>
+                            <li>
+                                <strong>Visibility:</strong> {{ campaign.visibility }}
+                            </li>
+                            <li v-if="campaign.flagged" class="badge bg-danger">
+                                Flagged
+                            </li>
+                        </ul>
+
+                        <div class="mt-auto">
+                            <RouterLink 
+                                :to="`/campaign/${campaign.id}`" 
+                                class="btn btn-primary btn-sm"
+                            >
+                                View
+                            </RouterLink>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div v-if="sponsor.campaigns.length == 0">
-            <p>None</p>
+        <div class="row" v-if="sponsor.campaigns.length == 0">
+            <p class="text-muted">
+                No campaigns created yet.
+            </p>
         </div>
     </section>
     <section v-else>
-        <h3>Assigned Ads</h3>
-        <div v-for="ad in influencer.assigned_ads">
-            <p>{{ ad.requirement }}</p>
-            <ul>
-                <li>Status: {{ ad.status }}</li>
-                <li>Payout: Rs. {{ ad.payment_amount }}</li>
-            </ul>
-        </div>
-        <div v-if="influencer.assigned_ads.length == 0">
-            <p>None</p>
+        <div class="row">
+            <div 
+                v-for="ad in influencer.assigned_ads" 
+                :key="ad.id" 
+                class="col-md-6 mb-4" 
+            >
+                <div class="card shadow-sm h-100">
+                    <div class="card-body d-flex flex-column">
+                        <h3 class="card-title">{{ ad.requirement }}</h3>
+                        <p class="card-text">{{ ad.message }}</p>
+
+                        <ul class="list-unstyled">
+                            <li>
+                                <strong>Campaign:</strong> {{ ad.campaign.name }}
+                            </li>
+                            <li>
+                                <strong>Status:</strong> {{ ad.status }}
+                            </li>
+                            <li>
+                                <strong>Payout:</strong> Rs. {{ formatNumber(ad.payment_amount) }}
+                            </li>
+                        </ul>
+
+                        <div class="mt-auto">
+                            <RouterLink :to="`/campaign/${ad.campaign.id}`" class="btn btn-primary btn-sm">
+                                View Campaign
+                            </RouterLink>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row" v-if="influencer.assigned_ads.length == 0">
+                <p class="text-muted">
+                    No ad requests assigned yet.
+                </p>
+            </div>
         </div>
     </section>
+
 </template>

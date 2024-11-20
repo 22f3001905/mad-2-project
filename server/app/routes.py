@@ -362,6 +362,9 @@ def search_users():
 @auth_required("token")
 @roles_accepted('Admin')
 def user_profile(user_id):
+    if user_id == 1:
+        pass  # TODO: Cannot access admin info.
+
     user = db.session.get(User, user_id)
 
     if user.sponsor:
