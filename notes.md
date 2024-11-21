@@ -11,3 +11,16 @@ Commands to run:
 4. Celery Worker: celery -A celery_service.celery_app worker --loglevel INFO
 5. Celery Beat: celery -A celery_service.celery_app beat --max-interval 1 --loglevel INFO
 6. Mailhog: MailHog
+
+Installation:
+
+```bash
+npm install
+npm run dev
+
+python -m venv venv
+source venv/bin/activate
+python server.py
+
+python dummy_data.py
+```
