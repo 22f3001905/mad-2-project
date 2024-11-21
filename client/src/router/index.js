@@ -52,7 +52,7 @@ const router = createRouter({
         { path: '/404', name: 'not-found', component: ErrorView, props: { statusCode: 404, description: 'The page you are looking for does not exist.' } },
         { path: '/500', name: 'internal-error', component: ErrorView, props: { statusCode: 500, description: 'Internal Server Error. Please try again later.' } },
         { path: '/error', name: 'error', component: ErrorView },
-        { path: '/:catchAll(.*)', redirect: '/404' },
+        // { path: '/:catchAll(.*)', redirect: '/404' },
     ]
 });
 

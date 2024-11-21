@@ -124,3 +124,4 @@ coverage
 generate_keys.py
 *.rdb
 exports/
+certs/
