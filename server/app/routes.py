@@ -858,3 +858,25 @@ def approve_sponsor(sponsor_id):
 
     db.session.commit()
     return jsonify({ 'message': 'Sponsor was approved.' })
+
+
+@app.route("/add-money", methods=["POST"])
+@auth_required("token")
+@roles_required("Sponsor")
+@not_flagged()
+@not_approved()
+def add_money_sponsor():
+    content = request.json
+    try:
+        amount = float(content.get('amount', 0))
+    except:
+        abort(500, description="Cannot convert to float.")
+    
+    if amount < 0:
+        abort(405, description="Cannot add negative money.")
+
+    # Enough to update sponsor budget in DB
+    current_user.sponsor.budget += amount            
+    db.session.commit()
+
+    return jsonify({ 'message': 'Money was added to sponsor budget.' })
