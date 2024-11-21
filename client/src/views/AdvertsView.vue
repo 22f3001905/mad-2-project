@@ -1,7 +1,6 @@
 <script setup>
 import Navbar from '@/components/Navbar.vue';
 import { reactive, onMounted, computed } from 'vue';
-import { useRoute } from 'vue-router';
 import { formatNumber } from '@/utils';
 import { useUserStore } from '@/stores/user';
 
@@ -191,7 +190,7 @@ onMounted(async () => {
         </div>
     </div>
 
-    <div class="text-center mt-4">
+    <div class="text-center my-4">
         <RouterLink to="/search" class="btn btn-outline-primary">
             Search For Campaigns
         </RouterLink>

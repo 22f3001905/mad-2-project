@@ -2,7 +2,7 @@
 import { defineProps, reactive, ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import { formatNumber } from '@/utils';
+import { formatNumber, redirectToErrorPage } from '@/utils';
 
 const props = defineProps({
     title: String,  // 'Create' or 'Edit'
@@ -28,8 +28,13 @@ const campaignId = ref(route.params.id);
 
 onMounted(async () => {
     try {
-        const response = await fetch('/api/hard-coded-form-data');
-        const data = await response.json();
+        const res = await fetch('/api/hard-coded-form-data');
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
+        const data = await res.json();
         const fetchedCampaignNiches = [];
         for (const [idx, campaignNiche] of data.campaign_niche_names.entries()) {
             fetchedCampaignNiches.push({ id: idx + 1, name: campaignNiche })
@@ -44,6 +49,11 @@ onMounted(async () => {
                 method: 'GET',
                 headers: { 'Authentication-Token': localStorage.getItem('authToken') }
             });
+
+            if (!res.ok) {
+                return redirectToErrorPage(res.status, router);
+            }
+
             const data = await res.json();
             console.log(data);
 
@@ -82,6 +92,11 @@ const createCampaign = async () => {
                 goals: form.goals
             })
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         return router.push(`/campaign/${data.id}`);
@@ -108,6 +123,11 @@ const editCampaign = async () => {
                 end_date: form.end_date
             })
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         return router.push(`/campaign/${campaignId.value}`);

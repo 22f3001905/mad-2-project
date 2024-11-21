@@ -17,7 +17,7 @@ const isLoggedIn = computed(() => store.getAuthToken != null);
             An Influencer Engagement & Sponsorship Co-ordination Platform.
         </p>
         <div class="row align-items-center">
-            <figure class="text-center col">
+            <figure class="text-center col-8">
                 <img 
                     class="img-fluid rounded shadow" 
                     src="/img/work.jpg" 

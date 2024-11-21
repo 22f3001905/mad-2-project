@@ -1,5 +1,9 @@
 <script setup>
-import { onMounted, ref, reactive } from 'vue';
+import { onMounted, ref, reactive, onUnmounted, onBeforeUnmount } from 'vue';
+import { redirectToErrorPage } from '@/utils';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const showDownloadButton = ref(true);
 const exportCompleted = ref(false);
@@ -27,7 +31,7 @@ const downloadCampaignsCSVFile = async (url) => {
             const url = window.URL.createObjectURL(blob);
             
             downloadButtonManual.value.href = url;
-            downloadButtonManual.value.download="campaigns.csv";
+            downloadButtonManual.value.download = "campaigns.csv";
             downloadButtonManual.value.click();
 
             setTimeout(() => {
@@ -35,6 +39,7 @@ const downloadCampaignsCSVFile = async (url) => {
             }, 10000);
         } else {
             console.error('Error in download request.', res.statusText);
+            return redirectToErrorPage(res.status, router);
         }
     } catch (error) {
         console.error('Error in downloading .csv file.', error);
@@ -51,6 +56,11 @@ const triggerExport = async () => {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
 
@@ -73,6 +83,11 @@ const poll = async (taskId) => {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
 
         if (data.ready) {
@@ -111,6 +126,12 @@ onMounted(() => {
         console.log('No tasks triggered!');
     }
 });
+
+// Important: We need to clear the polling before unmounting this component.
+onBeforeUnmount(() => {
+    const pollId = state.polls.shift();
+    clearInterval(pollId);
+})
 </script>
 
 <template>

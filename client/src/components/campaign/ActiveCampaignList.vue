@@ -1,5 +1,9 @@
 <script setup>
 import { defineProps, ref, reactive, onMounted } from 'vue';
+import { redirectToErrorPage } from '@/utils';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const props = defineProps({
     role: { type: String, required: true }
@@ -15,6 +19,11 @@ const flagCampaign = async (campaignId) => {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         state.activeCampaigns.filter(camp => camp.id == campaignId)[0].flagged = true;
@@ -29,6 +38,11 @@ const unflagCampaign = async (campaignId) => {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         state.activeCampaigns.filter(camp => camp.id == campaignId)[0].flagged = false;
@@ -43,6 +57,11 @@ onMounted(async () => {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         state.activeCampaigns = [...data.campaigns];

@@ -1,4 +1,4 @@
-from flask import current_app as app
+from flask import current_app as app, abort
 from flask_restful import Api, Resource, reqparse, fields, marshal_with
 from flask_security import auth_required, roles_required, current_user, roles_accepted
 
@@ -454,6 +454,9 @@ class AdRequestAPI(Resource):
     def get(self, ad_request_id):
         ad_request = db.session.get(AdRequest, ad_request_id)
 
+        if not ad_request:
+            raise NotFoundError(error_message="Ad request not found.")
+        
         output = {
             'id': ad_request.id,
             'campaign_id': ad_request.campaign_id,
@@ -482,10 +485,28 @@ class AdRequestAPI(Resource):
         campaign = db.session.get(Campaign, campaign_id)
         ad_request = db.session.get(AdRequest, ad_request_id)
 
+        if not ad_request:
+            raise NotFoundError(error_message="Ad request not found.")
+        
+        if ad_request.sender_user_id != current_user.id:
+            raise BusinessValidationError(
+                status_code=403, 
+                error_message="You are not allowed to edit this ad request."
+            )
+        
+        if ad_request.status.name != 'Pending':
+            raise BusinessValidationError(
+                status_code=403, 
+                error_message="You can only edit a 'Pending' ad request."
+            )
+
         total_budget = campaign.budget + ad_request.payment_amount
 
         if payment_amount > total_budget:
-            pass # error
+            raise BusinessValidationError(
+                status_code=403, 
+                error_message="Payment amount cannot be greater than total budget."
+            )
 
         campaign.budget = total_budget - payment_amount
         
@@ -506,11 +527,11 @@ class AdRequestAPI(Resource):
     def delete(self, ad_request_id):
         ad_request = db.session.get(AdRequest, ad_request_id)
 
-        if ad_request.sender_user_id != current_user.id:
-            pass  # TODO: Error: NOT ALLOWED
-
         if not ad_request:
             pass  # error
+
+        if ad_request.sender_user_id != current_user.id:
+            pass  # TODO: Error: NOT ALLOWED
 
         ad_request.campaign.budget += ad_request.payment_amount
 

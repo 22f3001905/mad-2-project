@@ -1,9 +1,11 @@
 <script setup>
 import { reactive, onMounted } from 'vue';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
 
 import DownloadCampaignData from '@/components/campaign/DownloadCampaignData.vue';
-import { formatNumber } from '@/utils';
+import { formatNumber, redirectToErrorPage } from '@/utils';
+
+const router = useRouter();
 
 const state = reactive({
     campaigns: []
@@ -16,6 +18,11 @@ onMounted(async () => {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data.campaigns);
         state.campaigns = [...data.campaigns];  // creates a copy

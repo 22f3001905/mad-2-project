@@ -66,6 +66,11 @@ const registerUser = async () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(requestBody)
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await response.json();
         console.log(data);
         return router.push('/login');
@@ -79,7 +84,7 @@ const registerUser = async () => {
     <h2 class="text-center mb-3 pt-2">Account Registration</h2>
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <form @submit.prevent="registerUser" class="p-4 border rounded shadow-sm">
+            <form @submit.prevent="registerUser" class="p-4 border rounded shadow-sm mb-4">
                 <h3 class="mb-2 text-center">Basic Info</h3>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>

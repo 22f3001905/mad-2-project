@@ -12,6 +12,11 @@ onMounted(async () => {
                 'Authentication-Token': localStorage.getItem('authToken')
             }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         // console.log(data);
         budget.value = data.budget;

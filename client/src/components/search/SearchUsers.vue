@@ -1,6 +1,9 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue';
-import { formatNumber } from '@/utils';
+import { formatNumber, redirectToErrorPage } from '@/utils';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const searchForm = reactive({
     keyword: null,
@@ -22,6 +25,11 @@ const searchUsers = async () => {
                 user_type: searchForm.userType
             })
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         searchResults.value = [...data.data];
@@ -44,6 +52,11 @@ const flagUser = async (userId) => {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         searchResults.value.filter(user => user.user_id == userId)[0].flagged = true;
@@ -58,6 +71,11 @@ const unflagUser = async (userId) => {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         searchResults.value.filter(user => user.user_id == userId)[0].flagged = false;

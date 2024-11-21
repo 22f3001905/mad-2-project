@@ -2,7 +2,9 @@
 import { reactive, onMounted, computed } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { formatNumber } from '@/utils';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const store = useUserStore();
 const userRole = computed(() => store.getUserRole);
 
@@ -18,6 +20,11 @@ async function acceptAdRequest(adRequestId) {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         await getPendingAdRequests();
@@ -33,6 +40,11 @@ async function rejectAdRequest(adRequestId) {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         await getPendingAdRequests();
@@ -47,6 +59,11 @@ async function getPendingAdRequests() {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         state.pending_sent = [...data.pending_ad_requests.sent]
@@ -63,6 +80,11 @@ async function deleteAdRequest(adRequestId) {
             method: 'DELETE',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         state.pending_sent = state.pending_sent.filter(ad => ad.id != adRequestId);
     } catch (error) {
         console.error('Error in deleting ad request.', error);

@@ -1,5 +1,5 @@
 <script setup>
-import { formatNumber } from '@/utils';
+import { formatNumber, redirectToErrorPage } from '@/utils';
 import { defineProps, reactive, onMounted, ref, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router'; 
 import { useUserStore } from '@/stores/user';
@@ -47,6 +47,11 @@ onMounted(async () => {
                 method: 'GET',
                 headers: { 'Authentication-Token': localStorage.getItem('authToken') }
             });
+
+            if (!res.ok) {
+                return redirectToErrorPage(res.status, router);
+            }
+
             const data = await res.json();
             console.log(data.campaigns);
             state.campaigns = [...data.campaigns];
@@ -83,6 +88,11 @@ onMounted(async () => {
                 method: 'GET',
                 headers: { 'Authentication-Token': localStorage.getItem('authToken') }
             });
+
+            if (!res.ok) {
+                return redirectToErrorPage(res.status, router);
+            }
+
             const data = await res.json();
             console.log(data);
 
@@ -99,6 +109,10 @@ onMounted(async () => {
                         method: 'GET',
                         headers: { 'Authentication-Token': localStorage.getItem('authToken') }
                     });
+
+                    if (!r.ok) {
+                        return redirectToErrorPage(res.status, router);
+                    }
 
                     const d = await r.json();
                     console.log("YOUOYO", d);
@@ -145,6 +159,11 @@ onMounted(async () => {
                 method: 'GET',
                 headers: { 'Authentication-Token': localStorage.getItem('authToken') }
             });
+
+            if (!res.ok) {
+                return redirectToErrorPage(res.status, router);
+            }
+
             const data = await res.json();
             console.log(data);
 
@@ -155,6 +174,10 @@ onMounted(async () => {
                     method: 'GET',
                     headers: { 'Authentication-Token': localStorage.getItem('authToken') }
                 });
+
+                if (!r.ok) {
+                    return redirectToErrorPage(res.status, router);
+                }
 
                 const d = await r.json();
                 console.log(d);
@@ -176,6 +199,9 @@ onMounted(async () => {
         console.log('Fetch influencer name.');
         try {
             const res = await fetch(`/api/influencer/${influencerId.value}`);
+            if (!res.ok) {
+                return redirectToErrorPage(res.status, router);
+            }
             const data = await res.json();
             influencerName.value = data.influencer.name;
         } catch (error) {
@@ -204,6 +230,11 @@ const createAdRequest = async () => {
                 campaign_goal_id: form.campaign_goal_id
             })
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         return router.push(`/campaign/${form.campaign.id}`);
@@ -231,6 +262,11 @@ const editAdRequest = async () => {
                 campaign_goal_id: form.campaign_goal_id
             })
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         return router.push(`/campaign/${data.campaign_id}`);
@@ -269,6 +305,11 @@ const negotiateAdRequest = async () => {
                 // sender_user_id: form.sender_user_id
             })
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         return router.push(`/campaign/${form.campaign.id}`);

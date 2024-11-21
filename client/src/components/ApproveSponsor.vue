@@ -1,5 +1,9 @@
 <script setup>
 import { onMounted, reactive } from 'vue';
+import { redirectToErrorPage } from '@/utils';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const state = reactive({
     sponsors: []
@@ -10,6 +14,11 @@ const approveSponsor = async (sponsor_id) => {
         const res = await fetch(`/api/sponsor-approval/${sponsor_id}`, {
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         state.sponsors = state.sponsors.filter(sponsor => sponsor.id != sponsor_id);
@@ -23,6 +32,11 @@ onMounted(async () => {
         const res = await fetch('/api/sponsors-approval-pending', {
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         state.sponsors = state.sponsors.concat(data.data);
         console.log(data.data);

@@ -2,6 +2,7 @@
 import Navbar from '@/components/Navbar.vue';
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { redirectToErrorPage } from '@/utils';
 
 const route = useRoute();
 const router = useRouter();
@@ -31,6 +32,11 @@ const changeSelectedCampaign = async () => {
         const res = await fetch(`/api/campaign/${form.campaign_id}`, {
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         // console.log(data);
         const validAds = [];
@@ -63,6 +69,11 @@ const assignAd = async () => {
                 influencer_id: influencerId.value
             })
         })
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json()
         console.log(data);
         return router.push('/search');
@@ -77,6 +88,11 @@ onMounted(async () => {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data.campaigns);
         const validCampaigns = [];  // Campaigns with unassigned ads.
@@ -101,6 +117,11 @@ onMounted(async () => {
 
     try {
         const res = await fetch(`/api/influencer/${influencerId.value}`);
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+        
         const data = await res.json();
         influencerName.value = data.influencer.name;
     } catch (error) {
@@ -111,6 +132,11 @@ onMounted(async () => {
         const res = await fetch(`/api/campaign/${form.campaign_id}`, {
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         // console.log('hehehehehe', data);
         const validAds = [];

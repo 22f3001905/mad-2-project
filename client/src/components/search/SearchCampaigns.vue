@@ -1,6 +1,9 @@
 <script setup>
-import { formatNumber } from '@/utils';
+import { formatNumber, redirectToErrorPage } from '@/utils';
 import { onMounted, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const searchForm = reactive({
     min_budget: null,
@@ -25,6 +28,11 @@ const searchCampaigns = async () => {
                 keyword: searchForm.keyword
             })
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         searchResults.value = [...data.data];

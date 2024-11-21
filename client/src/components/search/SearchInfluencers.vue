@@ -1,6 +1,9 @@
 <script setup>
-import { formatNumber } from '@/utils';
+import { formatNumber, redirectToErrorPage } from '@/utils';
 import { onMounted, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const searchForm = reactive({
     min_reach: null,
@@ -28,6 +31,11 @@ const searchInfluencers = async () => {
                 niche: searchForm.niche
             })
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+        
         const data = await res.json();
         console.log(data);
         searchResults.value = [...data.data];
@@ -68,6 +76,11 @@ onMounted(async () => {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data.campaigns);
         const validCampaigns = [];  // Campaigns with unassigned ads.

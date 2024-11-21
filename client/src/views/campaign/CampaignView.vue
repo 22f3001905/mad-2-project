@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, reactive, computed } from 'vue';
 import { useRoute, RouterLink, useRouter } from 'vue-router';
-import { formatNumber } from '@/utils';
+import { formatNumber, redirectToErrorPage } from '@/utils';
 import { useUserStore } from '@/stores/user';
 
 const store = useUserStore();
@@ -39,6 +39,11 @@ async function deleteCampaign() {
             method: 'DELETE',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         return router.push('/campaigns');
     } catch (error) {
         console.error('Error in deleting campaign.', error);
@@ -52,6 +57,11 @@ async function deleteAdRequest(adRequestId) {
             method: 'DELETE',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         campaign.budget += campaign.adRequests.filter(ad => ad.id == adRequestId)[0].payment_amount;
         campaign.adRequests = campaign.adRequests.filter(ad => ad.id != adRequestId);
     } catch (error) {
@@ -65,6 +75,11 @@ async function getCampaignInfo() {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+        
         const data = await res.json();
         console.log(data);
         
@@ -89,6 +104,11 @@ async function acceptAdRequest(adRequestId) {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         await getCampaignInfo();
@@ -103,6 +123,11 @@ async function fetchInfluencerInfo() {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         state.influencerId = data.id;
@@ -118,6 +143,11 @@ async function rejectAdRequest(adRequestId) {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         await getCampaignInfo();
@@ -133,6 +163,11 @@ async function unassignAdRequests(adRequestId) {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         await getCampaignInfo();

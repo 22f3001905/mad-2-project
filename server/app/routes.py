@@ -310,6 +310,9 @@ def sponsor_budget():
 # @cache.cached(timeout=60, key_prefix=lambda: user_specific_key(f"influencer_{request.view_args['influencer_id']}"))
 def influencer_details(influencer_id):
     influencer = db.session.get(Influencer, influencer_id)
+    if not influencer:
+        abort(404, description="Influencer not found.")
+
     influencer_out = {
         'id': influencer.id,
         'name': influencer.name,
@@ -523,8 +526,12 @@ def negotiate_ad_request(ad_request_id):
         abort(405, description="Payment amount cannot be negative.")
     
     campaign_budget = ad_request.campaign.budget + ad_request.payment_amount
+
     if payment_amount > campaign_budget:
         abort(405, description="Payment Amount cannot be greater than the Campaign Budget.")
+    
+    if ad_request.sender_user_id == current_user.id:
+        abort(403, description='You cannot negaotiate with your own ad request.')
     
     ad_request.campaign.budget = campaign_budget - payment_amount
     

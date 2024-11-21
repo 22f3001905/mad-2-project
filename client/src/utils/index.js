@@ -19,5 +19,17 @@ function formatNumber(value) {
     return new Intl.NumberFormat().format(value);
 }
 
+function redirectToErrorPage(status, router) {
+    if (status == 403) {
+        return router.push('/403');
+    } else if (status == 404) {
+        return router.push('/404');
+    } else if (status == 500) {
+        return router.push('/500');
+    } else {
+        return router.push('/error');
+    }
+}
 
-export { userLoggedInRedirect, clearCookie, formatNumber };
+
+export { userLoggedInRedirect, clearCookie, formatNumber, redirectToErrorPage };

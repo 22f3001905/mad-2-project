@@ -16,13 +16,13 @@ import Navbar from '@/components/Navbar.vue';
     <h3 class="mt-4">Key Features</h3>
     <ul>
         <li>
-            Effortless Connections: Matchmaking between Sponsors and Influencers based on preferences, audience demographics, and campaign goals.
+            <strong>Effortless Connections:</strong> Matchmaking between Sponsors and Influencers based on preferences, audience demographics, and campaign goals.
         </li>
         <li>
-            Streamlined Communication: Messaging tools for efficient campaign coordination.
+            <strong>Streamlined Communication:</strong> Messaging tools for efficient campaign coordination.
         </li>
         <li>
-            Campaign Management: Tools to plan, track, and analyze sponsorship campaigns in real-time.
+            <strong>Campaign Management:</strong> Tools to plan, track, and analyze sponsorship campaigns in real-time.
         </li>
     </ul>
     <h3 class="mt-4">Our Technology</h3>
@@ -30,12 +30,12 @@ import Navbar from '@/components/Navbar.vue';
         We leverage cutting-edge technology to deliver a seamless experience:
     </p>
     <ul>
-        <li>Flask: Backend API framework for flexibility and scalability.</li>
-        <li>VueJS: Modern and interactive UI framework for dynamic user interfaces.</li>
-        <li>Bootstrap: Sleek and responsive styling for HTML generation.</li>
-        <li>SQLite: Lightweight and reliable database for data storage.</li>
-        <li>Redis: Efficient caching to boost performance.</li>
-        <li>Celery with Redis: Handling batch and scheduled jobs seamlessly.</li>
+        <li><strong>Flask:</strong> Backend API framework for flexibility and scalability.</li>
+        <li><strong>VueJS:</strong> Modern and interactive UI framework for dynamic user interfaces.</li>
+        <li><strong>Bootstrap:</strong> Sleek and responsive styling for HTML generation.</li>
+        <li><strong>SQLite:</strong> Lightweight and reliable database for data storage.</li>
+        <li><strong>Redis:</strong> Efficient caching to boost performance.</li>
+        <li><strong>Celery with Redis:</strong> Handling batch and scheduled jobs seamlessly.</li>
     </ul>
     <h3 class="mt-4">Backend Features</h3>
     <ul>
