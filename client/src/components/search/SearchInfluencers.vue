@@ -171,6 +171,12 @@ onMounted(async () => {
 
                     <div class="d-flex gap-2 mt-auto">
                         <RouterLink 
+                            :to="`/influencer/${influencer.id}`" 
+                            class="btn btn-outline-dark btn-sm" 
+                        >
+                            View
+                        </RouterLink>
+                        <RouterLink 
                             :to="`/ad-request/assign?influencer_id=${influencer.id}`" 
                             class="btn btn-outline-primary btn-sm" 
                             v-if="canAssignAd"

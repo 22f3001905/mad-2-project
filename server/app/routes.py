@@ -245,16 +245,21 @@ def pending_ad_requests():
 
 @app.route("/info/influencer")
 @auth_required("token")
-@roles_required("Influencer")
+@roles_accepted('Sponsor', 'Influencer')
 @not_flagged()
 # @cache.cached(60, key_prefix=lambda: user_specific_key('influencer_info'))
 def influencer_info():
+    # User is a sponsor.
     if current_user.influencer == None:
-        user_id = request.args.get('userId')
-        if not user_id:
-            return jsonify({ 'message': 'Influencer not found.' }), 404
-        user = db.session.get(User, user_id)
-        influencer = user.influencer
+        influencer_id = request.args.get('influencerId')
+
+        if not influencer_id:
+            abort(404, description='No influencerId provided.')
+        
+        influencer = db.session.get(Influencer, influencer_id)
+
+        if not influencer:
+            abort(404, description='Influencer not found.')
     else:
         influencer = current_user.influencer
     
@@ -278,6 +283,7 @@ def influencer_info():
     info = {
         "id": influencer.id,
         "name": influencer.name,
+        "email": influencer.user.email,
         "category": influencer.category.name,
         "niche": influencer.niche,
         "reach": influencer.reach,
@@ -366,7 +372,7 @@ def search_users():
 @roles_accepted('Admin')
 def user_profile(user_id):
     if user_id == 1:
-        pass  # TODO: Cannot access admin info.
+        abort(403, description="You cannot access admin info.")
 
     user = db.session.get(User, user_id)
 
@@ -421,7 +427,7 @@ def unassign_ad_request(ad_request_id):
     ad_request = db.session.get(AdRequest, ad_request_id)
 
     if ad_request.status.name != 'Rejected':
-        pass  # TODO
+        abort(403, description="You cannot unassign this ad request.")
 
     ad_request.influencer_id = None
     ad_request.status_id = 1

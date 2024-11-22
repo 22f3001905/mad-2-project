@@ -28,6 +28,7 @@ import UserView from '@/views/UserView.vue';
 import AboutView from '@/views/AboutView.vue';
 import ErrorView from '@/views/ErrorView.vue';
 import AddMoneyView from '@/views/AddMoneyView.vue';
+import InfluencerProfileView from '@/views/InfluencerProfileView.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -48,6 +49,7 @@ const router = createRouter({
         { path: '/adverts', name: 'adverts', component: AdvertsView },
         { path: '/stats', name: 'user-stats', component: StatsView },
         { path: '/user/:id', name: 'user-profile', component: UserView },
+        { path: '/influencer/:id', name: 'influencer-profile', component: InfluencerProfileView },
         { path: '/about', name: 'about', component: AboutView },
         { path: '/add-money', name: 'add-money', component: AddMoneyView },
         { path: '/403', name: 'permission-denied', component: ErrorView, props: { statusCode: 403, description: 'You do not have permission to access this page.' } },
