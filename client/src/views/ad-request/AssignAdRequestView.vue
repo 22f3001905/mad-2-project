@@ -24,7 +24,6 @@ const form = reactive({
     ad_request_id: null
 });
 
-// TODO: Help me!
 const changeSelectedCampaign = async () => {
     console.log('campaign changed.');
 	state.adRequests = [];
@@ -55,7 +54,6 @@ const changeSelectedCampaign = async () => {
     }
 }
 
-// TODO
 const assignAd = async () => {
     try {
         const res = await fetch('/api/assign-ad', {

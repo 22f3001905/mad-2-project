@@ -98,7 +98,6 @@ const poll = async (taskId) => {
             clearInterval(pollId);
             localStorage.removeItem('taskId');
 
-            // TODO: Trigger .csv file download.
             console.log('DATA IS READY TO BE DOWNLOADED.', data.value);
             await downloadCampaignsCSVFile(data.value.download_link);
 

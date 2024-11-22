@@ -1,8 +1,11 @@
 <script setup>
 import Navbar from '@/components/Navbar.vue';
 import { reactive, onMounted, computed } from 'vue';
-import { formatNumber } from '@/utils';
+import { formatNumber, redirectToErrorPage } from '@/utils';
 import { useUserStore } from '@/stores/user';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const store = useUserStore();
 const userId = computed(() => store.getUserId);
@@ -21,6 +24,11 @@ const getInfluencerInfo = async () => {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         state.influencerId = data.id;
@@ -37,6 +45,11 @@ async function acceptAdRequest(adRequestId) {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         // console.log(data);
         await getInfluencerInfo();
@@ -52,6 +65,11 @@ async function rejectAdRequest(adRequestId) {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         await getInfluencerInfo();
@@ -67,6 +85,11 @@ async function completeAdRequest(adRequestId) {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         // console.log(data);
         await getInfluencerInfo();
@@ -82,6 +105,11 @@ async function deleteAdRequest(adRequestId) {
             method: 'DELETE',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         state.assignedAds = state.assignedAds.filter(ad => ad.id != adRequestId);
     } catch (error) {
         console.error('Error in deleting ad request.', error);
