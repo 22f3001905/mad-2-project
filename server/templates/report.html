@@ -1,4 +1,17 @@
 <html>
+<head>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+      
+</head>
 <body>
     <h1>Monthly Activity Report - SponsorConnect</h1>
     <p>Dear {{ sponsor.name }},</p>
@@ -6,31 +19,53 @@
 
     <h2>Campaigns</h2>
 
-    <div>
-        {% for campaign in sponsor.campaigns %}
-            <div>
-                <h3>Name: {{ campaign.name }}</h3>
-                <ul>
-                    <li>Start: {{ campaign.start_date }} | End: {{ campaign.end_date }}</li>
-                    <li>Remaining Budget: Rs. {{ campaign.budget }}</li>
-                    <li>Ad Requests: {{ campaign.completed_ads }} / {{ campaign.n_ads }} Completed</li>
-                </ul>
-                <h4>Goals Achieved</h4>
-                {% if campaign.n_goals_achieved > 0 %}
-                    <ul>
-                        {% for goal in campaign.goals_achieved %}
-                            <li>{{ goal }}</li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <ul>
-                        <li>No completed ad requests</li>
-                    </ul>
-                {% endif %}
-            </div>
-            <hr>
-        {% endfor %}
-    </div>
+    {% if sponsor.campaigns %}
+        <div>
+            {% for campaign in sponsor.campaigns %}
+                <div>
+                    <h3>Name: {{ campaign.name }}</h3>
+
+                    <table>
+                        <tr>
+                            <th>Start</th>
+                            <td>{{ campaign.start_date }}</td>
+                        </tr>
+                        <tr>
+                            <th>End</th>
+                            <td>{{ campaign.end_date }}</td>
+                        </tr>
+                        <tr>
+                            <th>Remaining Budget</th>
+                            <td>Rs. {{ campaign.budget }}</td>
+                        </tr>
+                        <tr>
+                            <th>Ad Requests</th>
+                            <td>{{ campaign.completed_ads }} of {{ campaign.n_ads }} Completed</td>
+                        </tr>
+                    </table>
+
+                    <h4>Goals Achieved</h4>
+                    {% if campaign.n_goals_achieved > 0 %}
+                        <ul>
+                            {% for goal in campaign.goals_achieved %}
+                                <li>{{ goal }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <ul>
+                            <li>No completed ad requests</li>
+                        </ul>
+                    {% endif %}
+
+                </div>
+                <br>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div>
+            <p>No active campaigns.</p>
+        </div>
+    {% endif %}
 
     <p>For more information please visit our website.</p>
 

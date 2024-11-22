@@ -20,7 +20,7 @@ def setup_periodic_tasks(sender, **kwargs):
         name='Daily Influencer Reminder'
     )
     sender.add_periodic_task(
-        # 30.0,  # Test
+        # 20.0,  # Test
         crontab(minute=0, hour=8, day_of_month=1),  # 08:00 on first day of every month.
         send_monthly_sponsor_report.s(),
         name='Montly Sponsor Report'
