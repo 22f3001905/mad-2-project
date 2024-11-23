@@ -245,18 +245,24 @@ def pending_ad_requests():
 
 @app.route("/info/influencer")
 @auth_required("token")
-@roles_accepted('Sponsor', 'Influencer')
+@roles_accepted('Sponsor', 'Influencer', 'Admin')
 @not_flagged()
 # @cache.cached(60, key_prefix=lambda: user_specific_key('influencer_info'))
 def influencer_info():
-    # User is a sponsor.
+    # User is a sponsor or admin.
     if current_user.influencer == None:
+        influencer = None
+        user_id = request.args.get('userId')
         influencer_id = request.args.get('influencerId')
 
-        if not influencer_id:
-            abort(404, description='No influencerId provided.')
+        if not (user_id or influencer_id):
+            abort(404, description='No indentifier provided.')
         
-        influencer = db.session.get(Influencer, influencer_id)
+        if user_id:
+            user = db.session.get(User, user_id)
+            influencer = user.influencer if user else None
+        else:
+            influencer = db.session.get(Influencer, influencer_id)
 
         if not influencer:
             abort(404, description='Influencer not found.')
