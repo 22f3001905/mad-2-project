@@ -35,6 +35,11 @@ const state = reactive({
 async function deleteCampaign() {
     console.log('Campaign Deleted!');
     try {
+        const confirmDelete = window.confirm("Are you sure you want to delete this campaign?");
+        if (!confirmDelete) {
+            return null;
+        }
+
         const res = await fetch(`/api/campaign/${campaignId.value}`, {
             method: 'DELETE',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
@@ -53,6 +58,11 @@ async function deleteCampaign() {
 async function deleteAdRequest(adRequestId) {
     console.log('Ad Request Deleted!');
     try {
+        const confirmDelete = window.confirm("Are you sure you want to delete this ad request?");
+        if (!confirmDelete) {
+            return null;
+        }
+
         const res = await fetch(`/api/ad-request/${adRequestId}`, {
             method: 'DELETE',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
