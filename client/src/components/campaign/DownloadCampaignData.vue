@@ -66,8 +66,16 @@ const triggerExport = async () => {
 
         localStorage.setItem('taskId', data.task_id);
 
-        intervalId = setInterval(() => {
-            poll(data.task_id);
+        let pollCounter = 0;
+
+        intervalId = setInterval(async () => {
+            await poll(data.task_id);
+            pollCounter++;
+            if (pollCounter >= 10){
+                clearInterval(intervalId);
+                message.value = 'Something went wrong! Please try again later.';
+                localStorage.removeItem('taskId');
+            }
         }, 5000);
 
         state.polls.push(intervalId);
@@ -85,10 +93,12 @@ const poll = async (taskId) => {
         });
 
         if (!res.ok) {
+            localStorage.removeItem('taskId');
             return redirectToErrorPage(res.status, router);
         }
 
         const data = await res.json();
+        console.log(data);
 
         if (data.ready) {
             state.taskResult = data.value;
@@ -115,9 +125,16 @@ onMounted(() => {
     if (taskId) {
         showDownloadButton.value = false;
         message.value = 'Resuming export process...';
+        let pollCounter = 0;
 
-        intervalId = setInterval(() => {
-            poll(taskId);
+        intervalId = setInterval(async () => {
+            await poll(taskId);
+            pollCounter++;
+            if (pollCounter >= 10){
+                clearInterval(intervalId);
+                message.value = 'Something went wrong! Please try again later.';
+                localStorage.removeItem('taskId');
+            }
         }, 5000);
 
         state.polls.push(intervalId);
