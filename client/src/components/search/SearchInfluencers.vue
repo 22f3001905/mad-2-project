@@ -57,6 +57,11 @@ const resetSearch = () => {
 onMounted(async () => {
     try {
         const res = await fetch('/api/hard-coded-form-data');
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+        
         const data = await res.json();
         console.log(data.influencer_category_names);
 

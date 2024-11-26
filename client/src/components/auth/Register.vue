@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { redirectToErrorPage } from '@/utils';
 
 const router = useRouter();
 
@@ -10,6 +11,11 @@ const influencerCategories = ref([]);
 onMounted(async () => {
     try {
         const response = await fetch('/api/hard-coded-form-data');
+
+        if (!response.ok) {
+            return redirectToErrorPage(response.status, router);
+        }
+
         const data = await response.json();
         const fetchedIndustries = [];
         for (const [idx, industryName] of data.industry_names.entries()) {
@@ -67,8 +73,8 @@ const registerUser = async () => {
             body: JSON.stringify(requestBody)
         });
 
-        if (!res.ok) {
-            return redirectToErrorPage(res.status, router);
+        if (!response.ok) {
+            return redirectToErrorPage(response.status, router);
         }
 
         const data = await response.json();
