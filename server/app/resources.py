@@ -516,6 +516,13 @@ class AdRequestAPI(Resource):
                 status_code=403, 
                 error_message="Payment amount cannot be greater than total budget."
             )
+        
+        if current_user.influencer:
+            if influencer_id != current_user.influencer.id:
+                raise BusinessValidationError(
+                    status_code=403, 
+                    error_message="Provided influencer id does not match the user influencer id."
+                )
 
         campaign.budget = total_budget - payment_amount
         

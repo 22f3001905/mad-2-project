@@ -140,7 +140,7 @@ onMounted(async () => {
 
                             <div class="d-flex gap-2 mt-auto">
                                 <RouterLink 
-                                    :to="`/ad-request/${ad.id}/edit`" 
+                                    :to="`/ad-request/${ad.id}/edit?influencer_id=${ad.influencer_id}`" 
                                     class="btn btn-warning btn-sm"
                                 >
                                     Edit
