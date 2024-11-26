@@ -74,6 +74,20 @@ onMounted(async () => {
 
 const createCampaign = async () => {
     console.log('Create a new campaign.');
+    // end_date should be greater than start_date
+    const startDate = new Date(form.start_date);
+    const endDate = new Date(form.end_date);
+
+    if (endDate < startDate) {
+        alert('Please input correct Start & End Date.');
+        return null;
+    }
+
+    if (!form.goals.trim()) {
+        alert("Please input valid goals.");
+        return null;
+    }
+
     try {
         const res = await fetch(`/api/campaign`, {
             method: 'POST',

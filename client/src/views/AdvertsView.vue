@@ -33,7 +33,7 @@ const getInfluencerInfo = async () => {
         console.log(data);
         state.influencerId = data.id;
         state.walletBalance = data.wallet_balance;
-        state.assignedAds = [...data.assigned_ads];
+        state.assignedAds = [...data.assigned_ads].toReversed();
     } catch (error) {
         console.error('Error fetching influencer info.', error);
     }

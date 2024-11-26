@@ -7,7 +7,7 @@ import { useUserStore } from '@/stores/user';
 const store = useUserStore();
 const userId = computed(() => store.getUserId);
 
-console.log("USER ID:", userId.value);
+// console.log("USER ID:", userId.value);
 
 import Navbar from '@/components/Navbar.vue';
 
@@ -91,7 +91,7 @@ async function getCampaignInfo() {
         campaign.budget = data.budget;
         campaign.niche = data.niche.name;
         campaign.visibility = data.visibility.name;
-        campaign.adRequests = data.ad_requests;
+        campaign.adRequests = data.ad_requests.toReversed();
     } catch (error) {
         console.error('Error in fetching campaign data.', error);
     }
