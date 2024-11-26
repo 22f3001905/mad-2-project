@@ -149,6 +149,11 @@ async function fetchInfluencerInfo() {
 async function rejectAdRequest(adRequestId) {
     console.log('Ad Request rejected!');
     try {
+        const confirmReject = window.confirm("Are you sure you want to reject this ad request?");
+        if (!confirmReject) {
+            return null;
+        }
+        
         const res = await fetch(`/api/ad-request/${adRequestId}/reject`, {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }

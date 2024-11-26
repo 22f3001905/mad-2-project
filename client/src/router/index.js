@@ -63,11 +63,18 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const isAuthenticated = localStorage.getItem('authToken');
 
-    if (to.path === '/dashboard' && !isAuthenticated) {
-        next('/login');
-    } else {
-        next();
-    }
+    switch (true) {
+        case (to.path === '/dashboard' && !isAuthenticated):
+        case (to.path === '/stats' && !isAuthenticated):
+        case (to.path === '/campaigns' && !isAuthenticated):
+        case (to.path === '/adverts' && !isAuthenticated):
+        case (to.path === '/search' && !isAuthenticated):
+            next('/login');
+            break;
+        default:
+            next();
+            break;
+    }    
 });
 
 export default router
