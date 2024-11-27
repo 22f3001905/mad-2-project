@@ -142,6 +142,9 @@ const unflagUser = async (userId) => {
                         <li>
                             <strong>Wallet:</strong> Rs. {{ formatNumber(user.wallet) }}
                         </li>
+                        <li v-if="user.flagged" class="badge bg-danger">
+                            Flagged
+                        </li>
                     </ul>
 
                     <div class="d-flex gap-2 mt-auto">
