@@ -406,7 +406,7 @@ ad_request_fields = {
 
 ad_request_parser = reqparse.RequestParser()
 ad_request_parser.add_argument("campaign_id", type=int)
-ad_request_parser.add_argument("influencer_id")
+ad_request_parser.add_argument("influencer_id", type=int)
 ad_request_parser.add_argument("message", type=str)
 ad_request_parser.add_argument("requirement", type=str)
 ad_request_parser.add_argument("payment_amount", type=float)
@@ -523,6 +523,13 @@ class AdRequestAPI(Resource):
                     status_code=403, 
                     error_message="Provided influencer id does not match the user influencer id."
                 )
+        else:
+            if ad_request.influencer_id:
+                if ad_request.influencer_id != influencer_id:
+                    raise BusinessValidationError(
+                        status_code=403, 
+                        error_message="Provided influencer id does not match the ad request influencer id."
+                    )
 
         campaign.budget = total_budget - payment_amount
         
