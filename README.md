@@ -7,12 +7,23 @@
 
 ### Commands
 
-1. Vue: npm run dev
-2. Server: python server.py
-3. Redis: redis-server --port 6375
-4. Celery Worker: celery -A celery_service.celery_app worker --loglevel INFO
-5. Mailhog: MailHog
-6. Celery Beat: celery -A celery_service.celery_app beat --max-interval 30 --loglevel INFO
+```bash
+# Vue
+npm run dev
+
+# Flask
+python server.py
+
+# Redis
+redis-server --port 6375
+
+# MailHog
+MailHog
+
+# Celery
+celery -A celery_service.celery_app worker --loglevel INFO
+celery -A celery_service.celery_app beat --max-interval 30 --loglevel INFO
+```
 
 ### Installation
 
