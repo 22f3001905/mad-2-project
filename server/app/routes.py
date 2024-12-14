@@ -31,7 +31,6 @@ def user_info():
 @roles_required("Sponsor")
 @not_flagged()
 @not_approved()
-# @cache.cached(60, key_prefix=lambda: user_specific_key('sponsor_info'))
 def sponsor_info():
     if current_user.sponsor == None:
         user_id = request.args.get('userId')
@@ -72,7 +71,6 @@ def sponsor_info():
 @roles_required('Sponsor')
 @not_flagged()
 @not_approved()
-# @cache.cached(60, key_prefix=lambda: user_specific_key('campaigns'))
 def all_campaigns():
     data = { 'campaigns': [] }
     campaigns = current_user.sponsor.campaigns  # Sponsor Campaigns
@@ -101,7 +99,6 @@ def all_campaigns():
 @auth_required('token')
 @roles_required('Influencer')
 @not_flagged()
-# @cache.cached(60, key_prefix=lambda: user_specific_key('public_campaigns'))
 def public_campaigns():
     data = { 'campaigns': [] }
     campaigns = db.session.query(Campaign).filter(Campaign.visibility_id == 1).all()  # All Public Campaigns
@@ -130,7 +127,6 @@ def public_campaigns():
 @roles_accepted('Sponsor', 'Influencer', 'Admin')
 @not_flagged()
 @not_approved()
-# @cache.cached(60, key_prefix=lambda: user_specific_key('active_campaigns'))
 def active_campaigns():
     data = {
         'campaigns': [], 
@@ -190,7 +186,6 @@ def active_campaigns():
 @roles_accepted('Sponsor', 'Influencer')
 @not_flagged()
 @not_approved()
-# @cache.cached(60, key_prefix=lambda: user_specific_key('pending_requests'))
 def pending_ad_requests():
     data = {
         'pending_ad_requests': {
@@ -245,16 +240,26 @@ def pending_ad_requests():
 
 @app.route("/info/influencer")
 @auth_required("token")
-@roles_required("Influencer")
+@roles_accepted('Sponsor', 'Influencer', 'Admin')
 @not_flagged()
-# @cache.cached(60, key_prefix=lambda: user_specific_key('influencer_info'))
 def influencer_info():
+    # User is a sponsor or admin.
     if current_user.influencer == None:
+        influencer = None
         user_id = request.args.get('userId')
-        if not user_id:
-            return jsonify({ 'message': 'Influencer not found.' }), 404
-        user = db.session.get(User, user_id)
-        influencer = user.influencer
+        influencer_id = request.args.get('influencerId')
+
+        if not (user_id or influencer_id):
+            abort(404, description='No indentifier provided.')
+        
+        if user_id:
+            user = db.session.get(User, user_id)
+            influencer = user.influencer if user else None
+        else:
+            influencer = db.session.get(Influencer, influencer_id)
+
+        if not influencer:
+            abort(404, description='Influencer not found.')
     else:
         influencer = current_user.influencer
     
@@ -278,6 +283,7 @@ def influencer_info():
     info = {
         "id": influencer.id,
         "name": influencer.name,
+        "email": influencer.user.email,
         "category": influencer.category.name,
         "niche": influencer.niche,
         "reach": influencer.reach,
@@ -290,7 +296,6 @@ def influencer_info():
 from app.utils import form_hard_coded
 
 @app.route("/hard-coded-form-data")
-# @cache.cached(60, key_prefix=lambda: user_specific_key('hard_coded_form_data'))
 @cache.cached(60)
 def registration_form_data():
     return jsonify(form_hard_coded())
@@ -300,14 +305,12 @@ def registration_form_data():
 @roles_required("Sponsor")
 @not_flagged()
 @not_approved()
-# @cache.cached(60, key_prefix=lambda: user_specific_key('sponsor_budget'))
 def sponsor_budget():
     budget = current_user.sponsor.budget
     return jsonify({ 'budget': budget })
 
 
 @app.route('/influencer/<int:influencer_id>')
-# @cache.cached(timeout=60, key_prefix=lambda: user_specific_key(f"influencer_{request.view_args['influencer_id']}"))
 def influencer_details(influencer_id):
     influencer = db.session.get(Influencer, influencer_id)
     if not influencer:
@@ -366,7 +369,7 @@ def search_users():
 @roles_accepted('Admin')
 def user_profile(user_id):
     if user_id == 1:
-        pass  # TODO: Cannot access admin info.
+        abort(403, description="You cannot access admin info.")
 
     user = db.session.get(User, user_id)
 
@@ -421,7 +424,7 @@ def unassign_ad_request(ad_request_id):
     ad_request = db.session.get(AdRequest, ad_request_id)
 
     if ad_request.status.name != 'Rejected':
-        pass  # TODO
+        abort(403, description="You cannot unassign this ad request.")
 
     ad_request.influencer_id = None
     ad_request.status_id = 1
@@ -450,8 +453,9 @@ def accept_ad_request(ad_request_id):
     
     if ad_request.campaign.flagged:
         abort(405, description="Campaign is flagged by the admin.")
-    
+
     if current_user.influencer:
+        # Unassigned public ad.
         if ad_request.influencer == None:
             ad_request.influencer = current_user.influencer
         else:
@@ -858,3 +862,25 @@ def approve_sponsor(sponsor_id):
 
     db.session.commit()
     return jsonify({ 'message': 'Sponsor was approved.' })
+
+
+@app.route("/add-money", methods=["POST"])
+@auth_required("token")
+@roles_required("Sponsor")
+@not_flagged()
+@not_approved()
+def add_money_sponsor():
+    content = request.json
+    try:
+        amount = float(content.get('amount', 0))
+    except:
+        abort(500, description="Cannot convert to float.")
+    
+    if amount < 0:
+        abort(405, description="Cannot add negative money.")
+
+    # Enough to update sponsor budget in DB
+    current_user.sponsor.budget += amount            
+    db.session.commit()
+
+    return jsonify({ 'message': 'Money was added to sponsor budget.' })

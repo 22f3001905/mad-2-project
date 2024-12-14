@@ -1,7 +1,10 @@
 <script setup>
 import Chart from '@/components/stats/Chart.vue';
 import { onMounted, reactive } from 'vue';
-import { formatNumber } from '@/utils';
+import { formatNumber, redirectToErrorPage } from '@/utils';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const zip = (a, b) => a.map((k, i) => [k, b[i]]);
 
@@ -25,6 +28,11 @@ onMounted(async () => {
                 'Authentication-Token': localStorage.getItem('authToken')
             }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
 

@@ -170,7 +170,10 @@ class CampaignAPI(Resource):
         
         total_budget = sponsor.budget
         if budget > total_budget:
-            pass  # error
+            raise BusinessValidationError(
+                status_code=403, 
+                error_message="Campaign budget cannot be greater than total budget."
+            )
 
         sponsor.budget = total_budget - budget
 
@@ -327,7 +330,10 @@ class CampaignAPI(Resource):
         
         total_budget = sponsor.budget + campaign.budget
         if budget > total_budget:
-            pass  # error
+            raise BusinessValidationError(
+                status_code=403, 
+                error_message="Campaign budget cannot be greater than total budget."
+            )
 
         total_budget -= budget
         sponsor.budget = total_budget
@@ -400,7 +406,7 @@ ad_request_fields = {
 
 ad_request_parser = reqparse.RequestParser()
 ad_request_parser.add_argument("campaign_id", type=int)
-ad_request_parser.add_argument("influencer_id")
+ad_request_parser.add_argument("influencer_id", type=int)
 ad_request_parser.add_argument("message", type=str)
 ad_request_parser.add_argument("requirement", type=str)
 ad_request_parser.add_argument("payment_amount", type=float)
@@ -427,7 +433,10 @@ class AdRequestAPI(Resource):
         campaign = db.session.get(Campaign, campaign_id)
 
         if payment_amount > campaign.budget:
-            pass # error
+            raise BusinessValidationError(
+                status_code=403, 
+                error_message="Payment amount cannot be greater than total budget."
+            )
 
         campaign.budget -= payment_amount
 
@@ -507,6 +516,20 @@ class AdRequestAPI(Resource):
                 status_code=403, 
                 error_message="Payment amount cannot be greater than total budget."
             )
+        
+        if current_user.influencer:
+            if influencer_id != current_user.influencer.id:
+                raise BusinessValidationError(
+                    status_code=403, 
+                    error_message="Provided influencer id does not match the user influencer id."
+                )
+        else:
+            if ad_request.influencer_id:
+                if ad_request.influencer_id != influencer_id:
+                    raise BusinessValidationError(
+                        status_code=403, 
+                        error_message="Provided influencer id does not match the ad request influencer id."
+                    )
 
         campaign.budget = total_budget - payment_amount
         
@@ -528,10 +551,16 @@ class AdRequestAPI(Resource):
         ad_request = db.session.get(AdRequest, ad_request_id)
 
         if not ad_request:
-            pass  # error
+            raise BusinessValidationError(
+                status_code=404, 
+                error_message="Ad request not found."
+            )
 
         if ad_request.sender_user_id != current_user.id:
-            pass  # TODO: Error: NOT ALLOWED
+            raise BusinessValidationError(
+                status_code=403, 
+                error_message="You cannot delete this ad request."
+            )
 
         ad_request.campaign.budget += ad_request.payment_amount
 

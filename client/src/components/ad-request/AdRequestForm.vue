@@ -221,7 +221,7 @@ const createAdRequest = async () => {
             },
             body: JSON.stringify({
                 campaign_id: form.campaign.id,
-                influencer_id: influencerId.value,
+                influencer_id: Number(influencerId.value),
                 requirement: form.requirement,
                 message: form.message,
                 payment_amount: form.payment_amount,
@@ -254,7 +254,7 @@ const editAdRequest = async () => {
             },
             body: JSON.stringify({
                 campaign_id: form.campaign.id,
-                influencer_id: influencerId.value,
+                influencer_id: Number(influencerId.value),
                 requirement: form.requirement,
                 message: form.message,
                 payment_amount: form.payment_amount,

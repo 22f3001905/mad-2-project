@@ -1,8 +1,11 @@
 <script setup>
 import Navbar from '@/components/Navbar.vue';
 import { reactive, onMounted, computed } from 'vue';
-import { formatNumber } from '@/utils';
+import { formatNumber, redirectToErrorPage } from '@/utils';
 import { useUserStore } from '@/stores/user';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const store = useUserStore();
 const userId = computed(() => store.getUserId);
@@ -21,11 +24,16 @@ const getInfluencerInfo = async () => {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         state.influencerId = data.id;
         state.walletBalance = data.wallet_balance;
-        state.assignedAds = [...data.assigned_ads];
+        state.assignedAds = [...data.assigned_ads].toReversed();
     } catch (error) {
         console.error('Error fetching influencer info.', error);
     }
@@ -37,6 +45,11 @@ async function acceptAdRequest(adRequestId) {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         // console.log(data);
         await getInfluencerInfo();
@@ -48,10 +61,20 @@ async function acceptAdRequest(adRequestId) {
 async function rejectAdRequest(adRequestId) {
     console.log('Ad Request Accepted!');
     try {
+        const confirmReject = window.confirm("Are you sure you want to reject this ad request?");
+        if (!confirmReject) {
+            return null;
+        }
+
         const res = await fetch(`/api/ad-request/${adRequestId}/reject`, {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data);
         await getInfluencerInfo();
@@ -67,6 +90,11 @@ async function completeAdRequest(adRequestId) {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         // console.log(data);
         await getInfluencerInfo();
@@ -78,10 +106,20 @@ async function completeAdRequest(adRequestId) {
 async function deleteAdRequest(adRequestId) {
     console.log('Ad Request Deleted!');
     try {
+        const confirmDelete = window.confirm("Are you sure you want to delete this campaign?");
+        if (!confirmDelete) {
+            return null;
+        }
+        
         const res = await fetch(`/api/ad-request/${adRequestId}`, {
             method: 'DELETE',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         state.assignedAds = state.assignedAds.filter(ad => ad.id != adRequestId);
     } catch (error) {
         console.error('Error in deleting ad request.', error);
@@ -169,7 +207,7 @@ onMounted(async () => {
                     <div v-else-if="ad.status == 'Accepted'" class="mt-auto">
                         <button 
                             @click="completeAdRequest(ad.id)" 
-                            class="btn btn-dark btn-sm"
+                            class="btn btn-outline-dark btn-sm"
                         >
                             Complete
                         </button>

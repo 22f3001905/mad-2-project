@@ -2,7 +2,7 @@
 import { RouterLink, useRouter } from 'vue-router';
 import { reactive, computed, defineProps, ref } from 'vue';
 import { useUserStore } from '@/stores/user';
-import { clearCookie } from '@/utils';
+import { clearCookie, redirectToErrorPage } from '@/utils';
 
 const router = useRouter();
 
@@ -12,7 +12,12 @@ const isLoggedIn = computed(() => store.getAuthToken != null);
 
 const logoutUser = async () => {
     try {
-        await fetch('/api/logout');
+        const res = await fetch('/api/logout');
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
         store.logout();

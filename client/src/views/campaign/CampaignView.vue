@@ -7,7 +7,7 @@ import { useUserStore } from '@/stores/user';
 const store = useUserStore();
 const userId = computed(() => store.getUserId);
 
-console.log("USER ID:", userId.value);
+// console.log("USER ID:", userId.value);
 
 import Navbar from '@/components/Navbar.vue';
 
@@ -35,6 +35,11 @@ const state = reactive({
 async function deleteCampaign() {
     console.log('Campaign Deleted!');
     try {
+        const confirmDelete = window.confirm("Are you sure you want to delete this campaign?");
+        if (!confirmDelete) {
+            return null;
+        }
+
         const res = await fetch(`/api/campaign/${campaignId.value}`, {
             method: 'DELETE',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
@@ -53,6 +58,11 @@ async function deleteCampaign() {
 async function deleteAdRequest(adRequestId) {
     console.log('Ad Request Deleted!');
     try {
+        const confirmDelete = window.confirm("Are you sure you want to delete this ad request?");
+        if (!confirmDelete) {
+            return null;
+        }
+
         const res = await fetch(`/api/ad-request/${adRequestId}`, {
             method: 'DELETE',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
@@ -91,7 +101,7 @@ async function getCampaignInfo() {
         campaign.budget = data.budget;
         campaign.niche = data.niche.name;
         campaign.visibility = data.visibility.name;
-        campaign.adRequests = data.ad_requests;
+        campaign.adRequests = data.ad_requests.toReversed();
     } catch (error) {
         console.error('Error in fetching campaign data.', error);
     }
@@ -139,6 +149,11 @@ async function fetchInfluencerInfo() {
 async function rejectAdRequest(adRequestId) {
     console.log('Ad Request rejected!');
     try {
+        const confirmReject = window.confirm("Are you sure you want to reject this ad request?");
+        if (!confirmReject) {
+            return null;
+        }
+        
         const res = await fetch(`/api/ad-request/${adRequestId}/reject`, {
             method: 'GET',
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }

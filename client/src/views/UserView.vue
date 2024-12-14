@@ -1,10 +1,11 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import Navbar from '@/components/Navbar.vue';
-import { useRoute } from 'vue-router';
-import { formatNumber } from '@/utils';
+import { useRoute, useRouter } from 'vue-router';
+import { formatNumber, redirectToErrorPage } from '@/utils';
 
 const route = useRoute();
+const router = useRouter();
 const userId = ref(route.params.id);
 
 const user = reactive({
@@ -34,6 +35,11 @@ onMounted(async () => {
         const res = await fetch(`/api/user/${userId.value}`, {
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         console.log(data.data);
 
@@ -51,6 +57,11 @@ onMounted(async () => {
             const res = await fetch(`/api/info/sponsor?userId=${userId.value}`, {
                 headers: { 'Authentication-Token': localStorage.getItem('authToken') }
             });
+
+            if (!res.ok) {
+                return redirectToErrorPage(res.status, router);
+            }
+
             const data = await res.json();
             console.log(data);
 
@@ -65,6 +76,11 @@ onMounted(async () => {
             const res = await fetch(`/api/info/influencer?userId=${userId.value}`, {
                 headers: { 'Authentication-Token': localStorage.getItem('authToken') }
             });
+
+            if (!res.ok) {
+                return redirectToErrorPage(res.status, router);
+            }
+            
             const data = await res.json();
             console.log(data);
 

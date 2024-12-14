@@ -103,6 +103,9 @@ def random_file_name(sponsor_name):
     return f"{sanitized_name}-{random_hash}"
 
 def save_data_to_csv(data, file_name):
+    if not os.path.exists('exports'):
+        os.makedirs('exports')
+
     df = pd.DataFrame(data)
     df['goals'] = df['goals'].apply(lambda x: ';'.join(x))
     df['goals_achieved'] = df['goals_achieved'].apply(lambda x: '; '.join(x))

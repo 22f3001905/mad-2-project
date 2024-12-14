@@ -57,6 +57,11 @@ const resetSearch = () => {
 onMounted(async () => {
     try {
         const res = await fetch('/api/hard-coded-form-data');
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+        
         const data = await res.json();
         console.log(data.influencer_category_names);
 
@@ -170,6 +175,12 @@ onMounted(async () => {
                     </ul>
 
                     <div class="d-flex gap-2 mt-auto">
+                        <RouterLink 
+                            :to="`/influencer/${influencer.id}`" 
+                            class="btn btn-outline-dark btn-sm" 
+                        >
+                            View
+                        </RouterLink>
                         <RouterLink 
                             :to="`/ad-request/assign?influencer_id=${influencer.id}`" 
                             class="btn btn-outline-primary btn-sm" 

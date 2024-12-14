@@ -7,7 +7,10 @@ import ApproveSponsor from '@/components/ApproveSponsor.vue';
 import ActiveCampaignList from '@/components/campaign/ActiveCampaignList.vue';
 import PendingAdRequestList from '@/components/ad-request/PendingAdRequestList.vue';
 
-// import { userLoggedInRedirect } from '@/utils';
+import { formatNumber, redirectToErrorPage } from '@/utils';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const user = reactive({
     id: null,
@@ -35,6 +38,11 @@ onMounted(async () => {
         const res = await fetch('/api/info/user', {
             headers: { 'Authentication-Token': localStorage.getItem('authToken') }
         });
+
+        if (!res.ok) {
+            return redirectToErrorPage(res.status, router);
+        }
+
         const data = await res.json();
         // console.log(data);
         user.id = data.id;
@@ -48,10 +56,13 @@ onMounted(async () => {
             const res = await fetch('/api/info/sponsor', {
                 headers: { 'Authentication-Token': localStorage.getItem('authToken') }
             });
-            const data = await res.json();
+
             if (!res.ok) {
-                throw new Error('Something went wrong.');
+                return redirectToErrorPage(res.status, router);
             }
+
+            const data = await res.json();
+
             console.log(data);
             user.name = data.name;
             sponsor.budget = data.budget;
@@ -65,6 +76,11 @@ onMounted(async () => {
             const res = await fetch('/api/info/influencer', {
                 headers: { 'Authentication-Token': localStorage.getItem('authToken') }
             });
+
+            if (!res.ok) {
+                return redirectToErrorPage(res.status, router);
+            }
+
             const data = await res.json();
             console.log(data);
             user.name = data.name;
