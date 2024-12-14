@@ -428,6 +428,7 @@ def unassign_ad_request(ad_request_id):
 
     ad_request.influencer_id = None
     ad_request.status_id = 1
+    ad_request.sender_user_id = current_user.id
 
     db.session.commit()
 
